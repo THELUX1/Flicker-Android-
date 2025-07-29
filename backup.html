@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Respaldo de datos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: sans-serif;
+      background: #121212;
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    input, button {
+      width: 100%;
+      font-size: 16px;
+      margin-bottom: 15px;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+    }
+
+    input {
+      background-color: #1e1e1e;
+      color: white;
+    }
+
+    button {
+      background-color: #1e88e5;
+      color: white;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background-color: #1565c0;
+    }
+
+    @media (min-width: 600px) {
+      body {
+        max-width: 500px;
+        margin: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🔐 Respaldo de perfiles</h1>
+
+  <input id="nombre" placeholder="Tu nombre" />
+  <input id="email" placeholder="Tu correo" />
+  <button onclick="enviarRespaldo()">Enviar Respaldo</button>
+
+  <script>
+    function enviarRespaldo() {
+      const nombre = document.getElementById('nombre').value.trim();
+      const email = document.getElementById('email').value.trim();
+
+      if (!nombre || !email) {
+        alert("Por favor completá nombre y correo.");
+        return;
+      }
+
+      // Crear objeto con todos los datos en el formato compatible
+      const datosBackup = {};
+      
+      // 1. Agregar los perfiles
+      const perfiles = JSON.parse(localStorage.getItem('profiles')) || [];
+      datosBackup.profiles = JSON.stringify(perfiles);
+      
+      // 2. Agregar el perfil actual
+      datosBackup.currentProfileId = localStorage.getItem('currentProfileId') || null;
+      
+      // 3. Agregar todos los datos de progreso y otros relacionados con perfiles
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        
+        // Incluir todas las claves que comienzan con "profile_" o "progress_"
+        if (key.startsWith('profile_') || key.startsWith('progress_')) {
+          datosBackup[key] = localStorage.getItem(key);
+        }
+      }
+
+      // Formatear los datos para el correo
+      const datosTexto = `Respaldo de perfiles de Flicker:\n\n` +
+                        `Nombre: ${nombre}\n` +
+                        `Email: ${email}\n` +
+                        `Fecha: ${new Date().toLocaleString()}\n\n` +
+                        `Perfiles respaldados: ${perfiles.length}\n\n` +
+                        `Datos en formato compatible:\n${JSON.stringify(datosBackup, null, 2)}`;
+
+      // Configuración del correo (EDITA ESTO CON TU GMAIL)
+      const gmailDestino = "cristiandeniz668@gmail.com"; // Cambia esto por tu Gmail
+      const asunto = `Respaldo de Flicker - ${nombre}`;
+
+      // Crear enlace mailto con parámetros
+      const mailtoLink = `mailto:${gmailDestino}?` +
+                         `subject=${encodeURIComponent(asunto)}&` +
+                         `body=${encodeURIComponent(datosTexto)}`;
+
+      // Abrir cliente de correo
+      window.location.href = mailtoLink;
+    }
+  </script>
+</body>
+</html>

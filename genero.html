@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Películas de [Género] - Flicker</title>
+    <link rel="stylesheet" href="styles2.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script type="module" src="moviesData.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo-container">
+            <div class="logo-glass">
+                <a href="index.html" class="logo-link">
+                    <h1 class="logo">Flicker</h1>
+                </a>
+            </div>
+        </div>
+        <div class="back-button-container">
+            <a href="index.html" class="back-button">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+        </div>
+    </header>
+
+    <!-- Loader -->
+    <div id="loader" class="loader">
+        <div class="loader-spinner"></div>
+        <p class="loader-text">Cargando películas...</p>
+    </div>
+
+    <!-- Contenido principal -->
+    <main class="genre-content">
+        <div class="genre-header">
+            <h1 id="genre-title" class="genre-title"></h1>
+            <p id="movie-count" class="movie-count"></p>
+        </div>
+        <div class="movies-grid" id="movies-grid">
+            <!-- Tarjetas se insertarán aquí -->
+        </div>
+    </main>
+
+    <script type="module">
+        import { manualMovies, accionMovies, dramaMovies } from './moviesData.js';
+
+        function createMovieCard(movie) {
+            const card = document.createElement('div');
+            card.className = 'movie-card';
+            card.innerHTML = `
+                <a href="${movie.link}">
+                    <img src="${movie.image}" alt="${movie.title}" class="movie-poster">
+                    <div class="movie-info">
+                        <h3 class="movie-title">${movie.title}</h3>
+                        ${movie.year ? `<p class="movie-year">${movie.year}</p>` : ''}
+                    </div>
+                </a>
+            `;
+            return card;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const genre = decodeURIComponent(urlParams.get('genre'));
+            
+            document.getElementById('genre-title').textContent = genre;
+            
+            const allMovies = [...manualMovies, ...accionMovies, ...dramaMovies];
+            
+            const filteredMovies = allMovies
+                .filter(movie => movie.genres?.some(g => g.toLowerCase() === genre.toLowerCase()))
+                .reverse();
+                
+            document.getElementById('movie-count').textContent = `${filteredMovies.length} películas`;
+            
+            const moviesGrid = document.getElementById('movies-grid');
+            moviesGrid.innerHTML = '';
+            
+            filteredMovies.forEach(movie => {
+                moviesGrid.appendChild(createMovieCard(movie));
+            });
+            
+            document.getElementById('loader').style.display = 'none';
+        });
+    </script>
+</body>
+</html>
