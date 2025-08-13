@@ -85,7 +85,7 @@ const manualMovies = [
       {
       id: 1450599,
           title: "K.O.",
-          image: "https://s.lupacine.com/image/t/p/w500/r46leE6PSzLR3pnVzaxx5Q30yUF.jpg",
+          image: "https://m.media-amazon.com/images/M/MV5BNTE0OGZjZWUtZjU3MS00NTRlLTk1ZGMtZGM3NzkzYThiMzM3XkEyXkFqcGc@._V1_.jpg",
           link: "detalles.html?type=movie&id=1450599",
           year: "2025",
           genres: ["Acción", "Drama", "Aventura"] // <-- Asegúrate de que esto esté definido
@@ -125,7 +125,7 @@ const manualMovies = [
       {
           id: 1001414,
           title: "Fear Street: Prom Queen",
-          image: "https://s.lupacine.com/image/t/p/w500/gevScWYkF8l5i9NjFSXo8HfPNyy.jpg",
+          image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRKcUCoUpx0mo53mdMLVDtxIXKqhmYwkPRxtA&s",
           link: "detalles.html?type=movie&id=1001414",
           year: "2025",
           genres: ["Terror", "Suspenso"]
@@ -181,7 +181,7 @@ const manualMovies = [
       {
           id: 661539,
           title: "Un completo desconocido",
-          image: "https://s.lupacine.com/image/t/p/w500/llWl3GtNoXosbvYboelmoT459NM.jpg",
+          image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTeJTb9Uxs6ZYcSGn7lL6t7McHRTnfYeG6K1w&s",
           link: "detalles.html?type=movie&id=661539",
           year: "2024",
           genres: ["Drama", "Música", "Historia"]
@@ -197,7 +197,7 @@ const manualMovies = [
       {
           id: 1061699,
           title: "Seis Triple Ocho",
-          image: "https://s.lupacine.com/image/t/p/w500/7tvAnzZj9e9AjdoHaN9jshm2Cjw.jpg",
+          image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJcJRNkU2bt41RJ7wmGnwPag02uG5P5zPWqQ&s",
           link: "detalles.html?type=movie&id=1061699",
           year: "2024",
           genres: ["Drama", "Historia", "Bélica"]
@@ -229,7 +229,7 @@ const manualMovies = [
       {
           id: 1075456,
           title: "O'Dessa",
-          image: "https://s.lupacine.com/image/t/p/w500/xbdRxyr1u5dbhvMm14w7J1jJWQS.jpg",
+          image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTwiXb06rpDHlM3RPAZpOJ5uBzkmz-BRU43-Q&s",
           link: "detalles.html?type=movie&id=1075456",
           year: "2025",
           genres: ["Música", "Drama", "Ciencia ficción"]
@@ -237,7 +237,7 @@ const manualMovies = [
       {
           id: 1233413,
           title: "Los Pecadores",
-          image: "https://s.lupacine.com/image/t/p/w500/jYfMTSiFFK7ffbY2lay4zyvTkEk.jpg",
+          image: "https://pics.filmaffinity.com/Los_pecadores-728852033-large.jpg",
           link: "detalles.html?type=movie&id=1233413",
           year: "2025",
           genres: ["Terror", "Suspenso","Drama","Acción","Western","Música"]
@@ -277,7 +277,7 @@ const manualMovies = [
       {
           id: 1144430,
           title: "La bala perdida 3",
-          image: "https://s.lupacine.com/image/t/p/w500/qycPITRqXgPai7zj1gKffjCdSB5.jpg",
+          image: "https://pics.filmaffinity.com/balle_perdue-785684707-large.jpg",
           link: "detalles.html?type=movie&id=1144430",
           year: "2025",
           genres: ["Acción", "Suspenso", "Crímen","Drama"]
@@ -285,7 +285,7 @@ const manualMovies = [
       {
           id: 1333100,
           title: "Attack on Titan: EL ATAQUE FINAL",
-          image: "https://s.lupacine.com/image/t/p/w500/wgwldDDlTDDMrluOMkpSA8lyKjv.jpg",
+          image: "https://m.media-amazon.com/images/M/MV5BN2EzYTYyNGUtOTE2ZS00ZTljLWE5M2EtZDViYjhmYzgwNThhXkEyXkFqcGc@._V1_.jpg",
           link: "detalles.html?type=movie&id=1333100",
           year: "2024",
           genres: ["Anime","Animación", "Aventura", "Acción","Drama","Fantasía"]
@@ -293,7 +293,7 @@ const manualMovies = [
       {
           id: 668489,
           title: "Estragos",
-          image: "https://s.lupacine.com/image/t/p/w500/r46leE6PSzLR3pnVzaxx5Q30yUF.jpg",
+          image: "https://pics.filmaffinity.com/havoc-982203264-mmed.jpg",
           link: "detalles.html?type=movie&id=668489",
           year: "2025",
           genres: ["Acción", "Crímen", "Suspenso"]
@@ -301,7 +301,7 @@ const manualMovies = [
       {
           id: 986056,
           title: "Thunderbolts*",
-          image: "https://s.lupacine.com/image/t/p/w500/m9EtP1Yrzv6v7dMaC9mRaGhd1um.jpg",
+          image: "https://m.media-amazon.com/images/M/MV5BOTRiYjY1ZjQtNzA1OC00NWRiLWExNGYtMTljOWNkMWUyZmJhXkEyXkFqcGc@._V1_.jpg",
           link: "detalles.html?type=movie&id=986056",
           year: "2025",
           genres: ["Drama","Acción", "Aventura", "Ciencia ficción"]
@@ -309,7 +309,7 @@ const manualMovies = [
       {
           id: 1233069,
           title: "Extraterritorial",
-          image: "https://s.lupacine.com/image/t/p/w500/jM2uqCZNKbiyStyzXOERpMqAbdx.jpg",
+          image: "https://m.media-amazon.com/images/M/MV5BYjVkMzI2MjAtYzA3NC00OGE1LWEyZDMtODc0YTc5NTZjYzFiXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
           link: "detalles.html?type=movie&id=1233069",
           year: "2025",
           genres: ["Acción", "Suspenso"]
@@ -341,7 +341,7 @@ const manualMovies = [
       {
           id: 974573,
           title: "Otro pequeño favor",
-          image: "https://s.lupacine.com/image/t/p/w500/zboCGZ4aIqPMd7VFI4HWnmc7KYJ.jpg",
+          image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQmQCQ5VKbdpwjnljfceu7hVBKrMZO5fqcAbQ&s",
           link: "detalles.html?type=movie&id=974573",
           year: "2025",
           genres: ["Comedia", "Suspenso", "Crímen"]
@@ -349,7 +349,7 @@ const manualMovies = [
       {
           id: 1197306,
           title: "Rescate implacable",
-          image: "https://s.lupacine.com/image/t/p/w500/6FRFIogh3zFnVWn7Z6zcYnIbRcX.jpg",
+          image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR-lutmGL1UZmUj7KljO7qBv5fjVj66Y4bFEw&s",
           link: "detalles.html?type=movie&id=1197306",
           year: "2025",
           genres: ["Acción", "Suspenso", "Crímen"]
@@ -365,7 +365,7 @@ const manualMovies = [
       {
           id: 1254786,
           title: "Mi Lista De Deseos",
-          image: "https://s.lupacine.com/image/t/p/w500/5fg98cVo7da7OIK45csdLSd4NaU.jpg",
+          image: "https://m.media-amazon.com/images/M/MV5BMjNhNzUyMTQtYTFiZS00NzM2LWI3YTgtZmI1ZTA1MDUzMzBhXkEyXkFqcGc@._V1_.jpg",
           link: "detalles.html?type=movie&id=1254786",
           year: "2025",
           genres: ["Romance", "Comedia", "Drama"]
@@ -373,7 +373,7 @@ const manualMovies = [
       {
           id: 931349,
           title: "Ash",
-          image: "https://s.lupacine.com/image/t/p/w500/nRa8B3tQCUK6pVwjasIyQehbvpF.jpg",
+          image: "https://pics.filmaffinity.com/Ash-816951815-large.jpg",
           link: "detalles.html?type=movie&id=931349",
           year: "2025",
           genres: ["Terror", "Suspenso", "Ciencia ficción"]
@@ -381,7 +381,7 @@ const manualMovies = [
       {
           id: 1013601,
           title: "The Alto Knights",
-          image: "https://s.lupacine.com/image/t/p/w500/95KmR0xNuZZ6DNESDwLKWGIBvMg.jpg",
+          image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSppWxcR3I0j64oZSgm2GX-86SFQMuxU_9HGg&s",
           link: "detalles.html?type=movie&id=1013601",
           year: "2025",
           genres: ["Crímen", "Drama", "Historia"]
@@ -405,7 +405,7 @@ const manualMovies = [
       {
           id: 1276073,
           title: "Bullet Train Explosion",
-          image: "https://s.lupacine.com/image/t/p/w500/jmzxlDBwgvRbpPJzNQwizyn9UEn.jpg",
+          image: "https://m.media-amazon.com/images/M/MV5BMTVhMGM1NTYtMmI0MC00NjA2LTljMmUtYmJiNmZkMDVhMTIxXkEyXkFqcGc@._V1_.jpg",
           link: "detalles.html?type=movie&id=1276073",
           year: "2025",
           genres: ["Drama", "Suspenso", "Acción","Crímen"]
@@ -437,7 +437,7 @@ const manualMovies = [
       {
           id: 1124620,
           title: "El Mono",
-          image: "https://s.lupacine.com/image/t/p/w500/yYa8Onk9ow7ukcnfp2QWVvjWYel.jpg",
+          image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQv26t6SBQoNVNkXT03r8O0NrdFruF24CNpKQ&s",
           link: "detalles.html?type=movie&id=1124620",
           year: "2025",
           genres: ["Comedia", "Terror"]
@@ -445,7 +445,7 @@ const manualMovies = [
       {
           id: 1356039,
           title: "Counterstrike",
-          image: "https://s.lupacine.com/image/t/p/w500/lI2uFlSEkwXKljqiry7coaJ6wIS.jpg",
+          image: "https://m.media-amazon.com/images/M/MV5BYmExM2ZiOGItMDcxZi00NDc3LTk3MmItNGQyZWNlYzBiOTI2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
           link: "detalles.html?type=movie&id=1356039",
           year: "2025",
           genres: ["Acción", "Fantasía", "Suspenso"]
@@ -453,7 +453,7 @@ const manualMovies = [
       {
           id: 1104845,
           title: "Plankton: La Película",
-          image: "https://s.lupacine.com/image/t/p/w500/hGaUNLF5VZbg9ovPTyjm9Rv5xWz.jpg",
+          image: "https://m.media-amazon.com/images/M/MV5BMWUzYmFmMDYtNzMyOC00OWMwLTk2MTYtNTY0YTA5ZDFkNmYzXkEyXkFqcGc@._V1_.jpg",
           link: "detalles.html?type=movie&id=1104845",
           year: "2025",
           genres: ["Animación", "Comedia", "Aventura", "Familia", "Fantasía"]
@@ -534,7 +534,7 @@ const manualMovies = [
       {
           id: 1352774,
           title: "Piglet",
-          image: "https://s.lupacine.com/image/t/p/w500/5wZNFUJAwyX6RCxdqrLO9lLWJ20.jpg",
+          image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkimPvXmORGgK18eitUjmr8i5Rq7d2cDjtOg&s",
           link: "detalles.html?type=movie&id=1352774",
           year: "2025",
           genres: ["Terror"]
@@ -542,7 +542,7 @@ const manualMovies = [
       {
           id: 1035048,
           title: "Criaturas: Línea de extinción",
-          image: "https://s.lupacine.com/image/t/p/w500/tnfc0NJ3BzhJrGJhkkEd6MHBdq5.jpg",
+          image: "https://m.media-amazon.com/images/M/MV5BMzJhMTU4MDAtZTE5NC00ZDhkLWFiYmUtN2M1ZjlhMDc4OWQ3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
           link: "detalles.html?type=movie&id=1035048",
           year: "2024",
           genres: ["Acción", "Suspenso", "Ciencia ficción"]
@@ -550,7 +550,7 @@ const manualMovies = [
       {
           id: 1201012,
           title: "Dhoom Dhaam",
-          image: "https://s.lupacine.com/image/t/p/w500/2E7me3rPi8HqaeheuD86YlpNX6k.jpg",
+          image: "https://resizing.flixster.com/oBXsy1v-1EHcFX4M493UpLE8Lt0=/fit-in/705x460/v2/https://resizing.flixster.com/-XZAfHZM39UwaGJIFWKAE8fS0ak=/v3/t/assets/p29386127_v_v8_aa.jpg",
           link: "detalles.html?type=movie&id=1201012",
           year: "2025",
           genres: ["Acción", "Comedia", "Romance"]
@@ -574,7 +574,7 @@ const manualMovies = [
       {
           id: 1247019,
           title: "Thi Yot 2: Susurros Mortales",
-          image: "https://s.lupacine.com/image/t/p/w500/uDW5eeFUYp1vaU2ymEdVBG6g7iq.jpg",
+          image: "https://pics.filmaffinity.com/tee_yod_2_death_whisperer_2-329848516-mmed.jpg",
           link: "detalles.html?type=movie&id=1247019",
           year: "2024",
           genres: ["Terror", "Acción", "Suspenso"]
@@ -590,7 +590,7 @@ const manualMovies = [
       {
           id: 516729,
           title: "Paddington: Aventura en la selva",
-          image: "https://s.lupacine.com/image/t/p/w500/1ffZAucqfvQu36x1C49XfOdjuOG.jpg",
+          image: "https://m.media-amazon.com/images/M/MV5BMzk1NTk1ODMtZjBlMi00MjA0LWJiMWItZmI1Y2M5MTk4Y2JjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
           link: "detalles.html?type=movie&id=516729",
           year: "2024",
           genres: ["Aventura", "Comedia", "Familia"]
@@ -606,7 +606,7 @@ const manualMovies = [
       {
           id: 539972,
           title: "Kraven el cazador",
-          image: "https://s.lupacine.com/image/t/p/w500/1GvBhRxY6MELDfxFrete6BNhBB5.jpg",
+          image: "https://m.media-amazon.com/images/M/MV5BYzc0ZmI1ZjMtNzg2ZS00NWVlLWI3MTEtYWQ0NmUzZGQ3MWM5XkEyXkFqcGc@._V1_.jpg",
           link: "detalles.html?type=movie&id=539972",
           year: "2024",
           genres: ["Acción", "Ciencia ficción", "Aventura", "Suspenso"]
@@ -614,7 +614,7 @@ const manualMovies = [
       {
           id: 710295,
           title: "Hombre Lobo",
-          image: "https://s.lupacine.com/image/t/p/w500/vtdEHG1j07PqLlVyhKNZRHTPKGt.jpg",
+          image: "https://pics.filmaffinity.com/wolfman-301191175-large.jpg",
           link: "detalles.html?type=movie&id=710295",
           year: "2025",
           genres: ["Terror", "Suspenso"]
@@ -630,7 +630,7 @@ const manualMovies = [
       {
           id: 696506,
           title: "Mickey 17",
-          image: "https://s.lupacine.com/image/t/p/w500/edKpE9B5qN3e559OuMCLZdW1iBZ.jpg",
+          image: "https://m.media-amazon.com/images/M/MV5BY2I5MmUxZGMtNTI0MC00OWU0LThjZjMtMDRjYTNmZDdkYmJhXkEyXkFqcGc@._V1_.jpg",
           link: "detalles.html?type=movie&id=696506",
           year: "2025",
           genres: ["Ciencia ficción", "Aventura", "Comedia"]

@@ -55,8 +55,7 @@ const peliculasDisponibles = {
 "1100988": {
         "title": "Exterminio: La evolución",
         "360p": "https://v3.fiestareel.com/mov/2022/1100988-104282/480/480p.m3u8",
-        "720p": "https://v3.fiestareel.com/mov/2022/1100988-104282/720/720p.m3u8",
-        "1080p": "https://v3.fiestareel.com/mov/2022/1100988-104282/720/720p.m3u8"
+        "720p": "https://v3.fiestareel.com/mov/2022/1100988-104282/720/720p.m3u8"
     },
 "1426680": {
         "title": "Nuestros Tiempos",

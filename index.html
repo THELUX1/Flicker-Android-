@@ -1,10 +1,3 @@
-<!-- Cambios clave:
-  - El menú de ajustes (.settings-menu) ahora se despliega desde abajo hacia arriba.
-  - Se ajustó la estructura para que el menú esté en la parte inferior.
-  - La animación y colores "negros cálidos" se aplican en el CSS.
-  - El botón de ajustes abre el menú desde abajo y el botón de cerrar lo oculta.
--->
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -64,7 +57,7 @@
         </div>
     </div>
 
-    <!-- Menú desplegable de ajustes DESDE ABAJO HACIA ARRIBA -->
+    <!-- Menú desplegable de ajustes -->
     <div id="settings-menu" class="settings-menu">
         <div class="settings-header">
             <button class="close-settings">
@@ -131,8 +124,11 @@
         </a>
     </nav>
 
+    <!-- Contenedor de toasts -->
+    <div class="toast-container" id="toast-container"></div>
+
     <script>
-        // Control del menú de ajustes desde abajo
+        // Control del menú de ajustes
         document.getElementById('settings-button').addEventListener('click', function() {
             const menu = document.getElementById('settings-menu');
             menu.classList.add('active');
@@ -145,7 +141,6 @@
             document.body.classList.remove('menu-open');
         });
 
-        // Opcional: cerrar tocando fuera del menú (para móviles)
         document.addEventListener('click', function(e) {
             const menu = document.getElementById('settings-menu');
             if (menu.classList.contains('active') && !menu.contains(e.target) && !e.target.closest('#settings-button')) {
