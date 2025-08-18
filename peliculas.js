@@ -1,5 +1,64 @@
 // videos.js
 const peliculasDisponibles = {
+"1771": {
+        "title": "Capitán América: El primer vengador",
+        "360p": "https://b76rg533gp.guardstorage.net/hls_3/v1tERbNd4xiZYMLianzDUtFutMvQU7CPVVYb5NXwzy6z8JU6Gu9yKY6PCG95xoOcc6529ogGL64HRy0OhTN75w/index-f1-v1-a1.m3u8?sig=oVNS7WeEkV6lrnYOhWEf7g&expires=1755512087",
+        "720p": "https://b76rg533gp.guardstorage.net/hls_3/v1tERbNd4xiZYMLianzDUtFutMvQU7CPVVYb5NXwzy6z8JU6Gu9yKY6PCG95xoOcc6529ogGL64HRy0OhTN75w/index-f2-v1-a1.m3u8?sig=oVNS7WeEkV6lrnYOhWEf7g&expires=1755512087",
+        "1080p": "https://b76rg533gp.guardstorage.net/hls_3/v1tERbNd4xiZYMLianzDUtFutMvQU7CPVVYb5NXwzy6z8JU6Gu9yKY6PCG95xoOcc6529ogGL64HRy0OhTN75w/index-f3-v1-a1.m3u8?sig=oVNS7WeEkV6lrnYOhWEf7g&expires=1755512087"
+    },
+"1236197": {
+        "title": "Folow",
+        "360p": "https://v3.fiestareel.com/mov/2025/1236197-112984/480/480p.m3u8",
+        "720p": "https://v3.fiestareel.com/mov/2025/1236197-112984/720/720p.m3u8",
+        "1080p": ""
+    },
+"755898": {
+        "title": "La guerra de los mundos",
+        "360p": "https://v3.fiestareel.com/mov/2025/755898-113219/480/480p.m3u8",
+        "720p": "https://v3.fiestareel.com/mov/2025/755898-113219/720/720p.m3u8",
+        "1080p": ""
+    },
+"1232546": {
+        "title": "Until Dawn: Noche de terror",
+        "360p": "https://v3.fiestareel.com/mov/2025/1232546-102886/480/480p.m3u8",
+        "720p": "https://v3.fiestareel.com/mov/2025/1232546-102886/720/720p.m3u8",
+        "1080p": ""
+    },
+"1241470": {
+        "title": "Osiris",
+        "360p": "https://v3.fiestareel.com/mov/2022/1241470-113324/480/480p.m3u8",
+        "720p": "https://v3.fiestareel.com/mov/2022/1241470-113324/480/480p.m3u8",
+        "1080p": "https://v3.fiestareel.com/mov/2022/1241470-113324/720/720p.m3u8"
+    },
+"1083433": {
+        "title": "Sé lo que hicieron el verano pasado",
+        "360p": "https://v3.fiestareel.com/mov/2025/1083433-113213/480/480p.m3u8",
+        "720p": "https://v3.fiestareel.com/mov/2025/1083433-113213/480/480p.m3u8",
+        "1080p": "https://v3.fiestareel.com/mov/2025/1083433-113213/720/720p.m3u8"
+    },
+"1151031": {
+        "title": "Haz que regrese",
+        "360p": "https://v3.fiestareel.com/mov/2022/1151031-113273/480/480p.m3u8",
+        "720p": "https://v3.fiestareel.com/mov/2022/1151031-113273/720/720p.m3u8",
+        "1080p": "https://v3.fiestareel.com/mov/2022/1151031-113273/720/720p.m3u8"
+    },
+"1269208": {
+        "title": "Mis 84 m²",
+        "360p": "https://v3.fiestareel.com/mov/2025/1269208-112162/480/480p.m3u8",
+        "720p": "https://v3.fiestareel.com/mov/2025/1269208-112162/720/720p.m3u8",
+        "1080p": "https://v3.fiestareel.com/mov/2025/1269208-112162/720/720p.m3u8"
+    },
+"1429744": {
+        "title": "Ziam",
+        "360p": "https://v3.fiestareel.com/mov/2022/1429744-113159/480/480p.m3u8",
+        "720p": "https://v3.fiestareel.com/mov/2022/1429744-113159/720/720p.m3u8"
+   },     
+"1307078": {
+        "title": "Mi Año En Oxford",
+        "360p": "https://v3.fiestareel.com/mov/2022/1307078-113094/480/480p.m3u8",
+        "720p": "https://v3.fiestareel.com/mov/2022/1307078-113094/720/720p.m3u8",
+        "1080p": "https://v3.fiestareel.com/mov/2022/1307078-113094/720/720p.m3u8"
+    },
 "1241436": {
         "title": "Tiempo de guerra",
         "360p": "https://v3.fiestareel.com/mov/2025/1241436-94559/480/480p.m3u8",
@@ -12,8 +71,9 @@ const peliculasDisponibles = {
     },
 "1061474": {
         "title": "Superman",
-        "360p": "https://v3.fiestareel.com/mov/2025/1061474-109880/480/480p.m3u8",
-        "720p Cam": "https://v3.fiestareel.com/mov/2025/1061474-109880/720/720p.m3u8"
+        "360p": "https://eqz0nz1hz2.guardstorage.net/hls_3/kHXo3Bx85x4cg56N1GtjDJ22342UH2OYDhEY4tmGLkscpwyJP139lfhUkX4rmr4OZQ-LG-6HHfiGqCXLWymsoWLD2KVlykJwJ9Ep_apwhKRHwkqspsoVcwZ4u9lqIp4q1B1GV4b5NIoh-Mazj5UBLAcuSiCQcfg3XfdjVy4OOqtU42griruUYXaZD4L8YHJ-YTuCS39AgIzAQ1QX5_OknA/index-f1-v1-a1.m3u8?sig=Bkb9VXrPN5OJcdFoiC4Z5w&expires=1755513370",
+        "720p": "https://eqz0nz1hz2.guardstorage.net/hls_3/kHXo3Bx85x4cg56N1GtjDJ22342UH2OYDhEY4tmGLkscpwyJP139lfhUkX4rmr4OZQ-LG-6HHfiGqCXLWymsoWLD2KVlykJwJ9Ep_apwhKRHwkqspsoVcwZ4u9lqIp4q1B1GV4b5NIoh-Mazj5UBLAcuSiCQcfg3XfdjVy4OOqtU42griruUYXaZD4L8YHJ-YTuCS39AgIzAQ1QX5_OknA/index-f2-v1-a1.m3u8?sig=Bkb9VXrPN5OJcdFoiC4Z5w&expires=1755513370",
+        "1080p": "https://eqz0nz1hz2.guardstorage.net/hls_3/kHXo3Bx85x4cg56N1GtjDJ22342UH2OYDhEY4tmGLkscpwyJP139lfhUkX4rmr4OZQ-LG-6HHfiGqCXLWymsoWLD2KVlykJwJ9Ep_apwhKRHwkqspsoVcwZ4u9lqIp4q1B1GV4b5NIoh-Mazj5UBLAcuSiCQcfg3XfdjVy4OOqtU42griruUYXaZD4L8YHJ-YTuCS39AgIzAQ1QX5_OknA/index-f3-v1-a1.m3u8?sig=Bkb9VXrPN5OJcdFoiC4Z5w&expires=1755513370"
     },
 "1450599": {
         "title": "K.O.",
@@ -54,8 +114,9 @@ const peliculasDisponibles = {
     },
 "1100988": {
         "title": "Exterminio: La evolución",
-        "360p": "https://v3.fiestareel.com/mov/2022/1100988-104282/480/480p.m3u8",
-        "720p": "https://v3.fiestareel.com/mov/2022/1100988-104282/720/720p.m3u8"
+        "360p": "https://atrzm8s86i.guardstorage.net/hls_3/0kqj2uHCNluP1PYaqis1w8SycdQCBTw_EVEtWaFT6AZ0dbLXwhtbnGUNsSVHGpj6kkzME-AMWO7_bkTsdTBSEaKrHvW4Pyeza1WB574-Q01WNwrBgCJxr_Dh_Zwd2SHX_jj-R9KhAc7sGmYiSZdn8vCDH3XaR7_6LLpmHzrnbgAfacJBd5eVTt6E0O7xY9LtUwxjgwyO_cBLU3vo4L6ymQ/index-f1-v1-a1.m3u8?sig=ieJ9oVpTi6BRCIt-qMhJ0w&expires=1755513664",
+        "720p": "https://atrzm8s86i.guardstorage.net/hls_3/0kqj2uHCNluP1PYaqis1w8SycdQCBTw_EVEtWaFT6AZ0dbLXwhtbnGUNsSVHGpj6kkzME-AMWO7_bkTsdTBSEaKrHvW4Pyeza1WB574-Q01WNwrBgCJxr_Dh_Zwd2SHX_jj-R9KhAc7sGmYiSZdn8vCDH3XaR7_6LLpmHzrnbgAfacJBd5eVTt6E0O7xY9LtUwxjgwyO_cBLU3vo4L6ymQ/index-f2-v1-a1.m3u8?sig=ieJ9oVpTi6BRCIt-qMhJ0w&expires=1755513664",
+        "1080p":  "https://atrzm8s86i.guardstorage.net/hls_3/0kqj2uHCNluP1PYaqis1w8SycdQCBTw_EVEtWaFT6AZ0dbLXwhtbnGUNsSVHGpj6kkzME-AMWO7_bkTsdTBSEaKrHvW4Pyeza1WB574-Q01WNwrBgCJxr_Dh_Zwd2SHX_jj-R9KhAc7sGmYiSZdn8vCDH3XaR7_6LLpmHzrnbgAfacJBd5eVTt6E0O7xY9LtUwxjgwyO_cBLU3vo4L6ymQ/index-f3-v1-a1.m3u8?sig=ieJ9oVpTi6BRCIt-qMhJ0w&expires=1755513664"
     },
 "1426680": {
         "title": "Nuestros Tiempos",
@@ -215,8 +276,9 @@ const peliculasDisponibles = {
     },
 "986056": {
         "title": "Thunderbolts*",
-        "360p Cam": "https://v3.fiestareel.com/mov/2025/986056-94322/480/480p.m3u8",
-        "720p Cam": "https://v3.fiestareel.com/mov/2025/986056-94322/720/720p.m3u8"
+        "360p": "https://otnfip7097.guardstorage.net/hls_3/aUIZBJdPV7QBVs7fkAWSMcdIVloCXdfq6hJFT09gbsh5GcQHseC1XsLrwttPyde2jhuBNmv0iFPJlH0FXYmHFw/index-f1-v1-a1.m3u8?sig=QVIIlAdIMeZ3HHCncYL3Ng&expires=1755512971",
+        "720p": "https://be2719.rcr22.ams01.i8yz83pn.com/hls2/10/09366/vovxh55hgdem_x/index-v1-a1.m3u8?t=Q0wlR5Ds6pdvjpH_R3rMoH8gTEcxmVIhgUOWxfVzUUA&s=1755503714&e=10800&f=46832973&srv=1070&asn=264738&sp=5500&p=",
+        "1080p":"https://otnfip7097.guardstorage.net/hls_3/aUIZBJdPV7QBVs7fkAWSMcdIVloCXdfq6hJFT09gbsh5GcQHseC1XsLrwttPyde2jhuBNmv0iFPJlH0FXYmHFw/index-f1-v1-a1.m3u8?sig=QVIIlAdIMeZ3HHCncYL3Ng&expires=1755512971"
     },
 "1233069": {
         "title": "Extraterritorial",

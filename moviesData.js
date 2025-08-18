@@ -1,7 +1,31 @@
 const hiddenMovies = [
+{
+      id: 1771,
+          title: "Capitán América: El Primer Vengador",
+          image: "https://media.themoviedb.org/t/p/w220_and_h330_face/i5eSA5DK5iAv53SB4yv57bN56o6.jpg",
+          link: "detalles.html?type=movie&id=1771",
+          year: "2011",
+          genres: ["Acción", "Ciencia ficción", "Suspenso"] // <-- Asegúrate de que esto esté definido
+      },
     
 ];
 const manualMovies = [
+{
+      id: 1429744,
+          title: "Ziam",
+          image: "https://media.themoviedb.org/t/p/w220_and_h330_face/7ZRXha6VZEGP3C8Kab7pPwSMzDZ.jpg",
+          link: "detalles.html?type=movie&id=1429744",
+          year: "2025",
+          genres: ["Terror", "Suspenso", "Acción"] // <-- Asegúrate de que esto esté definido
+      },
+{
+      id: 1307078,
+          title: "Mi Año En Oxford",
+          image: "https://media.themoviedb.org/t/p/w220_and_h330_face/iKT49ApsXGKYY3wdZ0THYhhgOBe.jpg",
+          link: "detalles.html?type=movie&id=1307078",
+          year: "2025",
+          genres: ["Romance", "Comedia", "Drama"] // <-- Asegúrate de que esto esté definido
+      },
 {
       id: 1061474,
           title: "Superman",
@@ -35,6 +59,22 @@ const manualMovies = [
           genres: ["Acción", "Ciencia ficción", "Suspenso"]
       },
       {
+      id: 1151031,
+          title: "Haz que regrese",
+          image: "https://media.themoviedb.org/t/p/w220_and_h330_face/7Gh8dMAGNMvyr5YA2H1KgJK3wq3.jpg",
+          link: "detalles.html?type=movie&id=1151031",
+          year: "2025",
+          genres: ["Terror"] // <-- Asegúrate de que esto esté definido
+      },
+      {
+      id: 1083433,
+          title: "Sé lo que hicieron el verano pasado",
+          image: "https://media.themoviedb.org/t/p/w220_and_h330_face/iSbqO4oaXyUL17jB4YqPRpu7DeR.jpg",
+          link: "detalles.html?type=movie&id=1083433",
+          year: "2025",
+          genres: ["Terror", "Misterio", "Suspenso"] // <-- Asegúrate de que esto esté definido
+      },
+      {
           id: 1011477,
           title: "Karate Kid: Leyendas",
           image: "https://s3.fiestareel.com/image/t/p/w500/AEgggzRr1vZCLY86MAp93li43z.jpg",
@@ -49,6 +89,14 @@ const manualMovies = [
           link: "detalles.html?type=movie&id=846422",
           year: "2025",
           genres: ["Acción", "Fantasía"]
+      },
+      {
+      id: 1269208,
+          title: "Mis 84 m²",
+          image: "https://media.themoviedb.org/t/p/w220_and_h330_face/xhsXOE2FWBGOaHUoAnjBUW1Y1Ds.jpg",
+          link: "detalles.html?type=movie&id=1269208",
+          year: "2025",
+          genres: ["Suspenso","Drama"] // <-- Asegúrate de que esto esté definido
       },
       {
           id: 1234821,
@@ -73,6 +121,22 @@ const manualMovies = [
           link: "detalles.html?type=movie&id=749170",
           year: "2025",
           genres: ["Acción", "Comedia", "Suspenso"]
+      },
+      {
+      id: 1236197,
+          title: "Folow: Juegos de seducción",
+          image: "https://media.themoviedb.org/t/p/w220_and_h330_face/s91PuVwq8jwDtrCWjkpF63rZgyX.jpg",
+          link: "detalles.html?type=movie&id=1236197",
+          year: "2025",
+          genres: ["Drama", "Romance", "Suspenso"] // <-- Asegúrate de que esto esté definido
+      },
+      {
+      id: 1241470,
+          title: "Osiris",
+          image: "https://media.themoviedb.org/t/p/w220_and_h330_face/3YtZHtXPNG5AleisgEatEfZOT2w.jpg",
+          link: "detalles.html?type=movie&id=1241470",
+          year: "2025",
+          genres: ["Terror", "Ciencia ficción", "Acción"] // <-- Asegúrate de que esto esté definido
       },
       {
           id: 803796,
@@ -185,6 +249,14 @@ const manualMovies = [
           link: "detalles.html?type=movie&id=661539",
           year: "2024",
           genres: ["Drama", "Música", "Historia"]
+      },
+      {
+      id: 1011985,
+          title: "Kung Fu Panda 4",
+          image: "https://s3.fiestareel.com/image/t/p/w500/nqXsAaQsKw2gKpkfhIgjXNDRqg7.jpg",
+          link: "detalles.html?type=movie&id=1011985",
+          year: "2025",
+          genres: ["Animación","Familia","Comedia","Aventura"] // <-- Asegúrate de que esto esté definido
       },
       {
       id: 1069387,
@@ -505,7 +577,8 @@ const manualMovies = [
           title: "Compañera Perfecta",
           image: "https://media.themoviedb.org/t/p/w220_and_h330_face/nyloao2GWttUvS7KVcEM2eSDwUn.jpg",
           link: "detalles.html?type=movie&id=1084199",
-          year: "2025"
+          year: "2025",
+          genres: ["Acción", "Ciencia ficción", "Comedia"]
       },
       {
           id: 822119,
@@ -574,7 +647,7 @@ const manualMovies = [
       {
           id: 1247019,
           title: "Thi Yot 2: Susurros Mortales",
-          image: "https://pics.filmaffinity.com/tee_yod_2_death_whisperer_2-329848516-mmed.jpg",
+          image: "https://m.media-amazon.com/images/M/MV5BMDlmZThlMjQtYTNkYS00NWU0LThhODMtNjE3MDhlYTY0NWNjXkEyXkFqcGc@._V1_.jpg",
           link: "detalles.html?type=movie&id=1247019",
           year: "2024",
           genres: ["Terror", "Acción", "Suspenso"]
@@ -636,12 +709,28 @@ const manualMovies = [
           genres: ["Ciencia ficción", "Aventura", "Comedia"]
       },
       {
+      id: 1232546,
+          title: "Until Dawn: Noche de terror",
+          image: "https://media.themoviedb.org/t/p/w220_and_h330_face/exgfubqSbF4veI4uXFOdbV66gEf.jpg",
+          link: "detalles.html?type=movie&id=1232546",
+          year: "2025",
+          genres: ["Terror", "Misterio"] // <-- Asegúrate de que esto esté definido
+      },
+      {
           id: 426063,
           title: "Nosferatu",
           image: "https://media.themoviedb.org/t/p/w220_and_h330_face/jivUhECegXI3OYtPVflWoIDtENt.jpg",
           link: "detalles.html?type=movie&id=426063",
           year: "2024",
           genres: ["Terror"]
+      },
+      {
+      id: 755898,
+          title: "La guerra de los mundos",
+          image: "https://media.themoviedb.org/t/p/w220_and_h330_face/fjgSlNGECNgVeMJaOdDAXmGh7ZM.jpg",
+          link: "detalles.html?type=movie&id=755898",
+          year: "2025",
+          genres: ["Ciencia ficción", "Suspenso"] // <-- Asegúrate de que esto esté definido
       },
       {
           id: 777443,
