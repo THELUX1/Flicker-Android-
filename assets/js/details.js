@@ -1,13 +1,16 @@
 // Configuración global
-// details.js
 import { moviesData, seriesData } from './data.js';
 const TMDB = {
-    API_KEY: '995449ccaf6d840acc029f95c7d210dd', // Reemplaza con tu API key
+    API_KEY: '995449ccaf6d840acc029f95c7d210dd',
     BASE_URL: 'https://api.themoviedb.org/3',
     YOUTUBE_URL: 'https://www.youtube.com/embed/',
     IMAGE_URL: 'https://image.tmdb.org/t/p/w300',
     LANGUAGE: 'es-MX'
 };
+
+// Variables globales
+let autoplayOverlayShown = false;
+let userInteracted = false;
 
 // Función principal
 document.addEventListener('DOMContentLoaded', async function() {
@@ -42,6 +45,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         const availableSimilar = getAvailableSimilar(id, type);
         renderSimilarMedia(availableSimilar);
         
+        // Intentar reproducir con sonido después de una interacción del usuario
+        setupAutoplayWithSound();
+        
     } catch (error) {
         console.error('Error:', error);
         // Usar datos locales como fallback
@@ -51,6 +57,71 @@ document.addEventListener('DOMContentLoaded', async function() {
         showError('Error al cargar detalles adicionales. Mostrando información básica.');
     }
 });
+
+// Configurar autoplay con sonido después de interacción del usuario
+function setupAutoplayWithSound() {
+    const trailerContainer = document.getElementById('trailer-container');
+    const iframe = trailerContainer.querySelector('iframe');
+    
+    if (!iframe) return;
+    
+    // Intentar reproducir con sonido después de cualquier interacción del usuario
+    const enableSound = function() {
+        if (userInteracted) return;
+        
+        userInteracted = true;
+        const src = iframe.src;
+        
+        // Habilitar sonido si está muteado
+        if (src.includes('mute=1')) {
+            iframe.src = src.replace('mute=1', 'mute=0');
+            
+            // Mostrar indicador de sonido activado
+            showSoundEnabledIndicator();
+        }
+        
+        // Remover listeners después de la primera interacción
+        document.removeEventListener('click', enableSound);
+        document.removeEventListener('keydown', enableSound);
+        document.removeEventListener('touchstart', enableSound);
+    };
+    
+    // Agregar listeners para eventos de interacción del usuario
+    document.addEventListener('click', enableSound);
+    document.addEventListener('keydown', enableSound);
+    document.addEventListener('touchstart', enableSound);
+    
+    // También permitir habilitar sonido desde el iframe directamente
+    iframe.addEventListener('load', function() {
+        try {
+            this.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*');
+        } catch (e) {
+            console.log('No se pudo acceder al iframe por políticas de seguridad');
+        }
+    });
+}
+
+// Mostrar indicador de sonido activado
+function showSoundEnabledIndicator() {
+    const trailerContainer = document.getElementById('trailer-container');
+    
+    const soundIndicator = document.createElement('div');
+    soundIndicator.className = 'sound-indicator';
+    soundIndicator.innerHTML = `
+        <div class="sound-indicator-content">
+            <i class="fas fa-volume-up"></i>
+            <span>Sonido activado</span>
+        </div>
+    `;
+    
+    trailerContainer.appendChild(soundIndicator);
+    
+    // Ocultar después de 2 segundos
+    setTimeout(() => {
+        soundIndicator.classList.add('fade-out');
+        setTimeout(() => soundIndicator.remove(), 1000);
+    }, 2000);
+}
 
 // Función para hacer requests a TMDB
 async function fetchTMDB(endpoint) {
@@ -73,17 +144,42 @@ function renderMediaDetails(details, videos) {
     document.getElementById('media-duration').textContent = getDuration(details);
     document.getElementById('media-synopsis').textContent = details.overview || 'Sin sinopsis disponible.';
     
-    // Configurar tráiler
+    // Configurar tráiler con autoplay
     const trailerKey = getTrailerKey(videos);
     const trailerContainer = document.getElementById('trailer-container');
     
     if (trailerKey) {
+        // Iniciar con autoplay pero muteado (para cumplir con políticas de navegadores)
         trailerContainer.innerHTML = `
-            <iframe src="${TMDB.YOUTUBE_URL}${trailerKey}?autoplay=0&controls=1&showinfo=0&rel=0" 
+            <iframe src="${TMDB.YOUTUBE_URL}${trailerKey}?autoplay=1&mute=1&controls=1&showinfo=0&rel=0&modestbranding=1&enablejsapi=1" 
                     frameborder="0" 
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                     allowfullscreen></iframe>
         `;
+        
+        // Añadir overlay con indicador de reproducción automática (solo una vez)
+        if (!autoplayOverlayShown) {
+            const overlay = document.createElement('div');
+            overlay.className = 'autoplay-overlay';
+            overlay.innerHTML = `
+                <div class="autoplay-indicator">
+                    <i class="fas fa-play-circle"></i>
+                    <span>Reproduciendo automáticamente</span>
+                    <div class="unmute-hint">Haz clic para activar el sonido</div>
+                </div>
+            `;
+            trailerContainer.appendChild(overlay);
+            
+            // Ocultar el indicador después de 5 segundos
+            setTimeout(() => {
+                overlay.classList.add('fade-out');
+                setTimeout(() => {
+                    overlay.remove();
+                    autoplayOverlayShown = true;
+                }, 1000);
+            }, 5000);
+        }
+        
     } else {
         trailerContainer.innerHTML = `
             <div class="trailer-placeholder">
