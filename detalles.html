@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles - Flicker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/details.css">
+</head>
+<body>
+   <main class="details-container">
+        <!-- Sección del tráiler -->
+        <section class="trailer-section">
+            <div class="trailer-container" id="trailer-container">
+                <!-- El iframe del tráiler se insertará dinámicamente -->
+                <div class="trailer-placeholder">
+                    <i class="fas fa-play"></i>
+                    <p>Cargando tráiler...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección de información -->
+        <section class="info-section">
+            <h1 id="media-title">Cargando</h1>
+            
+            <div class="rating-duration">
+                <span class="rating"><i class="fas fa-star"></i> <span id="media-rating">••</span>/10</span>
+                <span class="year" id="media-year">••••</span>
+                <span class="duration" id="media-duration">•</span>
+            </div>
+
+            <div class="synopsis">
+                <h2>Sinopsis</h2>
+                <p id="media-synopsis">Cargando...</p>
+            </div>
+
+            <div class="actions">
+                <button class="play-btn">
+                    <i class="fas fa-play"></i> Reproducir
+                </button>
+                <div class="secondary-actions">
+                    <button class="action-btn report-btn">
+                        <i class="fas fa-flag"></i> Reportar
+                    </button>
+                    <button class="action-btn dislike-btn">
+                        <i class="fas fa-thumbs-down"></i> No me gusta
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección de títulos similares -->
+        <section class="similar-section">
+            <h2>Más títulos similares</h2>
+            <div class="carousel-container">
+                <div class="carousel-track" id="similar-carousel"></div>
+            </div>
+        </section>
+    </main>
+
+    <nav class="bottom-nav">
+        <a href="../index.html#movies" class="nav-btn">
+            <i class="fas fa-film"></i>
+            <span>Películas</span>
+        </a>
+        <a href="../index.html#series" class="nav-btn">
+            <i class="fas fa-tv"></i>
+            <span>Series</span>
+        </a>
+    </nav>
+    <script type="module" src="../assets/js/details.js"></script>
+</body>
+</html>

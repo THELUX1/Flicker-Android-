@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Reproductor - Flicker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/player.css">
+</head>
+<body>
+    <div class="video-player-container" id="video-player-container">
+        <div class="video-wrapper" id="video-wrapper">
+            <video id="main-video">
+                <source id="video-source" src="" type="video/mp4">
+                <track id="subtitle-track" kind="subtitles" srclang="es" label="Español">
+            </video>
+            
+            <div class="loader-container" id="loader">
+                <div class="loader"></div>
+            </div>
+            
+            <div class="custom-controls">
+                <div class="top-controls">
+                    <div class="video-title" id="video-title"></div>
+                    <button id="close-btn" class="control-btn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="center-controls">
+                    <button id="big-play-btn" class="big-play-btn">
+                        <i class="fas fa-play"></i>
+                    </button>
+                </div>
+                
+                <div class="bottom-controls">
+                    <div class="progress-container">
+                        <input type="range" id="progress-bar" min="0" max="100" value="0" step="0.1">
+                        <div class="time-display">
+                            <span id="current-time">00:00</span> / <span id="duration">00:00</span>
+                        </div>
+                    </div>
+                    
+                    <div class="main-controls">
+                        <div class="left-controls">
+                            <button id="play-pause-btn" class="control-btn">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <div class="volume-container">
+                                <button id="mute-btn" class="control-btn">
+                                    <i class="fas fa-volume-up"></i>
+                                </button>
+                                <input type="range" id="volume-slider" min="0" max="1" value="1" step="0.1">
+                            </div>
+                            <div class="series-selectors" id="series-selectors">
+                                <select id="season-select" class="control-select compact">
+                                    <option value="">T</option>
+                                </select>
+                                <select id="episode-select" class="control-select compact">
+                                    <option value="">E</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="right-controls">
+                            <select id="quality-select" class="control-select compact">
+                                <option value="">Calidad</option>
+                            </select>
+                            <select id="subtitle-select" class="control-select compact">
+                                <option value="none">Subs</option>
+                            </select>
+                            <button id="fullscreen-btn" class="control-btn">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../assets/js/player.js"></script>
+</body>
+</html>
