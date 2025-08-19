@@ -1,3 +1,43 @@
+/* ===== ELIMINACIÓN COMPLETA DE ESTILOS DE FOCO ===== */
+*:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Para Webkit (Chrome, Safari, Edge) */
+*:focus-visible,
+*:focus-within {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Eliminar contornos en inputs y botones */
+input:focus,
+textarea:focus,
+select:focus,
+button:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Eliminar estilos de foco en Firefox */
+::-moz-focus-inner {
+    border: 0 !important;
+}
+
+/* Eliminar el resaltado azul en elementos táctiles en iOS */
+* {
+    -webkit-tap-highlight-color: transparent !important;
+    tap-highlight-color: transparent !important;
+}
+
+/* Para elementos que necesitan mantener cierta indicación de foco (opcional) */
+.control-btn:focus,
+.nav-btn:focus,
+.media-card:focus {
+    transform: translateY(1px);
+    opacity: 0.9;
+}
 :root {
     --primary-color: #ff8800;
     --primary-hover: #ff9d33;
@@ -423,4 +463,48 @@ video {
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
+}
+
+/* Eliminar outline en controles del reproductor */
+video:focus,
+.control-btn:focus,
+.control-select:focus,
+#progress-bar:focus,
+#volume-slider:focus,
+.big-play-btn:focus {
+    outline: none;
+}
+
+/* Estilos de foco personalizados */
+.control-btn:focus-visible,
+.big-play-btn:focus-visible {
+    box-shadow: 0 0 0 2px var(--primary-color);
+}
+
+.control-select:focus-visible {
+    box-shadow: 0 0 0 2px var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+#progress-bar:focus-visible::-webkit-slider-thumb,
+#volume-slider:focus-visible::-webkit-slider-thumb {
+    box-shadow: 0 0 0 2px white;
+}
+
+/* Fallback para navegadores antiguos */
+@supports not selector(:focus-visible) {
+    .control-btn:focus,
+    .big-play-btn:focus {
+        box-shadow: 0 0 0 2px var(--primary-color);
+    }
+    
+    .control-select:focus {
+        box-shadow: 0 0 0 2px var(--primary-color);
+        border-color: var(--primary-color);
+    }
+    
+    #progress-bar:focus::-webkit-slider-thumb,
+    #volume-slider:focus::-webkit-slider-thumb {
+        box-shadow: 0 0 0 2px white;
+    }
 }

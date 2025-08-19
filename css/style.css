@@ -1,3 +1,43 @@
+/* ===== ELIMINACIÓN COMPLETA DE ESTILOS DE FOCO ===== */
+*:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Para Webkit (Chrome, Safari, Edge) */
+*:focus-visible,
+*:focus-within {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Eliminar contornos en inputs y botones */
+input:focus,
+textarea:focus,
+select:focus,
+button:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Eliminar estilos de foco en Firefox */
+::-moz-focus-inner {
+    border: 0 !important;
+}
+
+/* Eliminar el resaltado azul en elementos táctiles en iOS */
+* {
+    -webkit-tap-highlight-color: transparent !important;
+    tap-highlight-color: transparent !important;
+}
+
+/* Para elementos que necesitan mantener cierta indicación de foco (opcional) */
+.control-btn:focus,
+.nav-btn:focus,
+.media-card:focus {
+    transform: translateY(1px);
+    opacity: 0.9;
+}
 :root {
     --primary-color: #ff8800;
     --primary-hover: #ff9d33;
@@ -711,4 +751,49 @@ body.modal-open { overflow: hidden; }
 .reset-btn:hover {
     background: var(--primary-color);
     color: #fff;
+}
+
+/* Eliminar outline por defecto y agregar estilos personalizados de foco */
+a:focus,
+button:focus,
+input:focus,
+select:focus,
+textarea:focus,
+.media-card:focus,
+.nav-btn:focus,
+.search-btn:focus,
+.categories-btn:focus,
+.control-btn:focus,
+.control-select:focus,
+.action-btn:focus,
+.play-btn:focus {
+    outline: none;
+}
+
+/* Estilos de foco personalizados para mejorar accesibilidad */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    box-shadow: 0 0 0 2px var(--primary-color);
+    border-radius: 4px;
+}
+
+/* Para elementos que no deben tener sombra */
+.media-card:focus-visible {
+    box-shadow: 0 0 0 2px var(--primary-color);
+    border-radius: 8px;
+}
+
+/* Para navegadores que no soportan :focus-visible */
+@supports not selector(:focus-visible) {
+    a:focus,
+    button:focus,
+    input:focus,
+    select:focus,
+    textarea:focus {
+        box-shadow: 0 0 0 2px var(--primary-color);
+        border-radius: 4px;
+    }
 }

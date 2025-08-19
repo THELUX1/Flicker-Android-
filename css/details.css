@@ -1,3 +1,43 @@
+/* ===== ELIMINACIÓN COMPLETA DE ESTILOS DE FOCO ===== */
+*:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Para Webkit (Chrome, Safari, Edge) */
+*:focus-visible,
+*:focus-within {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Eliminar contornos en inputs y botones */
+input:focus,
+textarea:focus,
+select:focus,
+button:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Eliminar estilos de foco en Firefox */
+::-moz-focus-inner {
+    border: 0 !important;
+}
+
+/* Eliminar el resaltado azul en elementos táctiles en iOS */
+* {
+    -webkit-tap-highlight-color: transparent !important;
+    tap-highlight-color: transparent !important;
+}
+
+/* Para elementos que necesitan mantener cierta indicación de foco (opcional) */
+.control-btn:focus,
+.nav-btn:focus,
+.media-card:focus {
+    transform: translateY(1px);
+    opacity: 0.9;
+}
 :root {
     --primary-color: #e50914;
     --bg-color: #141414;
@@ -354,5 +394,45 @@ iframe {
     .skeleton-card {
         width: 180px;
         height: 270px;
+    }
+}
+
+/* Eliminar outline por defecto */
+.media-card a:focus,
+.play-btn:focus,
+.action-btn:focus,
+.nav-btn:focus {
+    outline: none;
+}
+
+/* Estilos de focus personalizados */
+.media-card a:focus-visible {
+    box-shadow: 0 0 0 2px var(--primary-color);
+    border-radius: 8px;
+}
+
+.play-btn:focus-visible,
+.action-btn:focus-visible {
+    box-shadow: 0 0 0 2px white;
+}
+
+.nav-btn:focus-visible {
+    box-shadow: 0 0 0 2px var(--primary-color);
+}
+
+/* Fallback para navegadores antiguos */
+@supports not selector(:focus-visible) {
+    .media-card a:focus {
+        box-shadow: 0 0 0 2px var(--primary-color);
+        border-radius: 8px;
+    }
+    
+    .play-btn:focus,
+    .action-btn:focus {
+        box-shadow: 0 0 0 2px white;
+    }
+    
+    .nav-btn:focus {
+        box-shadow: 0 0 0 2px var(--primary-color);
     }
 }
