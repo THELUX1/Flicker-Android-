@@ -9,6 +9,9 @@ const allGenres = [...new Set([...moviesData.flatMap(m => m.genres), ...seriesDa
 let deferredPrompt;
 let installButton;
 
+// Ruta base para GitHub Pages
+const BASE_PATH = '/Flicker-Android-/';
+
 document.addEventListener('DOMContentLoaded', function() {
     initApp();
 });
@@ -49,11 +52,10 @@ function createInstallButton() {
 }
 
 function setupPWA() {
-    // Registrar Service Worker
+    // Registrar Service Worker con la ruta correcta
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            // Para GitHub Pages, intentamos primero con ruta absoluta
-            const swUrl = '/sw.js';
+            const swUrl = `${BASE_PATH}sw.js`;
             
             navigator.serviceWorker.register(swUrl)
                 .then(registration => {
@@ -69,7 +71,7 @@ function setupPWA() {
                 })
                 .catch(registrationError => {
                     console.log('SW registration failed: ', registrationError);
-                    // Intentar con ruta relativa si falla la absoluta
+                    // Intentar con ruta relativa si falla
                     navigator.serviceWorker.register('./sw.js')
                         .then(registration => {
                             console.log('SW registered with relative path: ', registration);
