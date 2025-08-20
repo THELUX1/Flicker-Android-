@@ -6,22 +6,35 @@
     <title>Flicker - Películas y Series</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
+    
+    <!-- Añade estas líneas para el PWA -->
+    <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#ff8800">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Flicker">
+<link rel="apple-touch-icon" href="icons/icon-384x384.png">
 </head>
 <body>
     <header>
-        <div class="logo">Flicker</div>
-        <button class="categories-btn">
-            <i class="fas fa-list"></i>
-            <span>Categorías</span>
-        </button>
-        <div class="original-search-container">
-            <div class="search-container">
-                <button class="search-btn">
-                    <i class="fas fa-search"></i>
-                </button>
-            </div>
+    <div class="logo">Flicker</div>
+    <button class="categories-btn">
+        <i class="fas fa-list"></i>
+        <span>Categorías</span>
+    </button>
+    <div class="original-search-container">
+        <div class="search-container">
+            <button class="search-btn">
+                <i class="fas fa-search"></i>
+            </button>
         </div>
-    </header>
+    </div>
+    <!-- Botón de instalación (inicialmente oculto) -->
+    <button id="installButton" class="install-btn" style="display: none;">
+        <i class="fas fa-download"></i>
+        <span>Instalar</span>
+    </button>
+</header>
 
     <main>
         <div id="movies-container" class="content-container"></div>
