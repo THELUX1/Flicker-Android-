@@ -1,18 +1,18 @@
-// sw.js - Versión para GitHub Pages
 const CACHE_NAME = 'flicker-v1';
+const BASE_PATH = '/Flicker-Android-/';
 const urlsToCache = [
-  './',
-  './index.html',
-  './css/style.css',
-  './css/details.css',
-  './css/player.css',
-  './assets/js/main.js',
-  './assets/js/data.js',
-  './assets/js/details.js',
-  './assets/js/movie-links.js',
-  './assets/js/player.js',
-  './assets/js/series-links.js',
-  './assets/js/api.js',
+  BASE_PATH,
+  BASE_PATH + 'index.html',
+  BASE_PATH + 'css/style.css',
+  BASE_PATH + 'css/details.css',
+  BASE_PATH + 'css/player.css',
+  BASE_PATH + 'assets/js/main.js',
+  BASE_PATH + 'assets/js/data.js',
+  BASE_PATH + 'assets/js/details.js',
+  BASE_PATH + 'assets/js/movie-links.js',
+  BASE_PATH + 'assets/js/player.js',
+  BASE_PATH + 'assets/js/series-links.js',
+  BASE_PATH + 'assets/js/api.js',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'
 ];
 
@@ -43,7 +43,7 @@ self.addEventListener('activate', event => {
   return self.clients.claim(); // Tomar control inmediato de todas las pestañas
 });
 
-// Fetch events - Estrategia: Cache primero, luego red
+// Fetch events
 self.addEventListener('fetch', event => {
   // Solo manejar solicitudes GET
   if (event.request.method !== 'GET') return;
@@ -72,7 +72,7 @@ self.addEventListener('fetch', event => {
       .catch(() => {
         // Fallback para cuando no hay conexión y no está en cache
         if (event.request.destination === 'document') {
-          return caches.match('./index.html');
+          return caches.match(BASE_PATH + 'index.html');
         }
       })
   );
