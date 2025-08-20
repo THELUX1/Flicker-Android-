@@ -5,15 +5,109 @@ let currentMovies = [];
 let currentSeries = [];
 const allGenres = [...new Set([...moviesData.flatMap(m => m.genres), ...seriesData.flatMap(s => s.genres)])].sort();
 
+// Variables para la instalación de PWA
+let deferredPrompt;
+let installButton;
+
 document.addEventListener('DOMContentLoaded', function() {
     initApp();
 });
 
 function initApp() {
+    // Crear botón de instalación dinámicamente
+    createInstallButton();
+    
     loadInitialContent();
     setupSearch();
     setupCategories();
     setupOverlay();
+    setupPWA();
+}
+
+function createInstallButton() {
+    // Crear el botón de instalación
+    installButton = document.createElement('button');
+    installButton.id = 'installButton';
+    installButton.className = 'install-btn';
+    installButton.style.display = 'none';
+    installButton.innerHTML = `
+        <i class="fas fa-download"></i>
+        <span>Instalar App</span>
+    `;
+    
+    // Insertar el botón en el header (después del search container)
+    const searchContainer = document.querySelector('.search-container');
+    searchContainer.parentNode.insertBefore(installButton, searchContainer.nextSibling);
+    
+    // Añadir evento de clic
+    installButton.addEventListener('click', async () => {
+        await installPWA();
+    });
+}
+
+function setupPWA() {
+    // Registrar Service Worker
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+                    console.log('SW registered: ', registration);
+                })
+                .catch(registrationError => {
+                    console.log('SW registration failed: ', registrationError);
+                });
+        });
+    }
+    
+    // Evento que se dispara cuando la app es instalable
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // Prevenir que el mini-infobar aparezca en mobile
+        e.preventDefault();
+        // Guardar el evento para que pueda ser activado después
+        deferredPrompt = e;
+        // Mostrar el botón de instalación
+        installButton.style.display = 'flex';
+        
+        console.log('PWA install prompt available');
+    });
+    
+    // Evento que se dispara cuando la PWA está instalada
+    window.addEventListener('appinstalled', () => {
+        // Ocultar el botón de instalación
+        installButton.style.display = 'none';
+        // Resetear deferredPrompt
+        deferredPrompt = null;
+        console.log('PWA was installed');
+    });
+    
+    // Verificar si la app ya está instalada
+    checkIfAppIsInstalled();
+}
+
+async function installPWA() {
+    if (!deferredPrompt) return;
+    
+    // Mostrar el prompt de instalación
+    deferredPrompt.prompt();
+    
+    // Esperar a que el usuario responda al prompt
+    const { outcome } = await deferredPrompt.userChoice;
+    
+    console.log(`User response to the install prompt: ${outcome}`);
+    
+    // Ya hemos usado el prompt, no lo podemos usar again
+    deferredPrompt = null;
+    
+    // Ocultar el botón de instalación
+    installButton.style.display = 'none';
+}
+
+function checkIfAppIsInstalled() {
+    // Verificar si la app ya está instalada
+    if (window.matchMedia('(display-mode: standalone)').matches || 
+        window.navigator.standalone === true) {
+        installButton.style.display = 'none';
+    }
 }
 
 function loadInitialContent() {
@@ -29,6 +123,8 @@ function renderContent() {
 
 function renderMoviesByGenre() {
     const container = document.getElementById('movies-container');
+    if (!container) return;
+    
     container.innerHTML = '';
 
     allGenres.forEach(genre => {
@@ -57,6 +153,8 @@ function renderMoviesByGenre() {
 
 function renderSeriesByGenre() {
     const container = document.getElementById('series-container');
+    if (!container) return;
+    
     container.innerHTML = '';
 
     allGenres.forEach(genre => {
@@ -142,20 +240,26 @@ function createMediaCard(item) {
 
 function setupSearch() {
     const searchBtn = document.querySelector('.search-btn');
-    searchBtn.addEventListener('click', openSearch);
+    if (searchBtn) {
+        searchBtn.addEventListener('click', openSearch);
+    }
 }
 
 function setupCategories() {
     const categoriesBtn = document.querySelector('.categories-btn');
-    categoriesBtn.addEventListener('click', toggleCategoriesMenu);
-    createCategoriesMenu();
-    
-    const categoriesMenu = document.querySelector('.categories-menu');
-    const resetBtn = document.createElement('button');
-    resetBtn.className = 'category-item reset-btn';
-    resetBtn.textContent = 'Mostrar todo';
-    resetBtn.addEventListener('click', resetToInitialContent);
-    categoriesMenu.appendChild(resetBtn);
+    if (categoriesBtn) {
+        categoriesBtn.addEventListener('click', toggleCategoriesMenu);
+        createCategoriesMenu();
+        
+        const categoriesMenu = document.querySelector('.categories-menu');
+        if (categoriesMenu) {
+            const resetBtn = document.createElement('button');
+            resetBtn.className = 'category-item reset-btn';
+            resetBtn.textContent = 'Mostrar todo';
+            resetBtn.addEventListener('click', resetToInitialContent);
+            categoriesMenu.appendChild(resetBtn);
+        }
+    }
 }
 
 function setupOverlay() {
@@ -166,7 +270,7 @@ function setupOverlay() {
     overlay.addEventListener('click', function(e) {
         if (e.target === overlay) {
             const searchContainer = document.querySelector('.search-container');
-            if (searchContainer.classList.contains('search-active')) {
+            if (searchContainer && searchContainer.classList.contains('search-active')) {
                 closeSearch();
             }
             closeCategoriesMenu();
@@ -193,6 +297,8 @@ function openSearch() {
     const searchContainer = document.querySelector('.search-container');
     const overlay = document.querySelector('.overlay');
     
+    if (!searchContainer || !overlay) return;
+    
     searchContainer.classList.add('search-active');
     searchContainer.innerHTML = `
         <div class="search-wrapper">
@@ -207,25 +313,36 @@ function openSearch() {
     `;
     
     overlay.classList.add('active');
-    // document.body.style.overflow = 'hidden'; // eliminado para permitir scroll
     
     const searchInput = document.querySelector('.search-input');
-    searchInput.focus();
+    if (searchInput) {
+        searchInput.focus();
+    }
     
     // Event listeners
-    document.querySelector('.close-search').addEventListener('click', closeSearch);
-    searchInput.addEventListener('input', handleSearchInput);
+    const closeBtn = document.querySelector('.close-search');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeSearch);
+    }
+    
+    if (searchInput) {
+        searchInput.addEventListener('input', handleSearchInput);
+    }
     
     // Configurar scroll en resultados
     const resultsContainer = document.querySelector('.search-results-container');
-    resultsContainer.addEventListener('wheel', function(e) {
-        e.stopPropagation();
-    }, { passive: true });
+    if (resultsContainer) {
+        resultsContainer.addEventListener('wheel', function(e) {
+            e.stopPropagation();
+        }, { passive: true });
+    }
 }
 
 function closeSearch() {
     const searchContainer = document.querySelector('.search-container');
     const overlay = document.querySelector('.overlay');
+    
+    if (!searchContainer || !overlay) return;
     
     searchContainer.classList.remove('search-active');
     searchContainer.innerHTML = `
@@ -238,12 +355,17 @@ function closeSearch() {
     document.body.style.overflow = '';
     
     // Restaurar event listener del botón de búsqueda
-    document.querySelector('.search-btn').addEventListener('click', openSearch);
+    const searchBtn = document.querySelector('.search-btn');
+    if (searchBtn) {
+        searchBtn.addEventListener('click', openSearch);
+    }
 }
 
 function handleSearchInput(e) {
     const query = e.target.value.trim().toLowerCase();
     const resultsContainer = document.querySelector('.search-results');
+    
+    if (!resultsContainer) return;
     
     if (query.length > 0) {
         const allMedia = [...moviesData, ...seriesData];
@@ -308,6 +430,9 @@ function handleSearchInput(e) {
 function toggleCategoriesMenu() {
     const categoriesMenu = document.querySelector('.categories-menu');
     const overlay = document.querySelector('.overlay');
+    
+    if (!categoriesMenu || !overlay) return;
+    
     categoriesMenu.classList.toggle('active');
     overlay.classList.toggle('active');
 }
@@ -320,6 +445,9 @@ function closeAllMenus() {
 function closeCategoriesMenu() {
     const categoriesMenu = document.querySelector('.categories-menu');
     const overlay = document.querySelector('.overlay');
+    
+    if (!categoriesMenu || !overlay) return;
+    
     categoriesMenu.classList.remove('active');
     overlay.classList.remove('active');
 }
