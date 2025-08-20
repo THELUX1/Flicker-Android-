@@ -9,9 +9,6 @@ const allGenres = [...new Set([...moviesData.flatMap(m => m.genres), ...seriesDa
 let deferredPrompt;
 let installButton;
 
-// Ruta base para GitHub Pages
-const BASE_PATH = '/Flicker-Android-/';
-
 document.addEventListener('DOMContentLoaded', function() {
     initApp();
 });
@@ -27,7 +24,7 @@ function initApp() {
     setupPWA();
     
     // Forzar la comprobación del estado de instalación
-    setTimeout(checkPWAStatus, 3000);
+    setTimeout(checkPWAStatus, 1000);
 }
 
 function createInstallButton() {
@@ -52,22 +49,9 @@ function createInstallButton() {
 }
 
 function setupPWA() {
-    // SOLUCIÓN: Mostrar el botón siempre que no esté en modo standalone
-    // Esto evita depender exclusivamente del evento beforeinstallprompt
-    if (!isRunningStandalone()) {
-        // Intentar registrar service worker pero no bloquear la UI si falla
-        registerServiceWorker();
-        
-        // Mostrar el botón después de un breve retraso
-        setTimeout(() => {
-            if (!isRunningStandalone()) {
-                installButton.style.display = 'flex';
-                console.log('Mostrando botón de instalación (fallback)');
-            }
-        }, 2000);
-    }
+    // SOLUCIÓN: En GitHub Pages, confiamos en beforeinstallprompt solamente
+    // ya que Service Workers no funcionan en repositorios de proyecto
     
-    // Configurar event listeners para PWA
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
@@ -79,29 +63,19 @@ function setupPWA() {
         installButton.style.display = 'none';
         deferredPrompt = null;
         console.log('PWA was installed');
+        
+        // Mostrar mensaje de agradecimiento
+        showInstallSuccess();
     });
-}
-
-function registerServiceWorker() {
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register(`${BASE_PATH}sw.js`)
-            .then(registration => {
-                console.log('SW registered: ', registration);
-                registration.update();
-            })
-            .catch(registrationError => {
-                console.log('SW registration failed: ', registrationError);
-                // Intentar con ruta relativa
-                navigator.serviceWorker.register('./sw.js')
-                    .then(registration => {
-                        console.log('SW registered with relative path: ', registration);
-                    })
-                    .catch(error => {
-                        console.log('SW registration completely failed: ', error);
-                        // No ocultar el botón incluso si el SW falla
-                    });
-            });
-    }
+    
+    // En GitHub Pages, también mostramos el botón después de un tiempo
+    // ya que beforeinstallprompt puede no dispararse inmediatamente
+    setTimeout(() => {
+        if (!isRunningStandalone() && installButton.style.display === 'none') {
+            installButton.style.display = 'flex';
+            console.log('Mostrando botón de instalación (fallback para GitHub Pages)');
+        }
+    }, 3000);
 }
 
 async function installPWA() {
@@ -113,7 +87,6 @@ async function installPWA() {
         console.log(`User response to the install prompt: ${outcome}`);
         
         deferredPrompt = null;
-        installButton.style.display = 'none';
     } else {
         // Fallback: guiar al usuario a instalar manualmente
         showManualInstallInstructions();
@@ -146,8 +119,9 @@ function showManualInstallInstructions() {
         <h3 style="margin-bottom: 1rem; color: #ff8800;">Instalar Flicker</h3>
         <p style="margin-bottom: 1.5rem;">Para instalar la aplicación:</p>
         <div style="text-align: left; margin-bottom: 1.5rem;">
-            <p><strong>Chrome Android:</strong> Menú → "Agregar a pantalla de inicio"</p>
-            <p><strong>Safari iOS:</strong> Compartir → "Agregar a pantalla de inicio"</p>
+            <p><strong>Chrome Android:</strong> Menú (⋮) → "Agregar a pantalla de inicio"</p>
+            <p><strong>Safari iOS:</strong> Compartir (□ con ↑) → "Agregar a pantalla de inicio"</p>
+            <p><strong>Edge Android:</strong> Menú (⋯) → "Agregar a pantalla de inicio"</p>
         </div>
         <button id="closeManualInstall" style="background: #ff8800; color: white; border: none; padding: 0.7rem 1.5rem; border-radius: 5px; cursor: pointer;">Cerrar</button>
     `;
@@ -157,6 +131,43 @@ function showManualInstallInstructions() {
     
     // Evento para cerrar el modal
     document.getElementById('closeManualInstall').addEventListener('click', () => {
+        document.body.removeChild(modal);
+    });
+}
+
+function showInstallSuccess() {
+    // Crear un modal de agradecimiento
+    const modal = document.createElement('div');
+    modal.style.position = 'fixed';
+    modal.style.top = '0';
+    modal.style.left = '0';
+    modal.style.width = '100%';
+    modal.style.height = '100%';
+    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+    modal.style.display = 'flex';
+    modal.style.justifyContent = 'center';
+    modal.style.alignItems = 'center';
+    modal.style.zIndex = '2000';
+    
+    const modalContent = document.createElement('div');
+    modalContent.style.backgroundColor = '#1e1e1e';
+    modalContent.style.padding = '2rem';
+    modalContent.style.borderRadius = '10px';
+    modalContent.style.maxWidth = '90%';
+    modalContent.style.width = '400px';
+    modalContent.style.textAlign = 'center';
+    
+    modalContent.innerHTML = `
+        <h3 style="margin-bottom: 1rem; color: #ff8800;">¡Gracias por instalar Flicker!</h3>
+        <p style="margin-bottom: 1.5rem;">Disfruta de todas nuestras películas y series.</p>
+        <button id="closeSuccessInstall" style="background: #ff8800; color: white; border: none; padding: 0.7rem 1.5rem; border-radius: 5px; cursor: pointer;">Comenzar</button>
+    `;
+    
+    modal.appendChild(modalContent);
+    document.body.appendChild(modal);
+    
+    // Evento para cerrar el modal
+    document.getElementById('closeSuccessInstall').addEventListener('click', () => {
         document.body.removeChild(modal);
     });
 }
@@ -173,18 +184,6 @@ function checkPWAStatus() {
     if (isRunningStandalone()) {
         installButton.style.display = 'none';
         console.log('Running in standalone mode');
-    }
-    
-    // Verificar Service Worker
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistration()
-            .then(registration => {
-                if (registration) {
-                    console.log('Service Worker registered:', registration);
-                } else {
-                    console.log('No Service Worker registration found');
-                }
-            });
     }
 }
 
