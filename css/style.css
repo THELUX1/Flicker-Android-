@@ -752,7 +752,46 @@ body.modal-open { overflow: hidden; }
     background: var(--primary-color);
     color: #fff;
 }
+/* Botón de instalación */
+.install-btn {
+    background-color: rgba(20, 20, 20, 0.8);
+    color: var(--text-color);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 0.7rem 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
+    margin-left: 1rem;
+}
 
+.install-btn:hover {
+    background-color: rgba(40, 40, 40, 0.8);
+    transform: translateY(-2px);
+    color: var(--primary-color);
+}
+
+.install-btn i {
+    font-size: 1.2rem;
+}
+
+/* Responsive para el botón de instalación */
+@media (max-width: 600px) {
+    .install-btn span {
+        display: none;
+    }
+    
+    .install-btn {
+        padding: 0.5rem;
+        width: 45px;
+        height: 45px;
+        justify-content: center;
+    }
+}
 /* Eliminar outline por defecto y agregar estilos personalizados de foco */
 a:focus,
 button:focus,
