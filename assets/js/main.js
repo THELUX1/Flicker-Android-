@@ -22,6 +22,9 @@ function initApp() {
     setupCategories();
     setupOverlay();
     setupPWA();
+    
+    // Verificar estado de PWA después de un tiempo
+    setTimeout(checkPWAStatus, 2000);
 }
 
 function createInstallButton() {
@@ -49,12 +52,31 @@ function setupPWA() {
     // Registrar Service Worker
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js')
+            // Para GitHub Pages, intentamos primero con ruta absoluta
+            const swUrl = '/sw.js';
+            
+            navigator.serviceWorker.register(swUrl)
                 .then(registration => {
                     console.log('SW registered: ', registration);
+                    
+                    // Forzar la verificación de actualizaciones
+                    registration.update();
+                    
+                    // Verificar el estado periódicamente
+                    setInterval(() => {
+                        registration.update();
+                    }, 60 * 60 * 1000); // Cada hora
                 })
                 .catch(registrationError => {
                     console.log('SW registration failed: ', registrationError);
+                    // Intentar con ruta relativa si falla la absoluta
+                    navigator.serviceWorker.register('./sw.js')
+                        .then(registration => {
+                            console.log('SW registered with relative path: ', registration);
+                        })
+                        .catch(error => {
+                            console.log('SW registration completely failed: ', error);
+                        });
                 });
         });
     }
@@ -107,6 +129,49 @@ function checkIfAppIsInstalled() {
     if (window.matchMedia('(display-mode: standalone)').matches || 
         window.navigator.standalone === true) {
         installButton.style.display = 'none';
+    }
+}
+
+function checkPWAStatus() {
+    console.log('Checking PWA status...');
+    
+    // Verificar Service Worker
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistration()
+            .then(registration => {
+                if (registration) {
+                    console.log('Service Worker registered:', registration);
+                    installButton.style.display = 'none';
+                } else {
+                    console.log('No Service Worker registration found');
+                }
+            });
+    } else {
+        console.log('Service Workers not supported');
+    }
+    
+    // Verificar antes de instalar prompt
+    window.addEventListener('beforeinstallprompt', (e) => {
+        console.log('beforeinstallprompt event fired');
+    });
+    
+    // Verificar si ya está instalado
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+        console.log('Running in standalone mode');
+        installButton.style.display = 'none';
+    }
+    
+    // Verificar manifest
+    const manifestLink = document.querySelector('link[rel="manifest"]');
+    if (manifestLink) {
+        fetch(manifestLink.href)
+            .then(response => response.json())
+            .then(manifest => {
+                console.log('Manifest loaded successfully:', manifest);
+            })
+            .catch(error => {
+                console.error('Error loading manifest:', error);
+            });
     }
 }
 
