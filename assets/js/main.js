@@ -26,8 +26,8 @@ function initApp() {
     setupOverlay();
     setupPWA();
     
-    // Verificar estado de PWA después de un tiempo
-    setTimeout(checkPWAStatus, 2000);
+    // Forzar la comprobación del estado de instalación
+    setTimeout(checkPWAStatus, 3000);
 }
 
 function createInstallButton() {
@@ -52,90 +52,128 @@ function createInstallButton() {
 }
 
 function setupPWA() {
-    // Registrar Service Worker con la ruta correcta
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            const swUrl = `${BASE_PATH}sw.js`;
-            
-            navigator.serviceWorker.register(swUrl)
-                .then(registration => {
-                    console.log('SW registered: ', registration);
-                    
-                    // Forzar la verificación de actualizaciones
-                    registration.update();
-                    
-                    // Verificar el estado periódicamente
-                    setInterval(() => {
-                        registration.update();
-                    }, 60 * 60 * 1000); // Cada hora
-                })
-                .catch(registrationError => {
-                    console.log('SW registration failed: ', registrationError);
-                    // Intentar con ruta relativa si falla
-                    navigator.serviceWorker.register('./sw.js')
-                        .then(registration => {
-                            console.log('SW registered with relative path: ', registration);
-                        })
-                        .catch(error => {
-                            console.log('SW registration completely failed: ', error);
-                        });
-                });
-        });
+    // SOLUCIÓN: Mostrar el botón siempre que no esté en modo standalone
+    // Esto evita depender exclusivamente del evento beforeinstallprompt
+    if (!isRunningStandalone()) {
+        // Intentar registrar service worker pero no bloquear la UI si falla
+        registerServiceWorker();
+        
+        // Mostrar el botón después de un breve retraso
+        setTimeout(() => {
+            if (!isRunningStandalone()) {
+                installButton.style.display = 'flex';
+                console.log('Mostrando botón de instalación (fallback)');
+            }
+        }, 2000);
     }
     
-    // Evento que se dispara cuando la app es instalable
+    // Configurar event listeners para PWA
     window.addEventListener('beforeinstallprompt', (e) => {
-        // Prevenir que el mini-infobar aparezca en mobile
         e.preventDefault();
-        // Guardar el evento para que pueda ser activado después
         deferredPrompt = e;
-        // Mostrar el botón de instalación
         installButton.style.display = 'flex';
-        
         console.log('PWA install prompt available');
     });
     
-    // Evento que se dispara cuando la PWA está instalada
     window.addEventListener('appinstalled', () => {
-        // Ocultar el botón de instalación
         installButton.style.display = 'none';
-        // Resetear deferredPrompt
         deferredPrompt = null;
         console.log('PWA was installed');
     });
-    
-    // Verificar si la app ya está instalada
-    checkIfAppIsInstalled();
+}
+
+function registerServiceWorker() {
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register(`${BASE_PATH}sw.js`)
+            .then(registration => {
+                console.log('SW registered: ', registration);
+                registration.update();
+            })
+            .catch(registrationError => {
+                console.log('SW registration failed: ', registrationError);
+                // Intentar con ruta relativa
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => {
+                        console.log('SW registered with relative path: ', registration);
+                    })
+                    .catch(error => {
+                        console.log('SW registration completely failed: ', error);
+                        // No ocultar el botón incluso si el SW falla
+                    });
+            });
+    }
 }
 
 async function installPWA() {
-    if (!deferredPrompt) return;
-    
-    // Mostrar el prompt de instalación
-    deferredPrompt.prompt();
-    
-    // Esperar a que el usuario responda al prompt
-    const { outcome } = await deferredPrompt.userChoice;
-    
-    console.log(`User response to the install prompt: ${outcome}`);
-    
-    // Ya hemos usado el prompt, no lo podemos usar again
-    deferredPrompt = null;
-    
-    // Ocultar el botón de instalación
-    installButton.style.display = 'none';
+    if (deferredPrompt) {
+        // Usar el prompt de instalación si está disponible
+        deferredPrompt.prompt();
+        
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`User response to the install prompt: ${outcome}`);
+        
+        deferredPrompt = null;
+        installButton.style.display = 'none';
+    } else {
+        // Fallback: guiar al usuario a instalar manualmente
+        showManualInstallInstructions();
+    }
 }
 
-function checkIfAppIsInstalled() {
-    // Verificar si la app ya está instalada
-    if (window.matchMedia('(display-mode: standalone)').matches || 
-        window.navigator.standalone === true) {
-        installButton.style.display = 'none';
-    }
+function showManualInstallInstructions() {
+    // Crear un modal con instrucciones de instalación manual
+    const modal = document.createElement('div');
+    modal.style.position = 'fixed';
+    modal.style.top = '0';
+    modal.style.left = '0';
+    modal.style.width = '100%';
+    modal.style.height = '100%';
+    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+    modal.style.display = 'flex';
+    modal.style.justifyContent = 'center';
+    modal.style.alignItems = 'center';
+    modal.style.zIndex = '2000';
+    
+    const modalContent = document.createElement('div');
+    modalContent.style.backgroundColor = '#1e1e1e';
+    modalContent.style.padding = '2rem';
+    modalContent.style.borderRadius = '10px';
+    modalContent.style.maxWidth = '90%';
+    modalContent.style.width = '400px';
+    modalContent.style.textAlign = 'center';
+    
+    modalContent.innerHTML = `
+        <h3 style="margin-bottom: 1rem; color: #ff8800;">Instalar Flicker</h3>
+        <p style="margin-bottom: 1.5rem;">Para instalar la aplicación:</p>
+        <div style="text-align: left; margin-bottom: 1.5rem;">
+            <p><strong>Chrome Android:</strong> Menú → "Agregar a pantalla de inicio"</p>
+            <p><strong>Safari iOS:</strong> Compartir → "Agregar a pantalla de inicio"</p>
+        </div>
+        <button id="closeManualInstall" style="background: #ff8800; color: white; border: none; padding: 0.7rem 1.5rem; border-radius: 5px; cursor: pointer;">Cerrar</button>
+    `;
+    
+    modal.appendChild(modalContent);
+    document.body.appendChild(modal);
+    
+    // Evento para cerrar el modal
+    document.getElementById('closeManualInstall').addEventListener('click', () => {
+        document.body.removeChild(modal);
+    });
+}
+
+function isRunningStandalone() {
+    return window.matchMedia('(display-mode: standalone)').matches || 
+           window.navigator.standalone === true;
 }
 
 function checkPWAStatus() {
     console.log('Checking PWA status...');
+    
+    // Ocultar botón si ya está instalado
+    if (isRunningStandalone()) {
+        installButton.style.display = 'none';
+        console.log('Running in standalone mode');
+    }
     
     // Verificar Service Worker
     if ('serviceWorker' in navigator) {
@@ -143,40 +181,14 @@ function checkPWAStatus() {
             .then(registration => {
                 if (registration) {
                     console.log('Service Worker registered:', registration);
-                    installButton.style.display = 'none';
                 } else {
                     console.log('No Service Worker registration found');
                 }
             });
-    } else {
-        console.log('Service Workers not supported');
-    }
-    
-    // Verificar antes de instalar prompt
-    window.addEventListener('beforeinstallprompt', (e) => {
-        console.log('beforeinstallprompt event fired');
-    });
-    
-    // Verificar si ya está instalado
-    if (window.matchMedia('(display-mode: standalone)').matches) {
-        console.log('Running in standalone mode');
-        installButton.style.display = 'none';
-    }
-    
-    // Verificar manifest
-    const manifestLink = document.querySelector('link[rel="manifest"]');
-    if (manifestLink) {
-        fetch(manifestLink.href)
-            .then(response => response.json())
-            .then(manifest => {
-                console.log('Manifest loaded successfully:', manifest);
-            })
-            .catch(error => {
-                console.error('Error loading manifest:', error);
-            });
     }
 }
 
+// El resto del código permanece igual...
 function loadInitialContent() {
     currentMovies = [...moviesData];
     currentSeries = [...seriesData];
