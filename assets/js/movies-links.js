@@ -2,7 +2,7 @@ const moviesLinks = {
     "1771": {
         title: "Capitán América: El primer vengador",
         sources: [
-            { quality: "HD", url: "https://s437vla.storage.yandex.net/rdisk/60a53a5e292e00bbae5b2753a714defb91a01c8ec941ed74f1fe950aeea7c737/68a5e60b/miSRCdcoJZzWpT7_DeaELnkqasyVrc05L80BaZ7Dmy4yJXg2dvA01GKeMr40QLpnHujA2GyXZFWLv9aLjQbs1w==?uid=0&filename=Alien%20Planeta%20Tierra%20S01E01.mkv&disposition=attachment&hash=Pn0Dfzdv/RmsOjJjwrRNYIyiyPl7bZSxbmjvk8E6VJ3ZNErRtDseOVWgLLYkhVVfq/J6bpmRyOJonT3VoXnDag%3D%3D&limit=0&content_type=video%2Fx-matroska&owner_uid=2235161334&fsize=2790563874&hid=11dc88a5f3118e05342693dc1761c2ed&media_type=video&tknv=v3&ts=63ccd696d58c0&s=f2e9d739f672c64600453cae00a5d79c532681c5548697500efae34218d063f9&pb=U2FsdGVkX19AcOEd0YxID-Nci-WXQjIX5GnMjEo2EMSD52GFPap1-NTWb7T-unvLvAucOrNS_npSaY2bCgeLr3z6SAgz5ZLVM9huHRVe5lo" },
+            { quality: "HD", url: "" },
             { quality: "SD", url: "" }
         ],
         subtitles: [
@@ -134,7 +134,7 @@ const moviesLinks = {
     "1061474": {
         title: "Superman",
         sources: [
-            { quality: "HD", url: "https://eqz0nz1hz2.guardstorage.net/hls_3/kHXo3Bx85x4cg56N1GtjDJ22342UH2OYDhEY4tmGLkscpwyJP139lfhUkX4rmr4OZQ-LG-6HHfiGqCXLWymsoWLD2KVlykJwJ9Ep_apwhKRHwkqspsoVcwZ4u9lqIp4q1B1GV4b5NIoh-Mazj5UBLAcuSiCQcfg3XfdjVy4OOqtU42griruUYXaZD4L8YHJ-YTuCS39AgIzAQ1QX5_OknA/index-f2-v1-a1.m3u8?sig=Bkb9VXrPN5OJcdFoiC4Z5w&expires=1755513370" },
+            { quality: "HD", url: "https://s389vlx.storage.yandex.net/rdisk/2c472e279ec53a69ad3263266875a558c5bc4017efba53dfbf8bac894f3c64a9/68a6ee2a/Umj8mA-6ZMsEM_oUGHonrxKNZTg0cSYCfBbJCtttTZvHdMsyXKHTVT5Nrqlde0pAmFwoGs_uGk-meMeqfsT6TQ==?uid=0&filename=Superman%20%282025%29%20IMAX%20720p%20DUAL%20id_1061474.mkv&disposition=attachment&hash=/ZP9%2BGs7qvOjsFYOpbIZaR9QuRS3pS2NebqZkfdbcV6%2BkEjMcif5GoJPzChRmzRAq/J6bpmRyOJonT3VoXnDag%3D%3D&limit=0&content_type=video%2Fx-matroska&owner_uid=2031436222&fsize=1857051438&hid=61cc2efc3e9c7696c707d27631c1dc97&media_type=video&tknv=v3&ts=63cdd27985e80&s=83baae5eba685162afe4283077e2c173eb83e42f0f0f6e446b83760e2293faec&pb=U2FsdGVkX1-PXk0vx-isU5N8KndToVB4AM0PUQmWFbexEi2tvQ8vpIHza4CAvgEJLQoVcVLEcah3uBToeKasXod0ip2o2NdoygHSrS2pt7o" },
             { quality: "SD", url: "https://eqz0nz1hz2.guardstorage.net/hls_3/kHXo3Bx85x4cg56N1GtjDJ22342UH2OYDhEY4tmGLkscpwyJP139lfhUkX4rmr4OZQ-LG-6HHfiGqCXLWymsoWLD2KVlykJwJ9Ep_apwhKRHwkqspsoVcwZ4u9lqIp4q1B1GV4b5NIoh-Mazj5UBLAcuSiCQcfg3XfdjVy4OOqtU42griruUYXaZD4L8YHJ-YTuCS39AgIzAQ1QX5_OknA/index-f1-v1-a1.m3u8?sig=Bkb9VXrPN5OJcdFoiC4Z5w&expires=1755513370" }
         ],
         subtitles: [
