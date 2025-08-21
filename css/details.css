@@ -809,7 +809,7 @@ iframe {
     margin-top: 15px;
     padding-left: 20px;
     border-left: 3px solid #333;
-    display: none;
+    display: block; /* antes estaba en none */
 }
 
 .reply-item {
@@ -1166,4 +1166,185 @@ iframe {
     cursor: not-allowed;
 }
 
-/* ... resto del código sin cambios ... */
+/* ===== ESTILOS PARA AVATAR DE USUARIO ===== */
+.avatar-container {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    cursor: pointer;
+    background: linear-gradient(45deg, #ff8800, #ff5500);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-container i {
+    color: white;
+    font-size: 1.2rem;
+}
+
+.avatar-upload-btn {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.avatar-container:hover .avatar-upload-btn {
+    opacity: 1;
+}
+
+/* Modal para subir avatar */
+.avatar-modal {
+    display: none;
+    position: fixed;
+    z-index: 1001;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.avatar-modal-content {
+    background-color: #1a1a1a;
+    margin: 15% auto;
+    padding: 25px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
+    position: relative;
+    border: 1px solid #333;
+    text-align: center;
+}
+
+.avatar-preview {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    overflow: hidden;
+    background-color: #2a2a2a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-preview i {
+    font-size: 3rem;
+    color: #555;
+}
+
+.avatar-options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.avatar-option-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.avatar-option-btn:hover {
+    transform: translateY(-2px);
+}
+
+#upload-avatar-btn {
+    background-color: #ff8800;
+    color: white;
+}
+
+#remove-avatar-btn {
+    background-color: #444;
+    color: white;
+}
+
+.avatar-modal-close {
+    color: #aaa;
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.avatar-modal-close:hover {
+    color: #fff;
+}
+
+/* Alertas */
+.alert-toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    background-color: #333;
+    color: white;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1002;
+    animation: slideInRight 0.3s ease-out;
+}
+
+.alert-toast.success {
+    background-color: #2ecc71;
+}
+
+.alert-toast.error {
+    background-color: #e74c3c;
+}
+
+.alert-toast.warning {
+    background-color: #f39c12;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
