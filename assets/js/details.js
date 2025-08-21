@@ -385,6 +385,9 @@ function showLoginModal() {
 }
 
 // Configurar botones de login
+// ... código anterior sin cambios ...
+
+// Configurar botones de login
 function setupLoginButtons() {
     // Cerrar modal
     const closeBtn = document.querySelector('.close');
@@ -394,17 +397,14 @@ function setupLoginButtons() {
         });
     }
     
-    // Login con Google
-    const googleLoginBtn = document.getElementById('google-login');
-    if (googleLoginBtn) {
-        googleLoginBtn.addEventListener('click', signInWithGoogle);
-    }
+    // Eliminado: Login con Google
     
     // Login con email
     const emailLoginBtn = document.getElementById('email-login');
     if (emailLoginBtn) {
         emailLoginBtn.addEventListener('click', () => {
-            showEmailDevMessage();
+            // En lugar de mostrar mensaje de desarrollo, ahora abrirá el formulario de email
+            showEmailLoginForm();
         });
     }
     
@@ -416,70 +416,177 @@ function setupLoginButtons() {
         }
     });
 }
-// Función para mostrar mensaje de email en desarrollo
-function showEmailDevMessage() {
-    // Crear y mostrar toast notification
-    const toast = document.createElement('div');
-    toast.className = 'alert-toast warning';
-    toast.innerHTML = `
-        <i class="fas fa-tools"></i>
-        <span>Funcionalidad de email en desarrollo. Usa Google por ahora.</span>
-    `;
-    
-    document.body.appendChild(toast);
-    
-    // Eliminar el toast después de la animación
-    setTimeout(() => {
-        if (toast.parentNode) {
-            toast.parentNode.removeChild(toast);
-        }
-    }, 3000);
-    
-    // Alternativa: Mostrar un modal más elaborado
-    // showEmailDevModal();
-}
 
-// Función alternativa para mostrar modal de email en desarrollo
-function showEmailDevModal() {
-    const modal = document.createElement('div');
-    modal.className = 'email-dev-modal';
-    modal.innerHTML = `
-        <div class="email-dev-modal-content">
-            <div class="email-dev-modal-header">
-                <i class="fas fa-tools"></i>
-                <h2>Función en desarrollo</h2>
+// Función para mostrar formulario de login con email
+function showEmailLoginForm() {
+    const modalContent = document.querySelector('.modal-content');
+    modalContent.innerHTML = `
+        <span class="close">&times;</span>
+        <h2>Iniciar sesión con Email</h2>
+        <div class="email-login-form">
+            <div class="form-group">
+                <label for="login-email">Email</label>
+                <input type="email" id="login-email" placeholder="tu@email.com" required>
             </div>
-            <p>La autenticación por email está actualmente en desarrollo. Por favor, utiliza Google para iniciar sesión.</p>
-            <div class="email-dev-modal-actions">
-                <button class="email-dev-modal-btn primary" onclick="this.closest('.email-dev-modal').style.display='none'">Entendido</button>
-                <button class="email-dev-modal-btn secondary" onclick="signInWithGoogle()">Iniciar con Google</button>
+            <div class="form-group">
+                <label for="login-password">Contraseña</label>
+                <input type="password" id="login-password" placeholder="Tu contraseña" required>
             </div>
+            <button id="submit-email-login" class="email-login-btn">
+                <i class="fas fa-envelope"></i> Iniciar sesión
+            </button>
+            <p class="login-note">¿No tienes cuenta? <a href="#" id="show-register">Regístrate aquí</a></p>
         </div>
     `;
     
-    document.body.appendChild(modal);
-    modal.style.display = 'block';
+    // Configurar eventos
+    document.querySelector('.close').addEventListener('click', () => {
+        document.getElementById('login-modal').style.display = 'none';
+    });
     
-    // Cerrar modal al hacer clic fuera
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            modal.style.display = 'none';
-        }
+    document.getElementById('submit-email-login').addEventListener('click', handleEmailLogin);
+    document.getElementById('show-register').addEventListener('click', showRegisterForm);
+}
+
+// Función para mostrar formulario de registro
+function showRegisterForm(e) {
+    e.preventDefault();
+    const modalContent = document.querySelector('.modal-content');
+    modalContent.innerHTML = `
+        <span class="close">&times;</span>
+        <h2>Crear cuenta</h2>
+        <div class="email-login-form">
+            <div class="form-group">
+                <label for="register-name">Nombre</label>
+                <input type="text" id="register-name" placeholder="Tu nombre" required>
+            </div>
+            <div class="form-group">
+                <label for="register-email">Email</label>
+                <input type="email" id="register-email" placeholder="tu@email.com" required>
+            </div>
+            <div class="form-group">
+                <label for="register-password">Contraseña</label>
+                <input type="password" id="register-password" placeholder="Mínimo 6 caracteres" required>
+            </div>
+            <button id="submit-register" class="email-login-btn">
+                <i class="fas fa-user-plus"></i> Crear cuenta
+            </button>
+            <p class="login-note">¿Ya tienes cuenta? <a href="#" id="show-login">Inicia sesión aquí</a></p>
+        </div>
+    `;
+    
+    // Configurar eventos
+    document.querySelector('.close').addEventListener('click', () => {
+        document.getElementById('login-modal').style.display = 'none';
+    });
+    
+    document.getElementById('submit-register').addEventListener('click', handleEmailRegister);
+    document.getElementById('show-login').addEventListener('click', (e) => {
+        e.preventDefault();
+        showEmailLoginForm();
     });
 }
-// Iniciar sesión con Google
-function signInWithGoogle() {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-        .then(() => auth.signInWithPopup(provider))
+
+// Función para manejar login con email
+function handleEmailLogin() {
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+    
+    if (!email || !password) {
+        showAlert('Por favor, completa todos los campos', 'error');
+        return;
+    }
+    
+    // Iniciar sesión con Firebase
+    auth.signInWithEmailAndPassword(email, password)
         .then(() => {
             document.getElementById('login-modal').style.display = 'none';
+            showAlert('Sesión iniciada correctamente', 'success');
         })
         .catch((error) => {
-            console.error("Error en login con Google:", error);
-            alert("Error al iniciar sesión con Google");
+            console.error("Error en login:", error);
+            showAlert(getAuthErrorMessage(error), 'error');
         });
 }
+
+// Función para manejar registro con email
+function handleEmailRegister() {
+    const name = document.getElementById('register-name').value;
+    const email = document.getElementById('register-email').value;
+    const password = document.getElementById('register-password').value;
+    
+    if (!name || !email || !password) {
+        showAlert('Por favor, completa todos los campos', 'error');
+        return;
+    }
+    
+    if (password.length < 6) {
+        showAlert('La contraseña debe tener al menos 6 caracteres', 'error');
+        return;
+    }
+    
+    // Crear usuario con Firebase
+    auth.createUserWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+            // Actualizar perfil del usuario
+            return userCredential.user.updateProfile({
+                displayName: name
+            });
+        })
+        .then(() => {
+            document.getElementById('login-modal').style.display = 'none';
+            showAlert('Cuenta creada correctamente', 'success');
+        })
+        .catch((error) => {
+            console.error("Error en registro:", error);
+            showAlert(getAuthErrorMessage(error), 'error');
+        });
+}
+
+// Función para obtener mensajes de error legibles
+function getAuthErrorMessage(error) {
+    switch (error.code) {
+        case 'auth/invalid-email':
+            return 'El formato del email no es válido';
+        case 'auth/user-disabled':
+            return 'Esta cuenta ha sido deshabilitada';
+        case 'auth/user-not-found':
+            return 'No existe una cuenta con este email';
+        case 'auth/wrong-password':
+            return 'Contraseña incorrecta';
+        case 'auth/email-already-in-use':
+            return 'Este email ya está registrado';
+        case 'auth/weak-password':
+            return 'La contraseña es demasiado débil';
+        default:
+            return 'Error al autenticar. Intenta nuevamente.';
+    }
+}
+
+// Función para mostrar alertas
+function showAlert(message, type = 'info') {
+    const alert = document.createElement('div');
+    alert.className = `alert-toast ${type}`;
+    alert.innerHTML = `
+        <i class="fas fa-${type === 'error' ? 'exclamation-circle' : 
+                          type === 'success' ? 'check-circle' : 
+                          type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+        <span>${message}</span>
+    `;
+    
+    document.body.appendChild(alert);
+    
+    // Eliminar el alert después de 3 segundos
+    setTimeout(() => {
+        if (alert.parentNode) {
+            alert.parentNode.removeChild(alert);
+        }
+    }, 3000);
+}
+
+// Eliminado: función signInWithGoogle()
+
+// ... resto del código sin cambios ...
 
 // Actualizar UI basado en estado de autenticación
 function updateCommentUI() {
