@@ -807,8 +807,8 @@ function showReplyForm(commentId, username) {
                 <textarea placeholder="Responder a ${username}..." maxlength="500"></textarea>
                 <div class="comment-actions">
                     <span class="char-count">0/500</span>
-                    <button class="submit-reply-btn" data-comment-id="${commentId}">Responder</button>
-                    <button class="cancel-reply-btn">Cancelar</button>
+                    <button type="button" class="submit-reply-btn" data-comment-id="${commentId}">Responder</button>
+<button type="button" class="cancel-reply-btn">Cancelar</button>
                 </div>
             </div>
         </div>
