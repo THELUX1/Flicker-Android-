@@ -470,7 +470,8 @@ function showEmailDevModal() {
 // Iniciar sesión con Google
 function signInWithGoogle() {
     const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider)
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+        .then(() => auth.signInWithPopup(provider))
         .then(() => {
             document.getElementById('login-modal').style.display = 'none';
         })
