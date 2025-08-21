@@ -699,3 +699,480 @@ iframe {
         transform: translateY(0);
     }
 }
+
+/* ===== ESTILOS PARA EL MODAL DE LOGIN ===== */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background-color: #1a1a1a;
+    margin: 10% auto;
+    padding: 25px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
+    position: relative;
+    border: 1px solid #333;
+    animation: modalFadeIn 0.3s;
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: translateY(-50px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    color: #fff;
+    text-align: center;
+    font-size: 1.5rem;
+}
+
+.close {
+    color: #aaa;
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: #fff;
+}
+
+.login-options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.social-login-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.social-login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+#google-login {
+    background-color: #fff;
+    color: #757575;
+}
+
+#google-login:hover {
+    background-color: #f5f5f5;
+    color: #424242;
+}
+
+#email-login {
+    background-color: #e50914;
+    color: white;
+}
+
+#email-login:hover {
+    background-color: #f40612;
+}
+
+.login-note {
+    text-align: center;
+    color: #999;
+    font-size: 0.9rem;
+    margin-top: 20px;
+}
+
+/* ===== SISTEMA DE RESPUESTAS ===== */
+.replies-container {
+    margin-top: 15px;
+    padding-left: 20px;
+    border-left: 3px solid #333;
+    display: none;
+}
+
+.reply-item {
+    display: flex;
+    margin-bottom: 15px;
+    padding: 12px;
+    background-color: rgba(40, 40, 40, 0.6);
+    border-radius: 8px;
+}
+
+.reply-form {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    padding: 15px;
+    background-color: rgba(50, 50, 50, 0.6);
+    border-radius: 8px;
+}
+
+.view-replies-btn, .reply-btn {
+    background: transparent;
+    border: none;
+    color: #aaa;
+    cursor: pointer;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.view-replies-btn:hover, .reply-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.comment-actions-row {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.comment-action-btn-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: transparent;
+    border: none;
+    color: #aaa;
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.comment-action-btn-row:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.submit-reply-btn, .cancel-reply-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.submit-reply-btn {
+    background-color: #e50914;
+    color: white;
+}
+
+.submit-reply-btn:hover:not(:disabled) {
+    background-color: #f40612;
+}
+
+.submit-reply-btn:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+}
+
+.cancel-reply-btn {
+    background-color: #444;
+    color: #ccc;
+}
+
+.cancel-reply-btn:hover {
+    background-color: #555;
+}
+
+/* Mejoras para comentarios existentes */
+.comment-item {
+    padding: 15px;
+    background-color: rgba(30, 30, 30, 0.6);
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.comment-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #333;
+    margin-right: 15px;
+    flex-shrink: 0;
+}
+
+.comment-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.comment-avatar i {
+    font-size: 1.2rem;
+    color: #aaa;
+}
+
+.comment-content {
+    flex-grow: 1;
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.comment-author {
+    font-weight: 600;
+    color: #fff;
+}
+
+.comment-time {
+    font-size: 0.8rem;
+    color: #888;
+}
+
+.comment-text {
+    color: #ddd;
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 85%;
+        margin: 20% auto;
+        padding: 20px;
+    }
+    
+    .comment-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+    
+    .comment-actions-row {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .replies-container {
+        padding-left: 15px;
+    }
+}
+
+/* Animaciones para transiciones suaves */
+.fade-in {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.slide-down {
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from { 
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to { 
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+/* ===== ESTILOS PARA MENSAJES DE ALERTA ===== */
+.alert-toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #333;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    max-width: 350px;
+    animation: slideInRight 0.3s ease-out, fadeOut 0.5s ease-in 2.5s forwards;
+}
+
+.alert-toast i {
+    font-size: 1.2rem;
+    color: #ff8800;
+}
+
+.alert-toast.info i {
+    color: #2196F3;
+}
+
+.alert-toast.success i {
+    color: #4CAF50;
+}
+
+.alert-toast.error i {
+    color: #F44336;
+}
+
+.alert-toast.warning i {
+    color: #FF9800;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
+/* Modal de email en desarrollo */
+.email-dev-modal {
+    display: none;
+    position: fixed;
+    z-index: 1001;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+}
+
+.email-dev-modal-content {
+    background-color: #1a1a1a;
+    margin: 15% auto;
+    padding: 25px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 450px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
+    position: relative;
+    border: 1px solid #333;
+    text-align: center;
+    animation: modalFadeIn 0.3s;
+}
+
+.email-dev-modal-header {
+    margin-bottom: 20px;
+}
+
+.email-dev-modal-header i {
+    font-size: 3rem;
+    color: #ff8800;
+    margin-bottom: 15px;
+}
+
+.email-dev-modal h2 {
+    color: #fff;
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+}
+
+.email-dev-modal p {
+    color: #ccc;
+    line-height: 1.5;
+    margin-bottom: 25px;
+}
+
+.email-dev-modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.email-dev-modal-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.email-dev-modal-btn.primary {
+    background-color: #ff8800;
+    color: white;
+}
+
+.email-dev-modal-btn.primary:hover {
+    background-color: #ff7700;
+}
+
+.email-dev-modal-btn.secondary {
+    background-color: #333;
+    color: #ccc;
+}
+
+.email-dev-modal-btn.secondary:hover {
+    background-color: #444;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .alert-toast {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+    
+    .email-dev-modal-content {
+        width: 85%;
+        margin: 20% auto;
+        padding: 20px;
+    }
+    
+    .email-dev-modal-actions {
+        flex-direction: column;
+    }
+    
+    .email-dev-modal-btn {
+        width: 100%;
+    }
+}
