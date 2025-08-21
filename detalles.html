@@ -6,12 +6,15 @@
     <title>Detalles - Flicker</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/details.css">
+
     <!-- Firebase App (el core de Firebase compat) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <!-- Firebase Firestore compat -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <!-- Firebase Auth compat -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <!-- Firebase Storage compat -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
 </head>
 <body>
    <main class="details-container">
@@ -82,7 +85,33 @@
                     </div>
                 </div>
             </div>
-            
+            <!-- Modal para subir/editar avatar -->
+<div id="avatar-modal" class="avatar-modal">
+    <div class="avatar-modal-content">
+        <span class="avatar-modal-close">&times;</span>
+        <h2>Foto de perfil</h2>
+        
+        <div class="avatar-preview" id="avatar-preview">
+            <i class="fas fa-user"></i>
+        </div>
+        
+        <div class="avatar-options">
+            <input type="file" id="avatar-input" accept="image/*" style="display: none;">
+            <button id="upload-avatar-btn" class="avatar-option-btn">
+                <i class="fas fa-upload"></i> Subir foto
+            </button>
+            <button id="remove-avatar-btn" class="avatar-option-btn">
+                <i class="fas fa-trash"></i> Eliminar foto
+            </button>
+        </div>
+        
+        <div class="avatar-actions">
+            <button id="save-avatar-btn" class="submit-btn" disabled>
+                <i class="fas fa-save"></i> Guardar cambios
+            </button>
+        </div>
+    </div>
+</div>
             <!-- Modal de inicio de sesión -->
             <div id="login-modal" class="modal">
                 <div class="modal-content">
@@ -93,7 +122,7 @@
                             <i class="fas fa-envelope"></i> Continuar con Email
                         </button>
                     </div>
-                    <p class="login-note">Debes iniciar sesión para comentar y interactuar.</p>
+                    <p class="login-note">Debes iniciar sesión para comentar y participar.</p>
                 </div>
             </div>
             
