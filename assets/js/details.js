@@ -1,4 +1,5 @@
 let commentsListener = null;
+let repliesListener = null;
 let currentUser = null;
 import { moviesData, seriesData } from './data.js';
 
@@ -74,6 +75,9 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         // ✅ Inicializar comentarios
         initCommentsSystem();
+        
+        // ✅ Configurar botones de login
+        setupLoginButtons();
         
     } catch (error) {
         console.error('Error:', error);
@@ -351,6 +355,7 @@ function getAvailableSimilar(currentId, currentType) {
         .sort(() => 0.5 - Math.random())
         .slice(0, 5);
 }
+
 // Función para inicializar el sistema de comentarios
 function initCommentsSystem() {
     setupAuthState();
@@ -363,12 +368,116 @@ function setupAuthState() {
     auth.onAuthStateChanged((user) => {
         currentUser = user;
         updateCommentUI();
+        
+        // Si no hay usuario, mostrar modal de login después de un tiempo
+        if (!user) {
+            setTimeout(showLoginModal, 3000);
+        }
     });
+}
+
+// Mostrar modal de login
+function showLoginModal() {
+    const modal = document.getElementById('login-modal');
+    if (modal && !currentUser) {
+        modal.style.display = 'block';
+    }
+}
+
+// Configurar botones de login
+function setupLoginButtons() {
+    // Cerrar modal
+    const closeBtn = document.querySelector('.close');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            document.getElementById('login-modal').style.display = 'none';
+        });
+    }
     
-    // Para modo demo: autenticación anónima automática
-    auth.signInAnonymously().catch((error) => {
-        console.error("Error en autenticación anónima:", error);
+    // Login con Google
+    const googleLoginBtn = document.getElementById('google-login');
+    if (googleLoginBtn) {
+        googleLoginBtn.addEventListener('click', signInWithGoogle);
+    }
+    
+    // Login con email
+    const emailLoginBtn = document.getElementById('email-login');
+    if (emailLoginBtn) {
+        emailLoginBtn.addEventListener('click', () => {
+            showEmailDevMessage();
+        });
+    }
+    
+    // Cerrar modal al hacer clic fuera
+    window.addEventListener('click', (event) => {
+        const modal = document.getElementById('login-modal');
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
     });
+}
+// Función para mostrar mensaje de email en desarrollo
+function showEmailDevMessage() {
+    // Crear y mostrar toast notification
+    const toast = document.createElement('div');
+    toast.className = 'alert-toast warning';
+    toast.innerHTML = `
+        <i class="fas fa-tools"></i>
+        <span>Funcionalidad de email en desarrollo. Usa Google por ahora.</span>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    // Eliminar el toast después de la animación
+    setTimeout(() => {
+        if (toast.parentNode) {
+            toast.parentNode.removeChild(toast);
+        }
+    }, 3000);
+    
+    // Alternativa: Mostrar un modal más elaborado
+    // showEmailDevModal();
+}
+
+// Función alternativa para mostrar modal de email en desarrollo
+function showEmailDevModal() {
+    const modal = document.createElement('div');
+    modal.className = 'email-dev-modal';
+    modal.innerHTML = `
+        <div class="email-dev-modal-content">
+            <div class="email-dev-modal-header">
+                <i class="fas fa-tools"></i>
+                <h2>Función en desarrollo</h2>
+            </div>
+            <p>La autenticación por email está actualmente en desarrollo. Por favor, utiliza Google para iniciar sesión.</p>
+            <div class="email-dev-modal-actions">
+                <button class="email-dev-modal-btn primary" onclick="this.closest('.email-dev-modal').style.display='none'">Entendido</button>
+                <button class="email-dev-modal-btn secondary" onclick="signInWithGoogle()">Iniciar con Google</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    modal.style.display = 'block';
+    
+    // Cerrar modal al hacer clic fuera
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+}
+// Iniciar sesión con Google
+function signInWithGoogle() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider)
+        .then(() => {
+            document.getElementById('login-modal').style.display = 'none';
+        })
+        .catch((error) => {
+            console.error("Error en login con Google:", error);
+            alert("Error al iniciar sesión con Google");
+        });
 }
 
 // Actualizar UI basado en estado de autenticación
@@ -379,6 +488,7 @@ function updateCommentUI() {
     if (currentUser) {
         commentInput.disabled = false;
         commentInput.placeholder = "Añade un comentario público...";
+        submitButton.disabled = false;
     } else {
         commentInput.disabled = true;
         commentInput.placeholder = "Inicia sesión para comentar...";
@@ -398,7 +508,7 @@ function setupCommentForm() {
         charCount.textContent = `${length}/500`;
         
         // Habilitar/deshabilitar botón según contenido
-        submitButton.disabled = length === 0 || length > 500;
+        submitButton.disabled = length === 0 || length > 500 || !currentUser;
     });
     
     // Enviar comentario
@@ -427,12 +537,14 @@ function submitComment() {
     const comment = {
         text: text,
         userId: currentUser.uid,
-        userDisplayName: currentUser.isAnonymous ? "Usuario Anónimo" : (currentUser.displayName || "Usuario"),
+        userDisplayName: currentUser.displayName || "Usuario",
+        userPhotoURL: currentUser.photoURL || "",
         mediaType: type,
         mediaId: id,
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
         likes: 0,
-        likedBy: []
+        likedBy: [],
+        replyCount: 0
     };
     
     // Deshabilitar UI temporalmente
@@ -513,7 +625,10 @@ function addCommentToUI(comment, commentId) {
     
     commentElement.innerHTML = `
         <div class="comment-avatar">
-            <i class="fas fa-user"></i>
+            ${comment.userPhotoURL ? 
+                `<img src="${comment.userPhotoURL}" alt="${comment.userDisplayName}">` : 
+                `<i class="fas fa-user"></i>`
+            }
         </div>
         <div class="comment-content">
             <div class="comment-header">
@@ -526,20 +641,264 @@ function addCommentToUI(comment, commentId) {
                     <i class="fas fa-thumbs-up"></i>
                     <span>${comment.likes || 0}</span>
                 </button>
+                <button class="comment-action-btn reply-btn" data-comment-id="${commentId}">
+                    <i class="fas fa-reply"></i>
+                    <span>Responder</span>
+                </button>
+                ${comment.replyCount > 0 ? `
+                    <button class="comment-action-btn view-replies-btn" data-comment-id="${commentId}">
+                        <i class="fas fa-comments"></i>
+                        <span>Ver respuestas (${comment.replyCount})</span>
+                    </button>
+                ` : ''}
             </div>
+            <div class="replies-container" id="replies-${commentId}"></div>
         </div>
     `;
     
     commentsList.appendChild(commentElement);
     
-    // Configurar evento de like
+    // Configurar eventos
     const likeBtn = commentElement.querySelector('.like-btn');
     likeBtn.addEventListener('click', () => handleLike(commentId));
+    
+    const replyBtn = commentElement.querySelector('.reply-btn');
+    replyBtn.addEventListener('click', () => showReplyForm(commentId, comment.userDisplayName));
+    
+    if (comment.replyCount > 0) {
+        const viewRepliesBtn = commentElement.querySelector('.view-replies-btn');
+        viewRepliesBtn.addEventListener('click', () => toggleReplies(commentId));
+        
+        // Cargar respuestas
+        loadReplies(commentId);
+    }
+}
+
+// Función para mostrar formulario de respuesta
+function showReplyForm(commentId, username) {
+    if (!currentUser) {
+        showLoginModal();
+        return;
+    }
+    
+    // Ocultar otros formularios de respuesta
+    document.querySelectorAll('.reply-form').forEach(form => form.remove());
+    
+    const replyContainer = document.querySelector(`#replies-${commentId}`);
+    const replyForm = document.createElement('div');
+    replyForm.className = 'reply-form';
+    replyForm.innerHTML = `
+        <div class="comment-form">
+            <div class="user-avatar">
+                ${currentUser.photoURL ? 
+                    `<img src="${currentUser.photoURL}" alt="${currentUser.displayName}">` : 
+                    `<i class="fas fa-user"></i>`
+                }
+            </div>
+            <div class="comment-input-container">
+                <textarea placeholder="Responder a ${username}..." maxlength="500"></textarea>
+                <div class="comment-actions">
+                    <span class="char-count">0/500</span>
+                    <button class="submit-reply-btn" data-comment-id="${commentId}">Responder</button>
+                    <button class="cancel-reply-btn">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    replyContainer.appendChild(replyForm);
+    
+    // Configurar eventos del formulario de respuesta
+    const textarea = replyForm.querySelector('textarea');
+    const charCount = replyForm.querySelector('.char-count');
+    const submitBtn = replyForm.querySelector('.submit-reply-btn');
+    const cancelBtn = replyForm.querySelector('.cancel-reply-btn');
+    
+    textarea.addEventListener('input', function() {
+        const length = this.value.length;
+        charCount.textContent = `${length}/500`;
+        submitBtn.disabled = length === 0 || length > 500;
+    });
+    
+    submitBtn.addEventListener('click', () => {
+        submitReply(commentId, textarea.value.trim());
+    });
+    
+    cancelBtn.addEventListener('click', () => {
+        replyForm.remove();
+    });
+}
+
+// Función para enviar respuesta
+function submitReply(commentId, text) {
+    if (!text || !currentUser) return;
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const type = urlParams.get('type');
+    const id = urlParams.get('id');
+    
+    if (!type || !id) return;
+    
+    // Crear respuesta
+    const reply = {
+        text: text,
+        userId: currentUser.uid,
+        userDisplayName: currentUser.displayName || "Usuario",
+        userPhotoURL: currentUser.photoURL || "",
+        mediaType: type,
+        mediaId: id,
+        parentCommentId: commentId,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        likes: 0,
+        likedBy: []
+    };
+    
+    const submitBtn = document.querySelector(`.submit-reply-btn[data-comment-id="${commentId}"]`);
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Publicando...";
+    
+    // Guardar en Firestore
+    db.collection("replies").add(reply)
+        .then(() => {
+            // Actualizar contador de respuestas en el comentario principal
+            db.collection("comments").doc(commentId).update({
+                replyCount: firebase.firestore.FieldValue.increment(1)
+            });
+            
+            // Limpiar formulario
+            document.querySelector(`#replies-${commentId} .reply-form`).remove();
+        })
+        .catch((error) => {
+            console.error("Error al publicar respuesta:", error);
+            alert("Error al publicar la respuesta. Intenta nuevamente.");
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Responder";
+        });
+}
+
+// Función para cargar respuestas
+function loadReplies(commentId) {
+    const repliesContainer = document.getElementById(`replies-${commentId}`);
+    
+    // Configurar listener en tiempo real para respuestas
+    if (repliesListener) {
+        repliesListener(); // Limpiar listener anterior
+    }
+    
+    repliesListener = db.collection("replies")
+        .where("parentCommentId", "==", commentId)
+        .orderBy("timestamp", "asc")
+        .onSnapshot((snapshot) => {
+            repliesContainer.innerHTML = '';
+            
+            if (snapshot.empty) return;
+            
+            snapshot.forEach((doc) => {
+                const reply = doc.data();
+                addReplyToUI(reply, doc.id, commentId);
+            });
+        }, (error) => {
+            console.error("Error al cargar respuestas:", error);
+        });
+}
+
+// Alternar visualización de respuestas
+function toggleReplies(commentId) {
+    const repliesContainer = document.getElementById(`replies-${commentId}`);
+    const viewRepliesBtn = document.querySelector(`.view-replies-btn[data-comment-id="${commentId}"]`);
+    
+    if (repliesContainer.style.display === 'none' || !repliesContainer.style.display) {
+        repliesContainer.style.display = 'block';
+        viewRepliesBtn.innerHTML = '<i class="fas fa-comments"></i> <span>Ocultar respuestas</span>';
+    } else {
+        repliesContainer.style.display = 'none';
+        viewRepliesBtn.innerHTML = '<i class="fas fa-comments"></i> <span>Ver respuestas</span>';
+    }
+}
+
+// Función para añadir respuesta a la UI
+function addReplyToUI(reply, replyId, commentId) {
+    const repliesContainer = document.getElementById(`replies-${commentId}`);
+    
+    const replyElement = document.createElement('div');
+    replyElement.className = 'reply-item';
+    
+    const date = reply.timestamp ? reply.timestamp.toDate() : new Date();
+    const timeAgo = getTimeAgo(date);
+    
+    replyElement.innerHTML = `
+        <div class="comment-avatar">
+            ${reply.userPhotoURL ? 
+                `<img src="${reply.userPhotoURL}" alt="${reply.userDisplayName}">` : 
+                `<i class="fas fa-user"></i>`
+            }
+        </div>
+        <div class="comment-content">
+            <div class="comment-header">
+                <span class="comment-author">${reply.userDisplayName}</span>
+                <span class="comment-time">${timeAgo}</span>
+            </div>
+            <p class="comment-text">${escapeHtml(reply.text)}</p>
+            <div class="comment-actions">
+                <button class="comment-action-btn like-reply-btn" data-reply-id="${replyId}">
+                    <i class="fas fa-thumbs-up"></i>
+                    <span>${reply.likes || 0}</span>
+                </button>
+            </div>
+        </div>
+    `;
+    
+    repliesContainer.appendChild(replyElement);
+    
+    // Configurar like para respuesta
+    const likeBtn = replyElement.querySelector('.like-reply-btn');
+    likeBtn.addEventListener('click', () => handleReplyLike(replyId));
+}
+
+// Función para manejar likes en respuestas
+function handleReplyLike(replyId) {
+    if (!currentUser) {
+        showLoginModal();
+        return;
+    }
+    
+    const replyRef = db.collection("replies").doc(replyId);
+    
+    db.runTransaction((transaction) => {
+        return transaction.get(replyRef).then((doc) => {
+            if (!doc.exists) {
+                throw new Error("La respuesta no existe");
+            }
+            
+            const reply = doc.data();
+            const likedBy = reply.likedBy || [];
+            const userId = currentUser.uid;
+            
+            if (likedBy.includes(userId)) {
+                // Quitar like
+                transaction.update(replyRef, {
+                    likes: (reply.likes || 0) - 1,
+                    likedBy: firebase.firestore.FieldValue.arrayRemove(userId)
+                });
+            } else {
+                // Añadir like
+                transaction.update(replyRef, {
+                    likes: (reply.likes || 0) + 1,
+                    likedBy: firebase.firestore.FieldValue.arrayUnion(userId)
+                });
+            }
+        });
+    }).catch((error) => {
+        console.error("Error al actualizar like:", error);
+    });
 }
 
 // Función para manejar likes
 function handleLike(commentId) {
-    if (!currentUser) return;
+    if (!currentUser) {
+        showLoginModal();
+        return;
+    }
     
     const commentRef = db.collection("comments").doc(commentId);
     
@@ -593,9 +952,12 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// Limpiar listener cuando sea necesario
+// Limpiar listeners cuando sea necesario
 function cleanupComments() {
     if (commentsListener) {
         commentsListener();
+    }
+    if (repliesListener) {
+        repliesListener();
     }
 }
