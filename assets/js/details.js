@@ -22,6 +22,11 @@ if (!firebase.apps?.length) {
 // Referencias de servicios compat
 const auth = firebase.auth();
 const db = firebase.firestore();
+const storage = firebase.storage(); // Añadido Firebase Storage
+
+// Variables para el avatar
+let avatarFile = null;
+let avatarPreviewUrl = null;
 
 // Resto del código original
 
@@ -369,11 +374,208 @@ function setupAuthState() {
         currentUser = user;
         updateCommentUI();
         
+        // Inicializar sistema de avatar
+        setupAvatarSystem();
+        
         // Si no hay usuario, mostrar modal de login después de un tiempo
         if (!user) {
             setTimeout(showLoginModal, 3000);
         }
     });
+}
+
+// Configurar el sistema de avatar
+function setupAvatarSystem() {
+    // Actualizar avatar en la UI
+    updateAvatarUI();
+    
+    // Configurar eventos del modal de avatar
+    setupAvatarModal();
+}
+
+// Configurar modal de avatar
+function setupAvatarModal() {
+    const avatarModal = document.getElementById('avatar-modal');
+    const avatarModalClose = document.querySelector('.avatar-modal-close');
+    const uploadAvatarBtn = document.getElementById('upload-avatar-btn');
+    const removeAvatarBtn = document.getElementById('remove-avatar-btn');
+    const saveAvatarBtn = document.getElementById('save-avatar-btn');
+    const avatarInput = document.getElementById('avatar-input');
+    const avatarPreview = document.getElementById('avatar-preview');
+    
+    // Abrir modal al hacer clic en el avatar
+    document.getElementById('user-avatar').addEventListener('click', () => {
+        if (currentUser) {
+            avatarModal.style.display = 'block';
+            loadCurrentAvatar();
+        } else {
+            showLoginModal();
+        }
+    });
+    
+    // Cerrar modal
+    avatarModalClose.addEventListener('click', () => {
+        avatarModal.style.display = 'none';
+        resetAvatarModal();
+    });
+    
+    // Cerrar modal al hacer clic fuera
+    window.addEventListener('click', (event) => {
+        if (event.target === avatarModal) {
+            avatarModal.style.display = 'none';
+            resetAvatarModal();
+        }
+    });
+    
+    // Subir avatar
+    uploadAvatarBtn.addEventListener('click', () => {
+        avatarInput.click();
+    });
+    
+    // Manejar selección de archivo
+    avatarInput.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files[0]) {
+            avatarFile = e.target.files[0];
+            
+            // Validar tipo de archivo
+            if (!avatarFile.type.startsWith('image/')) {
+                showAlert('Por favor, selecciona una imagen válida', 'error');
+                return;
+            }
+            
+            // Validar tamaño (máximo 2MB)
+            if (avatarFile.size > 2 * 1024 * 1024) {
+                showAlert('La imagen debe ser menor a 2MB', 'error');
+                return;
+            }
+            
+            // Crear vista previa
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                avatarPreviewUrl = e.target.result;
+                avatarPreview.innerHTML = `<img src="${avatarPreviewUrl}" alt="Vista previa">`;
+                saveAvatarBtn.disabled = false;
+            };
+            reader.readAsDataURL(avatarFile);
+        }
+    });
+    
+    // Eliminar avatar
+    removeAvatarBtn.addEventListener('click', () => {
+        avatarFile = null;
+        avatarPreviewUrl = null;
+        avatarPreview.innerHTML = '<i class="fas fa-user"></i>';
+        saveAvatarBtn.disabled = false;
+    });
+    
+    // Guardar cambios
+    saveAvatarBtn.addEventListener('click', saveAvatar);
+}
+
+// Cargar avatar actual
+function loadCurrentAvatar() {
+    const avatarPreview = document.getElementById('avatar-preview');
+    const saveAvatarBtn = document.getElementById('save-avatar-btn');
+    
+    if (currentUser && currentUser.photoURL) {
+        avatarPreview.innerHTML = `<img src="${currentUser.photoURL}" alt="Avatar actual">`;
+    } else {
+        avatarPreview.innerHTML = '<i class="fas fa-user"></i>';
+    }
+    
+    saveAvatarBtn.disabled = true;
+    avatarFile = null;
+    avatarPreviewUrl = null;
+}
+
+// Resetear modal de avatar
+function resetAvatarModal() {
+    const avatarInput = document.getElementById('avatar-input');
+    avatarInput.value = '';
+    avatarFile = null;
+    avatarPreviewUrl = null;
+}
+
+// Guardar avatar
+async function saveAvatar() {
+    const saveAvatarBtn = document.getElementById('save-avatar-btn');
+    saveAvatarBtn.disabled = true;
+    saveAvatarBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+    
+    try {
+        let photoURL = null;
+        
+        // Si hay un archivo seleccionado, subirlo
+        if (avatarFile) {
+            // Crear referencia al archivo en Storage
+            const fileExtension = avatarFile.name.split('.').pop();
+            const storageRef = storage.ref();
+            const avatarRef = storageRef.child(`avatars/${currentUser.uid}.${fileExtension}`);
+            
+            // Subir archivo
+            const snapshot = await avatarRef.put(avatarFile);
+            
+            // Obtener URL de descarga
+            photoURL = await snapshot.ref.getDownloadURL();
+        } 
+        // Si no hay archivo pero hay una URL de vista previa (eliminación)
+        else if (!avatarPreviewUrl && currentUser.photoURL) {
+            // Eliminar archivo existente de Storage
+            try {
+                const existingRef = storage.refFromURL(currentUser.photoURL);
+                await existingRef.delete();
+            } catch (error) {
+                console.warn("No se pudo eliminar el avatar anterior:", error);
+            }
+            
+            photoURL = null;
+        }
+        
+        // Actualizar perfil del usuario
+        await currentUser.updateProfile({
+            photoURL: photoURL
+        });
+        
+        // Actualizar UI
+        updateAvatarUI();
+        
+        // Cerrar modal
+        document.getElementById('avatar-modal').style.display = 'none';
+        resetAvatarModal();
+        
+        showAlert('Foto de perfil actualizada correctamente', 'success');
+        
+    } catch (error) {
+        console.error("Error al guardar avatar:", error);
+        showAlert('Error al actualizar la foto de perfil', 'error');
+        saveAvatarBtn.disabled = false;
+    }
+    
+    saveAvatarBtn.innerHTML = '<i class="fas fa-save"></i> Guardar cambios';
+}
+
+// Actualizar avatar en la UI
+function updateAvatarUI() {
+    const userAvatar = document.getElementById('user-avatar');
+    
+    if (currentUser) {
+        // Cambiar el ID para usar la clase avatar-container
+        userAvatar.id = 'user-avatar-container';
+        userAvatar.className = 'avatar-container';
+        
+        if (currentUser.photoURL) {
+            userAvatar.innerHTML = `<img src="${currentUser.photoURL}" alt="${currentUser.displayName}">`;
+        } else {
+            userAvatar.innerHTML = '<i class="fas fa-user"></i>';
+        }
+        
+        // Añadir botón de edición
+        userAvatar.innerHTML += '<div class="avatar-upload-btn"><i class="fas fa-camera"></i></div>';
+    } else {
+        userAvatar.innerHTML = '<i class="fas fa-user"></i>';
+        userAvatar.className = 'user-avatar';
+        userAvatar.id = 'user-avatar';
+    }
 }
 
 // Mostrar modal de login
@@ -385,9 +587,6 @@ function showLoginModal() {
 }
 
 // Configurar botones de login
-// ... código anterior sin cambios ...
-
-// Configurar botones de login
 function setupLoginButtons() {
     // Cerrar modal
     const closeBtn = document.querySelector('.close');
@@ -396,8 +595,6 @@ function setupLoginButtons() {
             document.getElementById('login-modal').style.display = 'none';
         });
     }
-    
-    // Eliminado: Login con Google
     
     // Login con email
     const emailLoginBtn = document.getElementById('email-login');
@@ -528,9 +725,10 @@ function handleEmailRegister() {
     // Crear usuario con Firebase
     auth.createUserWithEmailAndPassword(email, password)
         .then((userCredential) => {
-            // Actualizar perfil del usuario
+            // Actualizar perfil del usuario con nombre y avatar por defecto
             return userCredential.user.updateProfile({
-                displayName: name
+                displayName: name,
+                photoURL: null // Avatar por defecto (ninguno)
             });
         })
         .then(() => {
@@ -583,10 +781,6 @@ function showAlert(message, type = 'info') {
         }
     }, 3000);
 }
-
-// Eliminado: función signInWithGoogle()
-
-// ... resto del código sin cambios ...
 
 // Actualizar UI basado en estado de autenticación
 function updateCommentUI() {
