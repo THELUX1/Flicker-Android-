@@ -64,47 +64,48 @@
             </div>
         </section>
     </main>
-<!-- Sección de comentarios -->
-<section class="comments-section">
-    <h2>Comentarios</h2>
     
-    <div class="comments-container" id="comments-container">
-        <div class="comment-form">
-            <div class="user-avatar" id="user-avatar">
-                <i class="fas fa-user"></i>
+    <!-- Sección de comentarios -->
+    <section class="comments-section">
+        <h2>Comentarios</h2>
+        
+        <div class="comments-container" id="comments-container">
+            <div class="comment-form">
+                <div class="user-avatar" id="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="comment-input-container">
+                    <textarea id="comment-input" placeholder="Añade un comentario público..." maxlength="500"></textarea>
+                    <div class="comment-actions">
+                        <span class="char-count">0/500</span>
+                        <button id="submit-comment" class="submit-btn" disabled>Comentar</button>
+                    </div>
+                </div>
             </div>
-            <div class="comment-input-container">
-                <textarea id="comment-input" placeholder="Añade un comentario público..." maxlength="500"></textarea>
-                <div class="comment-actions">
-                    <span class="char-count">0/500</span>
-                    <button id="submit-comment" class="submit-btn" disabled>Comentar</button>
+            
+            <!-- Modal de inicio de sesión -->
+            <div id="login-modal" class="modal">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <h2>Iniciar sesión</h2>
+                    <div class="login-options">
+                        <button id="email-login" class="social-login-btn">
+                            <i class="fas fa-envelope"></i> Continuar con Email
+                        </button>
+                    </div>
+                    <p class="login-note">Debes iniciar sesión para comentar y interactuar.</p>
+                </div>
+            </div>
+            
+            <div class="comments-list" id="comments-list">
+                <div class="loading-comments">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Cargando comentarios...</p>
                 </div>
             </div>
         </div>
-        <!-- Modal de inicio de sesión -->
-<div id="login-modal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2>Iniciar sesión</h2>
-        <div class="login-options">
-            <button id="google-login" class="social-login-btn">
-                <i class="fab fa-google"></i> Continuar con Google
-            </button>
-            <button id="email-login" class="social-login-btn">
-                <i class="fas fa-envelope"></i> Continuar con Email
-            </button>
-        </div>
-        <p class="login-note">Debes iniciar sesión para comentar y interactuar.</p>
-    </div>
-</div>
-        <div class="comments-list" id="comments-list">
-            <div class="loading-comments">
-                <i class="fas fa-spinner fa-spin"></i>
-                <p>Cargando comentarios...</p>
-            </div>
-        </div>
-    </div>
-</section>
+    </section>
+    
     <nav class="bottom-nav">
         <a href="../index.html#movies" class="nav-btn">
             <i class="fas fa-film"></i>
@@ -115,6 +116,7 @@
             <span>Series</span>
         </a>
     </nav>
+    
     <script type="module" src="assets/js/details.js"></script>
 </body>
 </html>
