@@ -6,6 +6,12 @@
     <title>Detalles - Flicker</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/details.css">
+    <!-- Firebase App (el core de Firebase compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <!-- Firebase Firestore compat -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <!-- Firebase Auth compat -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 </head>
 <body>
    <main class="details-container">
@@ -58,7 +64,32 @@
             </div>
         </section>
     </main>
-
+<!-- Sección de comentarios -->
+<section class="comments-section">
+    <h2>Comentarios</h2>
+    
+    <div class="comments-container" id="comments-container">
+        <div class="comment-form">
+            <div class="user-avatar" id="user-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="comment-input-container">
+                <textarea id="comment-input" placeholder="Añade un comentario público..." maxlength="500"></textarea>
+                <div class="comment-actions">
+                    <span class="char-count">0/500</span>
+                    <button id="submit-comment" class="submit-btn" disabled>Comentar</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="comments-list" id="comments-list">
+            <div class="loading-comments">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Cargando comentarios...</p>
+            </div>
+        </div>
+    </div>
+</section>
     <nav class="bottom-nav">
         <a href="../index.html#movies" class="nav-btn">
             <i class="fas fa-film"></i>
