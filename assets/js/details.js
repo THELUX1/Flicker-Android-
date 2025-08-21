@@ -1,5 +1,29 @@
-// Configuración global
+let commentsListener = null;
+let currentUser = null;
 import { moviesData, seriesData } from './data.js';
+
+// Firebase Configuración (compat)
+const firebaseConfig = {
+  apiKey: "AIzaSyAZGrc0UB86ZeWY4eW9zqMjqGZoIuEsZA8",
+  authDomain: "webapp-9b392.firebaseapp.com",
+  projectId: "webapp-9b392",
+  storageBucket: "webapp-9b392.firebasestorage.app",
+  messagingSenderId: "580583351950",
+  appId: "1:580583351950:web:83022ad86313928c9c4bdf",
+  measurementId: "G-X4J2V1ZGXH"
+};
+
+// Inicializar Firebase (compat)
+if (!firebase.apps?.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+
+// Referencias de servicios compat
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// Resto del código original
+
 const TMDB = {
     API_KEY: '995449ccaf6d840acc029f95c7d210dd',
     BASE_URL: 'https://api.themoviedb.org/3',
@@ -47,6 +71,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         
         // Intentar reproducir con sonido después de una interacción del usuario
         setupAutoplayWithSound();
+
+        // ✅ Inicializar comentarios
+        initCommentsSystem();
         
     } catch (error) {
         console.error('Error:', error);
@@ -323,4 +350,252 @@ function getAvailableSimilar(currentId, currentType) {
         )
         .sort(() => 0.5 - Math.random())
         .slice(0, 5);
+}
+// Función para inicializar el sistema de comentarios
+function initCommentsSystem() {
+    setupAuthState();
+    setupCommentForm();
+    loadComments();
+}
+
+// Configurar el estado de autenticación
+function setupAuthState() {
+    auth.onAuthStateChanged((user) => {
+        currentUser = user;
+        updateCommentUI();
+    });
+    
+    // Para modo demo: autenticación anónima automática
+    auth.signInAnonymously().catch((error) => {
+        console.error("Error en autenticación anónima:", error);
+    });
+}
+
+// Actualizar UI basado en estado de autenticación
+function updateCommentUI() {
+    const commentInput = document.getElementById('comment-input');
+    const submitButton = document.getElementById('submit-comment');
+    
+    if (currentUser) {
+        commentInput.disabled = false;
+        commentInput.placeholder = "Añade un comentario público...";
+    } else {
+        commentInput.disabled = true;
+        commentInput.placeholder = "Inicia sesión para comentar...";
+        submitButton.disabled = true;
+    }
+}
+
+// Configurar el formulario de comentarios
+function setupCommentForm() {
+    const commentInput = document.getElementById('comment-input');
+    const submitButton = document.getElementById('submit-comment');
+    const charCount = document.querySelector('.char-count');
+    
+    // Contador de caracteres
+    commentInput.addEventListener('input', function() {
+        const length = this.value.length;
+        charCount.textContent = `${length}/500`;
+        
+        // Habilitar/deshabilitar botón según contenido
+        submitButton.disabled = length === 0 || length > 500;
+    });
+    
+    // Enviar comentario
+    submitButton.addEventListener('click', submitComment);
+    commentInput.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && e.key === 'Enter') {
+            submitComment();
+        }
+    });
+}
+
+// Enviar comentario a Firebase
+function submitComment() {
+    const commentInput = document.getElementById('comment-input');
+    const text = commentInput.value.trim();
+    
+    if (!text || !currentUser) return;
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const type = urlParams.get('type');
+    const id = urlParams.get('id');
+    
+    if (!type || !id) return;
+    
+    // Crear comentario
+    const comment = {
+        text: text,
+        userId: currentUser.uid,
+        userDisplayName: currentUser.isAnonymous ? "Usuario Anónimo" : (currentUser.displayName || "Usuario"),
+        mediaType: type,
+        mediaId: id,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        likes: 0,
+        likedBy: []
+    };
+    
+    // Deshabilitar UI temporalmente
+    const submitButton = document.getElementById('submit-comment');
+    submitButton.disabled = true;
+    submitButton.textContent = "Publicando...";
+    
+    // Guardar en Firestore
+    db.collection("comments").add(comment)
+        .then(() => {
+            commentInput.value = "";
+            document.querySelector('.char-count').textContent = "0/500";
+        })
+        .catch((error) => {
+            console.error("Error al publicar comentario:", error);
+            alert("Error al publicar el comentario. Intenta nuevamente.");
+        })
+        .finally(() => {
+            submitButton.disabled = false;
+            submitButton.textContent = "Comentar";
+        });
+}
+
+// Cargar comentarios desde Firebase
+function loadComments() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const type = urlParams.get('type');
+    const id = urlParams.get('id');
+    
+    if (!type || !id) return;
+    
+    const commentsList = document.getElementById('comments-list');
+    
+    // Configurar listener en tiempo real
+    commentsListener = db.collection("comments")
+        .where("mediaType", "==", type)
+        .where("mediaId", "==", id)
+        .orderBy("timestamp", "desc")
+        .onSnapshot((snapshot) => {
+            commentsList.innerHTML = "";
+            
+            if (snapshot.empty) {
+                commentsList.innerHTML = `
+                    <div class="no-comments">
+                        <i class="fas fa-comments"></i>
+                        <p>No hay comentarios aún. ¡Sé el primero en comentar!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            snapshot.forEach((doc) => {
+                const comment = doc.data();
+                addCommentToUI(comment, doc.id);
+            });
+        }, (error) => {
+            console.error("Error al cargar comentarios:", error);
+            commentsList.innerHTML = `
+                <div class="no-comments">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>Error al cargar los comentarios.</p>
+                </div>
+            `;
+        });
+}
+
+// Añadir comentario a la UI
+function addCommentToUI(comment, commentId) {
+    const commentsList = document.getElementById('comments-list');
+    
+    const commentElement = document.createElement('div');
+    commentElement.className = 'comment-item';
+    commentElement.id = `comment-${commentId}`;
+    
+    // Formatear fecha
+    const date = comment.timestamp ? comment.timestamp.toDate() : new Date();
+    const timeAgo = getTimeAgo(date);
+    
+    commentElement.innerHTML = `
+        <div class="comment-avatar">
+            <i class="fas fa-user"></i>
+        </div>
+        <div class="comment-content">
+            <div class="comment-header">
+                <span class="comment-author">${comment.userDisplayName}</span>
+                <span class="comment-time">${timeAgo}</span>
+            </div>
+            <p class="comment-text">${escapeHtml(comment.text)}</p>
+            <div class="comment-actions">
+                <button class="comment-action-btn like-btn" data-comment-id="${commentId}">
+                    <i class="fas fa-thumbs-up"></i>
+                    <span>${comment.likes || 0}</span>
+                </button>
+            </div>
+        </div>
+    `;
+    
+    commentsList.appendChild(commentElement);
+    
+    // Configurar evento de like
+    const likeBtn = commentElement.querySelector('.like-btn');
+    likeBtn.addEventListener('click', () => handleLike(commentId));
+}
+
+// Función para manejar likes
+function handleLike(commentId) {
+    if (!currentUser) return;
+    
+    const commentRef = db.collection("comments").doc(commentId);
+    
+    // Usar transacción para evitar condiciones de carrera
+    db.runTransaction((transaction) => {
+        return transaction.get(commentRef).then((doc) => {
+            if (!doc.exists) {
+                throw new Error("El comentario no existe");
+            }
+            
+            const comment = doc.data();
+            const likedBy = comment.likedBy || [];
+            const userId = currentUser.uid;
+            
+            if (likedBy.includes(userId)) {
+                // Quitar like
+                transaction.update(commentRef, {
+                    likes: (comment.likes || 0) - 1,
+                    likedBy: firebase.firestore.FieldValue.arrayRemove(userId)
+                });
+            } else {
+                // Añadir like
+                transaction.update(commentRef, {
+                    likes: (comment.likes || 0) + 1,
+                    likedBy: firebase.firestore.FieldValue.arrayUnion(userId)
+                });
+            }
+        });
+    }).catch((error) => {
+        console.error("Error al actualizar like:", error);
+    });
+}
+
+// Utilidad: Obtener tiempo relativo (hace x tiempo)
+function getTimeAgo(date) {
+    const now = new Date();
+    const diffInSeconds = Math.floor((now - date) / 1000);
+    
+    if (diffInSeconds < 60) return "justo ahora";
+    if (diffInSeconds < 3600) return `hace ${Math.floor(diffInSeconds / 60)} min`;
+    if (diffInSeconds < 86400) return `hace ${Math.floor(diffInSeconds / 3600)} h`;
+    if (diffInSeconds < 2592000) return `hace ${Math.floor(diffInSeconds / 86400)} días`;
+    
+    return date.toLocaleDateString();
+}
+
+// Utilidad: Escapar HTML para prevenir XSS
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Limpiar listener cuando sea necesario
+function cleanupComments() {
+    if (commentsListener) {
+        commentsListener();
+    }
 }
