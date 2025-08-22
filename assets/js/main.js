@@ -1,5 +1,6 @@
 import { moviesData, seriesData } from './data.js';
-
+// Al principio del archivo, después de las importaciones
+let currentFeatured = null;
 // Variables globales
 let currentMovies = [];
 let currentSeries = [];
@@ -13,15 +14,118 @@ document.addEventListener('DOMContentLoaded', function() {
     initApp();
 });
 
+// En main.js, agregar esta función
+function setupScrollDetection() {
+    const header = document.querySelector('header');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
+    });
+}
+
+// En la función initApp(), agregar después de loadInitialContent();
 function initApp() {
-    // Crear botón de instalación dinámicamente
     createInstallButton();
-    
     loadInitialContent();
+    setupFeaturedSection(); // Nueva función
     setupSearch();
     setupCategories();
     setupOverlay();
     setupPWA();
+}
+
+// Agregar esta nueva función para configurar la sección destacada
+// En setupFeaturedSection(), asegurar que el contenido se muestre correctamente
+function setupFeaturedSection() {
+    // Seleccionar un contenido destacado aleatorio
+    const featuredItems = moviesData.filter(movie => movie.isNew);
+    if (featuredItems.length > 0) {
+        currentFeatured = featuredItems[Math.floor(Math.random() * featuredItems.length)];
+        
+        // Pequeño retraso para asegurar que el DOM esté listo
+        setTimeout(renderFeaturedSection, 100);
+    }
+}
+
+// Función para renderizar la sección destacada - MEJORADA
+function renderFeaturedSection() {
+    const main = document.querySelector('main');
+    
+    // Eliminar sección destacada existente si hay una
+    const existingFeatured = document.querySelector('.featured-section');
+    if (existingFeatured) {
+        existingFeatured.remove();
+    }
+    
+    // Crear contenedor para la sección destacada
+    const featuredSection = document.createElement('section');
+    featuredSection.className = 'featured-section';
+    
+    featuredSection.innerHTML = `
+        <div class="featured-backdrop">
+            <img src="${currentFeatured.image}" alt="${currentFeatured.title}" class="backdrop-image">
+            <div class="backdrop-overlay"></div>
+        </div>
+        <div class="featured-info">
+            <div class="top-badge">
+                <span class="top-number">TOP 10</span>                
+            </div>
+            <h1 class="featured-title">${currentFeatured.title}</h1>
+            <div class="featured-meta">
+                <span class="year">${currentFeatured.year}</span>
+                <span class="dot">•</span>
+                <span class="genres">${currentFeatured.genres.join(', ')}</span>
+            </div>
+            <div class="featured-actions">
+                <button class="play-btn">
+                    <i class="fas fa-play"></i>
+                    <span>Reproducir</span>
+                </button>
+                <button class="mylist-btn">
+                    <i class="fas fa-plus"></i>
+                    <span>Mi lista</span>
+                </button>
+            </div>
+        </div>
+    `;
+    
+    // Insertar la sección destacada al principio del main
+    if (main.firstChild) {
+        main.insertBefore(featuredSection, main.firstChild);
+    } else {
+        main.appendChild(featuredSection);
+    }
+    
+    // Asegurar que la imagen se cargue correctamente
+    const backdropImage = featuredSection.querySelector('.backdrop-image');
+    backdropImage.onload = function() {
+        // Pequeño ajuste después de cargar la imagen
+        featuredSection.style.opacity = '1';
+    };
+    
+    // Añadir event listeners a los botones
+    const playBtn = featuredSection.querySelector('.play-btn');
+    const mylistBtn = featuredSection.querySelector('.mylist-btn');
+    
+    playBtn.addEventListener('click', () => {
+        window.location.href = currentFeatured.link;
+    });
+    
+    mylistBtn.addEventListener('click', toggleMyList);
+    
+    // Scroll suave a la sección destacada si es necesario
+    setTimeout(() => {
+        featuredSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 300);
+}
+
+// Función para toggle de Mi Lista (simulada)
+function toggleMyList() {
+    console.log('Añadiendo/quitando de Mi lista:', currentFeatured.title);
+    // Aquí iría la lógica real para gestionar "Mi lista"
 }
 
 function createInstallButton() {

@@ -1,12 +1,23 @@
 // Películas disponibles (ordenadas por fecha de agregado, más recientes primero)
 export const moviesData = [
     {
+        id: 1078605,
+        title: "La Hora De La Desaparición",
+        image: "https://media.themoviedb.org/t/p/w220_and_h330_face/cwjNSLj5FCkwFsTx7g57ybWQDcp.jpg",
+        link: "detalles.html?type=movie&id=1078605",
+        year: "2025",
+        genres: ["Terror", "Misterio"],
+        addedDate: "2025",
+        isNew: true
+    },
+    {
       id: 1429744,
           title: "Ziam",
           image: "https://media.themoviedb.org/t/p/w220_and_h330_face/7ZRXha6VZEGP3C8Kab7pPwSMzDZ.jpg",
           link: "detalles.html?type=movie&id=1429744",
           year: "2025",
-          genres: ["Terror", "Suspenso", "Acción"] // <-- Asegúrate de que esto esté definido
+          genres: ["Terror", "Suspenso", "Acción"],
+          isNew: true// <-- Asegúrate de que esto esté definido
       },
 {
       id: 1307078,
@@ -22,7 +33,8 @@ export const moviesData = [
           image: "https://s3.fiestareel.com/image/t/p/w500/ombsmhYUqR4qqOLOxAyr5V8hbyv.jpg",
           link: "detalles.html?type=movie&id=1061474",
           year: "2025",
-          genres: ["Ciencia ficción", "Acción", "Aventura"] // <-- Asegúrate de que esto esté definido
+          genres: ["Ciencia ficción", "Acción", "Aventura"],
+          isNew: true// <-- Asegúrate de que esto esté definido
       },
 {
       id: 1287536,
@@ -905,3 +917,4 @@ export function getAvailableSimilar(currentId, currentType) {
         )
         .slice(0, 5);
 }
+export const featuredContent = moviesData.filter(movie => movie.isNew).slice(0, 5);

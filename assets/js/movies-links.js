@@ -1,9 +1,10 @@
 const moviesLinks = {
-    "1771": {
-        title: "Capitán América: El primer vengador",
+
+    "1078605": {
+        title: "Weapons",
         sources: [
-            { quality: "HD", url: "" },
-            { quality: "SD", url: "" }
+            { quality: "HD", url: "https://cdn-kuc3ehpz4wnczfyz.orbitcache.com/engine/hls2-c/01/15175/t7x1xtcbd4ao_,n,.urlset/index-v1-a1.m3u8?t=R67uKCRcg8Gh-xBs-EZ1S8pF3mMSY7rYLS8ruUWT-_I&s=1755890912&e=14400&f=75876826&node=07NuzcM+Z0d69CHSPeoFAVdb5mcUGZnvYS35DG5H5yM=&i=0.1&sp=2500&asn=264738&q=n&rq=glCDBx9xOIgN7OWd8AKYnyxrgMaSBKnOp79qAHEm" },
+            { quality: "SD", url: "https://cdn-kuc3ehpz4wnczfyz.orbitcache.com/engine/hls2-c/01/15175/t7x1xtcbd4ao_,n,.urlset/index-v1-a1.m3u8?t=R67uKCRcg8Gh-xBs-EZ1S8pF3mMSY7rYLS8ruUWT-_I&s=1755890912&e=14400&f=75876826&node=07NuzcM+Z0d69CHSPeoFAVdb5mcUGZnvYS35DG5H5yM=&i=0.1&sp=2500&asn=264738&q=n&rq=glCDBx9xOIgN7OWd8AKYnyxrgMaSBKnOp79qAHEm" }
         ],
         subtitles: [
             { lang: "Español", url: "https://example.com/movies/ziam/subs/es.vtt" },
