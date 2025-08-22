@@ -70,13 +70,16 @@ header {
     width: 100%;
     padding: 1rem var(--section-padding);
     z-index: 1200;
-    background: var(--bg-color);
+    background: linear-gradient(to bottom, rgba(15, 15, 15, 0.9) 0%, transparent 100%);
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 1rem;
+    transition: background-color 0.3s ease;
 }
-
+header.scrolled {
+    background: var(--bg-color);
+}
 .logo {
     font-size: 2rem;
     font-weight: bold;
@@ -330,7 +333,7 @@ header {
 
 /* Contenido principal */
 main {
-    margin-top: 90px;
+    margin-top: 0;
     padding: 0;
 }
 
@@ -834,5 +837,209 @@ textarea:focus-visible {
     textarea:focus {
         box-shadow: 0 0 0 2px var(--primary-color);
         border-radius: 4px;
+    }
+}
+/* Sección destacada */
+.featured-section {
+    position: relative;   
+    min-height: 500px;
+    width: 100%;
+    overflow: hidden;
+    margin: 0px 0 0 0; /* Agregar margen superior para el header */
+}
+
+.featured-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.backdrop-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 30%; /* Ajustar posición vertical de la imagen */
+    filter: brightness(0.7);
+}
+
+.backdrop-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50%; /* Aumentar overlay para mejor contraste */
+    background: linear-gradient(to top, var(--bg-color) 20%, transparent 90%);
+}
+
+.featured-info {
+    position: absolute;
+    bottom: 25%; /* Ajustar posición vertical */
+    left: var(--section-padding);
+    max-width: 600px;
+    z-index: 10;
+    padding-right: 2rem;
+}
+
+.top-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+}
+
+.top-number {
+    background-color: var(--primary-color);
+    color: #000;
+    font-weight: bold;
+    padding: 0.3rem 0.8rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.top-text {
+    color: var(--text-color);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.featured-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+.featured-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.dot {
+    font-weight: bold;
+}
+
+.featured-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.play-btn, .mylist-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.5rem;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    border: none;
+}
+
+.play-btn {
+    background-color: var(--primary-color);
+    color: #000;
+}
+
+.play-btn:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px);
+}
+
+.mylist-btn {
+    background-color: rgba(109, 109, 110, 0.7);
+    color: var(--text-color);
+}
+
+.mylist-btn:hover {
+    background-color: rgba(109, 109, 110, 0.5);
+    transform: translateY(-2px);
+}
+/* Transiciones suaves para la sección destacada */
+.featured-section {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.featured-section.loaded {
+    opacity: 1;
+}
+
+/* Mejorar la carga de imágenes */
+.backdrop-image {
+    transition: opacity 0.3s ease;
+}
+
+.backdrop-image.loading {
+    opacity: 0;
+}
+
+.backdrop-image.loaded {
+    opacity: 1;
+}
+/* Responsive para la sección destacada */
+@media (max-width: 768px) {
+    .featured-section {
+        height: 60vh;
+        min-height: 380px;
+        margin: 60px 0 1.5rem 0;
+    }
+    
+    .featured-info {
+        bottom: 20%;
+        left: 1rem;
+        right: 1rem;
+        padding-right: 1rem;
+    }
+    
+    .featured-title {
+        font-size: 1.8rem;
+    }
+    
+    .backdrop-image {
+        object-position: center 25%; /* Ajuste para mobile */
+    }
+}
+
+@media (max-width: 480px) {
+    .featured-section {
+        height: 50vh;
+        min-height: 320px;
+        margin: 50px 0 1rem 0;
+    }
+    
+    .featured-title {
+        font-size: 1.5rem;
+    }
+    
+    .featured-meta {
+        flex-wrap: wrap;
+    }
+    
+    .backdrop-image {
+        object-position: center 20%; /* Ajuste para mobile pequeño */
+    }
+}
+
+@media (max-width: 480px) {
+    .featured-section {
+        height: 50vh;
+        min-height: 350px;
+    }
+    
+    .featured-title {
+        font-size: 1.5rem;
+    }
+    
+    .top-badge {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
     }
 }
