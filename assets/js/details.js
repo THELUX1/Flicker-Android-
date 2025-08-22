@@ -172,20 +172,28 @@ async function fetchTMDB(endpoint) {
 }
 
 // Función para renderizar los detalles principales
+// Función para renderizar los detalles principales
 function renderMediaDetails(details, videos) {
-    // Actualizar texto
-    document.getElementById('media-title').textContent = details.title || details.name;
-    document.getElementById('media-rating').textContent = details.vote_average?.toFixed(1) || 'N/A';
-    document.getElementById('media-year').textContent = details.year || getYear(details);
-    document.getElementById('media-duration').textContent = getDuration(details);
-    document.getElementById('media-synopsis').textContent = details.overview || 'Sin sinopsis disponible.';
+    const urlParams = new URLSearchParams(window.location.search);
+    const type = urlParams.get('type');
     
-    // Configurar tráiler con autoplay
-    const trailerKey = getTrailerKey(videos);
+    // Combinar datos de API con datos locales
+    const localData = getMediaByIdAndType(details.id, type);
+    const combinedDetails = {...details, ...localData};
+    
+    // Actualizar texto
+    document.getElementById('media-title').textContent = combinedDetails.title || combinedDetails.name;
+    document.getElementById('media-rating').textContent = combinedDetails.vote_average?.toFixed(1) || 'N/A';
+    document.getElementById('media-year').textContent = combinedDetails.year || getYear(combinedDetails);
+    document.getElementById('media-duration').textContent = combinedDetails.runtime || getDuration(combinedDetails);
+    document.getElementById('media-synopsis').textContent = combinedDetails.overview || 'Sin sinopsis disponible.';
+    
+    // Configurar tráiler - priorizar el key local si existe
+    const trailerKey = combinedDetails.trailerKey || getTrailerKey(videos);
     const trailerContainer = document.getElementById('trailer-container');
     
     if (trailerKey) {
-        // Iniciar con autoplay pero muteado (para cumplir con políticas de navegadores)
+        // Iniciar con autoplay pero muteado
         trailerContainer.innerHTML = `
             <iframe src="${TMDB.YOUTUBE_URL}${trailerKey}?autoplay=1&mute=1&controls=1&showinfo=0&rel=0&modestbranding=1&enablejsapi=1" 
                     frameborder="0" 
@@ -223,6 +231,55 @@ function renderMediaDetails(details, videos) {
                 <p>Tráiler no disponible</p>
             </div>
         `;
+    }
+    
+    // Si es una serie, mostrar información adicional
+    if (type === 'tv') {
+        renderSeriesAdditionalInfo(combinedDetails);
+    }
+}
+
+// Función para mostrar información adicional de series
+function renderSeriesAdditionalInfo(series) {
+    const infoSection = document.querySelector('.info-section');
+    
+    // Crear elemento para información de temporadas y episodios
+    const seriesInfo = document.createElement('div');
+    seriesInfo.className = 'series-info';
+    seriesInfo.innerHTML = `
+        <div class="series-meta">
+            <span class="seasons">${series.seasons || '?'} Temporadas</span>
+            <span class="episodes">${series.episodes || '?'} Episodios</span>
+        </div>
+    `;
+    
+    // Insertar después del rating-duration
+    const ratingDuration = document.querySelector('.rating-duration');
+    ratingDuration.parentNode.insertBefore(seriesInfo, ratingDuration.nextSibling);
+    
+    // Si hay información del elenco y creadores
+    if (series.cast || series.creators) {
+        const castSection = document.createElement('div');
+        castSection.className = 'cast-section';
+        
+        let castHTML = '';
+        if (series.creators && series.creators.length > 0) {
+            castHTML += `<p class="creators"><strong>Creadores:</strong> ${series.creators.join(', ')}</p>`;
+        }
+        
+        if (series.cast && series.cast.length > 0) {
+            castHTML += `<div class="cast-list"><strong>Reparto principal:</strong><ul>`;
+            series.cast.slice(0, 4).forEach(person => {
+                castHTML += `<li>${person.name} como ${person.character}</li>`;
+            });
+            castHTML += `</ul></div>`;
+        }
+        
+        castSection.innerHTML = castHTML;
+        
+        // Insertar después de la sinopsis
+        const synopsis = document.querySelector('.synopsis');
+        synopsis.parentNode.insertBefore(castSection, synopsis.nextSibling);
     }
 }
 
