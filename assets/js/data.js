@@ -776,15 +776,62 @@ export const moviesData = [
 // Series disponibles (ordenadas por fecha de agregado, más recientes primero)
 export const seriesData = [
     {
-        id: 119051,
-        title: "Merlina",
-        image: "https://media.themoviedb.org/t/p/w220_and_h330_face/bNKwoYqkCXfIhhr5Jz8slrsw32r.jpg",
-        link: "detalles.html?type=tv&id=119051",
-        year: "2025",
-        genres: ["Sci-Fi & Fantasy", "Suspenso", "Acción"],
-        addedDate: "2024-06-15",
-        isNew: true
-    },
+    id: 157239,  // ID de ejemplo; reemplazar según tu sistema
+    title: "Alien: Earth",
+    image: "https://media.themoviedb.org/t/p/w220_and_h330_face/8IIPZe4V2xNYFWY7lBY6GpN2L8O.jpg",  // puedes reemplazar con la URL del teaser que prefieras
+    link: "detalles.html?type=tv&id=157239",
+    year: "2025-",  // serie recién estrenada, sin confirmación de renovación aún
+    genres: ["Ciencia ficción", "Horror"],
+    addedDate: "2025-08-12",
+    // Nuevos campos para detalles
+    overview: "Ambientada en el año 2120, dos años antes de los eventos de la película original de 1979, cuando cinco megacorporaciones como Prodigy y Weyland-Yutani compiten por controlar los avances en vida sintética. Cuando una nave llamada Maginot se estrella en la Tierra, un grupo de individuos híbridos —conciencias humanas implantadas en cuerpos sintéticos— liderados por Wendy, se enfrenta a una amenaza alienígena aterradora que podría redefinir el destino del planeta.",
+    runtime: "54–63 m/ep",
+    trailerKey: "xFgNiqjnNEw",  // todavía no hay un ID específico de YouTube confirmado
+    seasons: 1,
+    episodes: 8,
+    cast: [
+        { name: "Sydney Chandler", character: "Wendy (el híbrido protagonista)" },
+        { name: "Alex Lawther", character: "Hermit (su hermano/compañero)" },
+        { name: "Timothy Olyphant", character: "Kirsh" },
+        { name: "Essie Davis", character: "—" },
+        { name: "Samuel Blenkin", character: "Boy Kavalier" },
+        { name: "Adarsh Gourav", character: "—" },
+        // otros miembros del elenco recurrente
+        { name: "Babou Ceesay", character: "—" },
+        { name: "Erana James", character: "—" },
+        { name: "Lily Newmark", character: "—" }
+    ],
+    creators: ["Noah Hawley"],
+    executive_producers: ["Noah Hawley", "Ridley Scott"]
+},
+    {
+    id: 119051,
+    title: "Merlina",
+    image: "https://media.themoviedb.org/t/p/w220_and_h330_face/9PFonBhy4cQy7Jz20NpMygczOkv.jpg",
+    link: "detalles.html?type=tv&id=119051",
+    year: "2022-", // sigue en curso
+    genres: ["Comedia", "Misterio", "Fantástico"],
+    addedDate: "2024-06-12",
+    // Nuevos campos para detalles
+    overview: "Merlina Addams investiga una serie de asesinatos que atormentan a la ciudad mientras intenta dominar sus habilidades psíquicas, frustrar una monstruosa matanza y resolver el misterio sobrenatural que involucró a sus padres hace 25 años.",
+    
+    runtime: "45–57 m/ep",
+    trailerKey: "I53DryQ0QJQ", // ID de YouTube (temporada 1)
+    seasons: 2,
+    episodes: 16,
+    cast: [
+        { name: "Jenna Ortega", character: "Merlina Addams" },
+        { name: "Emma Myers", character: "Enid Sinclair" },
+        { name: "Hunter Doohan", character: "Tyler Galpin" },
+        { name: "Gwendoline Christie", character: "Larissa Weems" },
+        { name: "Luis Guzmán", character: "Gomez Addams" },
+        { name: "Catherine Zeta-Jones", character: "Morticia Addams" },
+        { name: "Steve Buscemi", character: "Barry Dort" },
+        { name: "Billie Piper", character: "Isadora Capri" },
+        { name: "Lady Gaga", character: "Rosaline Rotwood" }
+    ],
+    creators: ["Alfred Gough", "Miles Millar", "Tim Burton"]
+},
     {
         id: 1399,
         title: "Game of Thrones",
@@ -792,7 +839,21 @@ export const seriesData = [
         link: "detalles.html?type=tv&id=1399",
         year: "2011-2019",
         genres: ["Drama", "Fantasía", "Aventura"],
-        addedDate: "2024-06-12",     
+        addedDate: "2024-06-12",
+        // Nuevos campos para detalles
+        overview: "En el continente de Poniente, donde las estaciones duran décadas, varias familias nobles luchan por el control del Trono de Hierro. Mientras tanto, una antigua amenaza resurge en el norte y en el este, una joven exiliada busca reclamar su legítimo lugar.",
+        vote_average: 9.2,
+        runtime: "55m/ep",
+        trailerKey: "wA38GCX4Tb0", // ID de YouTube
+        seasons: 8,
+        episodes: 73,
+        cast: [
+            { name: "Emilia Clarke", character: "Daenerys Targaryen" },
+            { name: "Kit Harington", character: "Jon Snow" },
+            { name: "Peter Dinklage", character: "Tyrion Lannister" },
+            { name: "Lena Headey", character: "Cersei Lannister" }
+        ],
+        creators: ["David Benioff", "D.B. Weiss"]
     },
     {
         id: 60574,
@@ -802,8 +863,23 @@ export const seriesData = [
         year: "2013-2022",
         genres: ["Drama", "Crimen"],
         addedDate: "2024-06-08",
+        // Nuevos campos para detalles
+        overview: "Una gangster family epic set in 1919 Birmingham, England and centered on a gang who sew razor blades in the peaks of their caps, and their fierce boss Tommy Shelby, who means to move up in the world.",
+        vote_average: 8.8,
+        runtime: "60m/ep",
+        trailerKey: "oVzVdvGIC7U", // ID de YouTube
+        seasons: 6,
+        episodes: 36,
+        cast: [
+            { name: "Cillian Murphy", character: "Thomas Shelby" },
+            { name: "Paul Anderson", character: "Arthur Shelby" },
+            { name: "Helen McCrory", character: "Aunt Polly" },
+            { name: "Sophie Rundle", character: "Ada Shelby" },
+            { name: "Joe Cole", character: "John Shelby" }
+        ],
+        creators: ["Steven Knight"]
     },
-    // ... resto de series (más antiguas)
+    // ... resto de series con la misma estructura
 ];
 
 // Función para obtener todos los IDs disponibles
