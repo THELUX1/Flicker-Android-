@@ -445,7 +445,61 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
+   // En la función que carga el video, agregar detección de formato
+function loadVideo(sourceUrl) {
+    const videoElement = document.getElementById('main-video');
+    const sourceElement = document.getElementById('video-source');
+    const mkvSourceElement = document.getElementById('video-source-mkv') || createMkvSourceElement();
+    
+    // Determinar el tipo de video basado en la extensión
+    const extension = sourceUrl.split('.').pop().toLowerCase();
+    
+    if (extension === 'mkv') {
+        // Para MKV, usar el source específico
+        mkvSourceElement.src = sourceUrl;
+        mkvSourceElement.type = 'video/x-matroska';
+        
+        // Asegurarse de que el source MP4 esté vacío
+        sourceElement.src = '';
+        
+        // Cargar el video
+        videoElement.load();
+    } else {
+        // Para otros formatos (mp4, webm, etc.)
+        sourceElement.src = sourceUrl;
+        sourceElement.type = getVideoType(extension);
+        
+        // Asegurarse de que el source MKV esté vacío
+        if (mkvSourceElement) {
+            mkvSourceElement.src = '';
+        }
+        
+        // Cargar el video
+        videoElement.load();
+    }
+}
 
+// Función auxiliar para crear el elemento source MKV si no existe
+function createMkvSourceElement() {
+    const videoElement = document.getElementById('main-video');
+    const mkvSource = document.createElement('source');
+    mkvSource.id = 'video-source-mkv';
+    videoElement.appendChild(mkvSource);
+    return mkvSource;
+}
+
+// Función para obtener el tipo MIME correcto
+function getVideoType(extension) {
+    const types = {
+        'mp4': 'video/mp4',
+        'webm': 'video/webm',
+        'ogg': 'video/ogg',
+        'mov': 'video/quicktime',
+        'mkv': 'video/x-matroska'
+    };
+    
+    return types[extension] || 'video/mp4';
+}
     // Configuración específica para series
     function setupSeriesPlayer(seriesId, seasonNum, episodeNum) {
         const series = seriesLinks[seriesId];
