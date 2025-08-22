@@ -519,8 +519,8 @@ const moviesLinks = {
     "986056": {
         title: "Thunderbolts*",
         sources: [
-            { quality: "HD", url: "https://be2719.rcr22.ams01.i8yz83pn.com/hls2/10/09366/vovxh55hgdem_x/index-v1-a1.m3u8?t=Q0wlR5Ds6pdvjpH_R3rMoH8gTEcxmVIhgUOWxfVzUUA&s=1755503714&e=10800&f=46832973&srv=1070&asn=264738&sp=5500&p=" },
-            { quality: "SD", url: "https://otnfip7097.guardstorage.net/hls_3/aUIZBJdPV7QBVs7fkAWSMcdIVloCXdfq6hJFT09gbsh5GcQHseC1XsLrwttPyde2jhuBNmv0iFPJlH0FXYmHFw/index-f1-v1-a1.m3u8?sig=QVIIlAdIMeZ3HHCncYL3Ng&expires=1755512971" }
+            { quality: "HD", url: "https://be7713.rcr82.waw05.i8yz83pn.com/hls2/10/09366/vovxh55hgdem_x/index-v1-a1.m3u8?t=9MLe_-roKIrvZDrkfCtU8wGS3FY1KWZ3NHmyrAvG8l8&s=1755853037&e=10800&f=46832973&srv=1070&asn=264738&sp=5500&p=" },
+            { quality: "SD", url: "https://be7713.rcr82.waw05.i8yz83pn.com/hls2/10/09366/vovxh55hgdem_x/index-v1-a1.m3u8?t=9MLe_-roKIrvZDrkfCtU8wGS3FY1KWZ3NHmyrAvG8l8&s=1755853037&e=10800&f=46832973&srv=1070&asn=264738&sp=5500&p=" }
         ],
         subtitles: [
             { lang: "Español", url: "https://example.com/movies/ziam/subs/es.vtt" },
