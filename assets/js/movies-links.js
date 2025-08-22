@@ -191,7 +191,7 @@ const moviesLinks = {
         title: "Jurassic World: Renace",
         sources: [
             { quality: "HD", url: "https://v2.fiestareel.com/mov/2025/1234821-109762/720/720p.m3u8" },
-            { quality: "SD", url: "https://v2.fiestareel.com/mov/2025/1234821-109762/480/480p.m3u8" }
+            { quality: "SD", url: "https://h5.onfilom.com/es/detail/movie/t68TM94R4F31JdsST5v1k-Jurassic-World-Rebirth" }
         ],
         subtitles: [
             { lang: "Español", url: "https://example.com/movies/ziam/subs/es.vtt" },

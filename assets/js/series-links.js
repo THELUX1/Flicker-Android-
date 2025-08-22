@@ -1,4 +1,69 @@
-const seriesLinks = { 
+const seriesLinks = {                        
+       "60574": { // Merlina (Wednesday)
+        title: "Peaky Blinders",
+        seasons: {
+            "1": { // Temporada 1 (2022)
+                episodes: {
+                    "1": { title: "Episodio 1", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.onfilom.com/10674295f03371efbf975114c0db0102/f27bb982a5fc4680a698ffb08e764b13-94628d9207676eaa8d2ae53411bf1a84-sd.m3u8?hdnts=exp=1755990775_acl=/10674295f03371efbf975114c0db0102/*_hmac=bddb61b3b392bd8db010c9b18c399feccf7c501df631341356c8bd5346da6e76" }], subtitles: [] },
+                    "2": { title: "Episodio 2", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.onfilom.com/00b1747bf03671efa33987c7361c0102/28dbac28d52448a8b6d0aea9a95bd77c-6ad0774819a9594986d981ff87b8c7b2-sd.m3u8?hdnts=exp=1755990816_acl=/00b1747bf03671efa33987c7361c0102/*_hmac=796d6f58ca342b7e2203d4fedd3b4ed1d5d0433b4609a15b958899644234df0d" }], subtitles: [] },
+                    "3": { title: "Episodio 3", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.onfilom.com/e0f61e9bf03771efbfd75014c1ca0102/dc23599b7e8546b9a82a210311b36152-c62e25efce5735b031493d2037a3d90a-sd.m3u8?hdnts=exp=1755990773_acl=/e0f61e9bf03771efbfd75014c1ca0102/*_hmac=5c0a227355acbbbf3c0e6912a8cf1282287a75e7425982e2e5a526453419a314" }], subtitles: [] },
+                    "4": { title: "Episodio 4", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.onfilom.com/5094e2d8f03771ef93185114c1ca0102/b34d2e4800f145a19d520ba904510063-2de1eb6f5bbc67ae0dffa5fcaccafbb2-sd.m3u8?hdnts=exp=1755990966_acl=/5094e2d8f03771ef93185114c1ca0102/*_hmac=3b25f8c25bc0d3f6286375e2adef51e6f344293f98608505dfa74c744794fcab" }], subtitles: [] },
+                    "5": { title: "Episodio 5", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.onfilom.com/200e70e8f03771efbfc536a5e8aa0102/a84d2a4efda6496081e6aa26f33b432f-6471764c8d8bbe2f0222c365c840562e-sd.m3u8?hdnts=exp=1755990989_acl=/200e70e8f03771efbfc536a5e8aa0102/*_hmac=63651c655dd046a80802c2ebcf2166eea5d088af54af2e953aa2e51b564e3c5f" }], subtitles: [] },
+                    "6": { title: "Episodio 6", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.onfilom.com/90d5cf73f03871efbfef4177d0d10102/968c0dae084a4a1ca82aa5c1bda0f53b-5c561adc7c6cdca1145a1839b4c49b6d-sd.m3u8?hdnts=exp=1755991012_acl=/90d5cf73f03871efbfef4177d0d10102/*_hmac=ad4a525f3b0e7052b62e2e313502da2301dac9121ed55405f6d5165ed7bf025a" }], subtitles: [] }
+                }
+            },
+            "2": { // Temporada 2 (2025)
+                episodes: {
+                    "1": { title: "Episodio 1", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.onfilom.com/309550bbf03871efbb3a97c6360c0102/6fd0e3be57a54089966ba530e8f2f395-fedde5d776e686d82f338b09ac69ad47-sd.m3u8?hdnts=exp=1755991240_acl=/309550bbf03871efbb3a97c6360c0102/*_hmac=a8d3f1302239697da58943be5f3e849fb49a0e484d63942d306705daa43d9fe6" }], subtitles: [] },
+                    "2": { title: "Episodio 2", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.onfilom.com/1021fd38f03971efbf975114c0db0102/a6d8b47747934437b44cc6a6d9d5073a-0f6b545b70d30eb668683f2834d20a64-sd.m3u8?hdnts=exp=1755991261_acl=/1021fd38f03971efbf975114c0db0102/*_hmac=ea08c5b6ad1846f3df532d5e07447d80c61e28d07f8711aa5639c1c451a3b651" }], subtitles: [] },
+                    "3": { title: "Episodio 3", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.onfilom.com/80a09e3ef03971efbfa62680f9ea0102/2d0cddef97ad452597b86e42875ed23a-ccd5fc2e3b9af9caa487dd33c7024dea-sd.m3u8?hdnts=exp=1755990256_acl=/80a09e3ef03971efbfa62680f9ea0102/*_hmac=a0546d4e3719616323e56e7e6250541916a080dd83618bd20ca358c9e2ee4de4" }], subtitles: [] },
+                    "4": { title: "Episodio 4", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.onfilom.com/704bb39df03971efa33987c7361c0102/0c0c46222317446593530f00500246d6-4319d173687052b7cf0f2add456142a1-sd.m3u8?hdnts=exp=1755990269_acl=/704bb39df03971efa33987c7361c0102/*_hmac=4105d8513cad1fbda5c9b174b3bf0cb94a207770ecbf1ed907db7d56e115031c" }], subtitles: [] },
+                    "5": { title: "Episodio 5", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.onfilom.com/608bec1ff03a71efbfc536a5e8aa0102/30f0078052484443b9c1c64735b7e927-06f4644435603da3cf750d82dbcf52c7-sd.m3u8?hdnts=exp=1755990332_acl=/608bec1ff03a71efbfc536a5e8aa0102/*_hmac=222f5404787f1119e5f6e0443120fa08f2ecd4a6eb9bcb495fefaebb7efae6b0" }], subtitles: [] },
+                    "6": { title: "Episodio 6", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.onfilom.com/d0f3b131f03a71ef801187c7371d0102/107d9281ee17430881a1d6332763a5f5-062cd9f68ab1bc6ccc3b1b06dd709638-sd.m3u8?hdnts=exp=1755990374_acl=/d0f3b131f03a71ef801187c7371d0102/*_hmac=3d4b70098cd5551724b2a091297889da55e968d06a2396e4c1e50d02b6b7eeaf" }], subtitles: [] },
+                  }
+            },
+            "3": { // Temporada 3 (2025)
+                episodes: {
+                    "1": { title: "Episodio 1", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.qbplayer.com/8e42c48109d147598b39f132e236b2a9/844dbd36842d46198771670c19f6e50d-0429f70251bd866e2f4bdd7b907d90f4-sd.m3u8?hdnts=exp=1755991505_acl=/8e42c48109d147598b39f132e236b2a9/*_hmac=2e5edc7552f50aa3f5ee3abe9c7622d3cb0d9c7d95d4de073ef9d811d55799df" }], subtitles: [] },
+                    "2": { title: "Episodio 2", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.qbplayer.com/79a44a25cff442f8a83c97a675b1231c/b4a2037e2f0741b4a920667da7584b9e-2ab9509ffe93824b3343898ce4f15dbd-sd.m3u8?hdnts=exp=1755991551_acl=/79a44a25cff442f8a83c97a675b1231c/*_hmac=904d4830c0753baaf9d70d468379c96d8c029f4ffac3f09facc2aa0ea5cf393f" }], subtitles: [] },
+                    "3": { title: "Episodio 3", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.qbplayer.com/9bbe7d9c098f47aab63e383db57d94d5/e7bb54befd464df5bfe8b341824d7391-ce43ee295b5e384014008ac10b93bed8-sd.m3u8?hdnts=exp=1755991572_acl=/9bbe7d9c098f47aab63e383db57d94d5/*_hmac=9d9f877907a55d5d6ccd2904aaf8407903aa3fdb6e05976167f175e017bf06b2" }], subtitles: [] },
+                    "4": { title: "Episodio 4", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.qbplayer.com/29fb8f7c2d8d454d80642a8bff0dfbfc/cfabcd9dd9c948d48db0b7a4fcb0ee1c-04fd7d70e921b53e6c313e83d24849bc-sd.m3u8?hdnts=exp=1755991592_acl=/29fb8f7c2d8d454d80642a8bff0dfbfc/*_hmac=86df0a97a63bcf1d50f7b2b1fe9191845a3f83759f604ce0a9a73c07ef85f54f" }], subtitles: [] },
+                    "5": { title: "Episodio 5", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.qbplayer.com/4ae3f36d1b424831999dce4b06a3f593/83bd6a85b39e41f780af36cfa822fbcf-8fba8ae7932e59c449691b7c1a270d1b-sd.m3u8?hdnts=exp=1755991615_acl=/4ae3f36d1b424831999dce4b06a3f593/*_hmac=57d2eccd51b26adf7ccf0cd6c841e3c3c3f0333a7fae3c47d2a0362c30889e9a" }], subtitles: [] },
+                    "6": { title: "Episodio 6", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.qbplayer.com/43e312aeabb440a0b3251bf590b7215c/1710326c7e2a4b6e905e3cf30bc82e30-41c471fca0c4a6c1cd269c6902b4093a-sd.m3u8?hdnts=exp=1755991635_acl=/43e312aeabb440a0b3251bf590b7215c/*_hmac=87ccb41879f38b02363b6455ac7b41d33bed9b4fc3bde5a71d0a6ac326875e38" }], subtitles: [] },
+                    }
+            },
+            "4": { // Temporada 4 (2025)
+                episodes: {
+                    "1": { title: "Episodio 1", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.qbplayer.com/39c391c717ba4e5384da2d8a751507b2/70fec42943f744c1b0ae93229ab938c9-634ecca687ad87ed1a5dff09de2a5f3a-sd.m3u8?hdnts=exp=1755964117_acl=/39c391c717ba4e5384da2d8a751507b2/*_hmac=99085aca9543da2fee1fd1ee1b5ad3f7aa653db174bd9016a1f8cd920fecf801" }], subtitles: [] },
+                    "2": { title: "Episodio 2", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.qbplayer.com/eabf75f435b9476eb1fe65d9a1940761/461cf0074c2345b7be7c33e1d649c449-d70b3d43e878dd088baccd67488cc112-sd.m3u8?hdnts=exp=1755991763_acl=/eabf75f435b9476eb1fe65d9a1940761/*_hmac=4ea653b21f587de410c7dfa5c97839b0fbe958166744352d4e51c1435e1b79f7" }], subtitles: [] },
+                    "3": { title: "Episodio 3", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.qbplayer.com/2e52ebf000b14ab18d0dd1f0faa85140/0110d88c9b7043b586231ac8c78fdd34-5148735e06cd993b34c894c3112ee083-sd.m3u8?hdnts=exp=1755991786_acl=/2e52ebf000b14ab18d0dd1f0faa85140/*_hmac=3be9b1bc85b857e5dfc9de856f800d93ce59db08150ff4dab26bb08b35a83fe6" }], subtitles: [] },
+                    "4": { title: "Episodio 4", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.qbplayer.com/57b536de53584438bbd608e61118a8f9/04070ebac2d94f0ea461c28df9f96cc6-45ce8e84101e808f35b20825082e4baa-sd.m3u8?hdnts=exp=1755991808_acl=/57b536de53584438bbd608e61118a8f9/*_hmac=d243d808cfdd918e56bf4eafaac1c6cf29cd65cba7e1a43f3c9c8dbc31930dc8" }], subtitles: [] },
+                    "5": { title: "Episodio 5", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.qbplayer.com/5fdae2370b2046658d47a55469fc74ae/d8caf2af38d2441cafcd7c43f50501a0-d316b9fa8aceb9b3f50210c176fe9676-sd.m3u8?hdnts=exp=1755991834_acl=/5fdae2370b2046658d47a55469fc74ae/*_hmac=83a1523d803c937b95ce82465d568e38906708562b26f42e80be31cd40f2c9d6" }], subtitles: [] },
+                    "6": { title: "Episodio 6", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.qbplayer.com/c7c648796c3b4530a3354ad6fd5e9cc7/131c5456c1ff441e845ff692e72b7c45-4eb6895fb7fc9180c1f29eb4d64423bb-sd.m3u8?hdnts=exp=1755991877_acl=/c7c648796c3b4530a3354ad6fd5e9cc7/*_hmac=97e9be1a4f26600a7d5b8aacef748b109d37978f85f4092d87998d65a8432127" }], subtitles: [] },
+                    }
+            },
+            "5": { // Temporada 5 (2025)
+                episodes: {
+                    "1": { title: "Episodio 1", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.qbplayer.com/c9089120a60d4cef8e15244e9ab63296/c601bad47bc54d9fabbfb29c439f9155-a1550d11202eed5aa86b1e4061a6bbaf-sd.m3u8?hdnts=exp=1755980441_acl=/c9089120a60d4cef8e15244e9ab63296/*_hmac=acd3f1baaae314cbbf9e90886e81b910d6633362b176320e2457002b937357b9" }], subtitles: [] },
+                    "2": { title: "Episodio 2", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.qbplayer.com/3f70bef6f68c44da9a7dfe0b265ff5b7/54efdfd4e0e64876bf8b0b7bac3fc2b9-251a6340be32e5bd727aecbc900b2383-sd.m3u8?hdnts=exp=1755992055_acl=/3f70bef6f68c44da9a7dfe0b265ff5b7/*_hmac=584a125770e7fd615a38093e8c42cd9ade4c235fdd4f8678222d796a0d4f8181" }], subtitles: [] },
+                    "3": { title: "Episodio 3", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.qbplayer.com/c116d8c68fde471b80be7aac91256069/4f665a422b0749198becc8f0752c5f3a-c547ad8d79a8003d898ec8ab43c10ff5-sd.m3u8?hdnts=exp=1755992074_acl=/c116d8c68fde471b80be7aac91256069/*_hmac=75a4043a9a05b54c2f364476a1d6dff7cb20d909a5f5f57b04aeacd59b15caf3" }], subtitles: [] },
+                    "4": { title: "Episodio 4", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.qbplayer.com/c77eec98de3446b3821f4fb46d1b62d6/f0b772a1d2204e879f461a938f870028-6a00ede0de7a462ff4f310827c697a8e-sd.m3u8?hdnts=exp=1755965344_acl=/c77eec98de3446b3821f4fb46d1b62d6/*_hmac=5ef51ab49acbc0ecebcde0226e4aa22b0c81cd9b0c6c354154a573a67d1a94c0" }], subtitles: [] },
+                    "5": { title: "Episodio 5", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.qbplayer.com/2ec702ac1bfb4db393d93e00615c17eb/0e2447300c2348c5a8b79c684ff844c6-595600e7d35c6ac51defa830fab252b9-sd.m3u8?hdnts=exp=1755980444_acl=/2ec702ac1bfb4db393d93e00615c17eb/*_hmac=5c6d172a4c5ad40805091e75c89857da1a838c3b583deede606484543fe04752" }], subtitles: [] },
+                    "6": { title: "Episodio 6", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.qbplayer.com/868f944df840424d87c375f7f2e54636/1bfbc0c6209e43c797dec881ce1921d8-44b3673bc58d3284d280630e7fc3bd02-sd.m3u8?hdnts=exp=1755986561_acl=/868f944df840424d87c375f7f2e54636/*_hmac=d2bd318a0c7ab8ed115aceb1f0e589362c59c1673dc9f1ceab0bf084e57ca813" }], subtitles: [] },
+                    }
+            },
+            "6": { // Temporada 6 (2025)
+                episodes: {
+                    "1": { title: "Episodio 1", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.qbplayer.com/1a2b157898f74d1587d9be355380123d/6ff6937c72b94a31941e5b5f1efa86cc-2f227d0eac787c1abc1ef4d3fd7555f7-sd.m3u8?hdnts=exp=1755992173_acl=/1a2b157898f74d1587d9be355380123d/*_hmac=da909d491a646994cba10cf6bb0e1e9cd8f46df7d318b8bdf4ee5d53bce7ae43" }], subtitles: [] },
+                    "2": { title: "Episodio 2", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.qbplayer.com/136c639c5ef847cab2d14512ee19f695/4a73a7cd305449a3b2b138c6d635bcd5-4cdcf27bf51ee5a3c20715fa985a9e2c-sd.m3u8?hdnts=exp=1755992194_acl=/136c639c5ef847cab2d14512ee19f695/*_hmac=967066dce9446088b25219a9627464430a189aa3579fa5424607c4d991921737" }], subtitles: [] },
+                    "3": { title: "Episodio 3", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.qbplayer.com/0318b21d2cd64d9eba4f3754244dc2c8/975dc9d91f6f41aa84e478a2c8f8049a-47ea76888d88841a69a3a98922424daa-sd.m3u8?hdnts=exp=1755992213_acl=/0318b21d2cd64d9eba4f3754244dc2c8/*_hmac=30816fd485b4668a56b8a80b0e9663d86c82e6d0063a483b1e56d56d110026b2" }], subtitles: [] },
+                    "4": { title: "Episodio 4", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.qbplayer.com/889545c1448c44e7aa8c8ce91a3b9b0c/9012db6bbceb48ed930e67e3109206f8-0484b77555e7fa33242eb8da33373bc4-sd.m3u8?hdnts=exp=1755992233_acl=/889545c1448c44e7aa8c8ce91a3b9b0c/*_hmac=f023113d5088d03e7fc31f6b96e0c55c5c09f6a682b8cececdcd2a34dfe5305b" }], subtitles: [] },
+                    "5": { title: "Episodio 5", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.qbplayer.com/82b38246bc964aeb81feb0cdaa7a5010/f9b2ee96991f49deaa80db33e52ee560-2b14a2157e30cb136026698782fd1d88-sd.m3u8?hdnts=exp=1755992253_acl=/82b38246bc964aeb81feb0cdaa7a5010/*_hmac=504c559e651851f526af8be483a83ec70665feb8bd05d4fa9f2208e4316bedfd" }], subtitles: [] },
+                    "6": { title: "Episodio 6", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.qbplayer.com/317c29c4ed724b7aac851f8352d9595a/d2fa68f6c8ce49bc86a9d3f05fbec66e-483925f48cd456ffabac71a33b338ec0-sd.m3u8?hdnts=exp=1755992272_acl=/317c29c4ed724b7aac851f8352d9595a/*_hmac=4ec11f974d89df6bce918533f835ba2b647cb1f4152c177d42c61899841d181f" }], subtitles: [] },                                                      
+                }
+            }
+        }
+    },
        "1399": { 
     title: "Game of Thrones",
     seasons: {
@@ -99,29 +164,30 @@ const seriesLinks = {
         },
         "8": { // Temporada 8 (2019)
             episodes: {
-                "1": { title: "Episodio 1 - Winterfell", sources: [{ quality: "HD", url: "https://servidor.com/got/s8/e1.m3u8" }], subtitles: [] },
-                "2": { title: "Episodio 2 - A Knight of the Seven Kingdoms", sources: [{ quality: "HD", url: "https://servidor.com/got/s8/e2.m3u8" }], subtitles: [] },
-                "3": { title: "Episodio 3 - The Long Night", sources: [{ quality: "HD", url: "https://servidor.com/got/s8/e3.m3u8" }], subtitles: [] },
-                "4": { title: "Episodio 4 - The Last of the Starks", sources: [{ quality: "HD", url: "https://servidor.com/got/s8/e4.m3u8" }], subtitles: [] },
-                "5": { title: "Episodio 5 - The Bells", sources: [{ quality: "HD", url: "https://servidor.com/got/s8/e5.m3u8" }], subtitles: [] },
-                "6": { title: "Episodio 6 - The Iron Throne", sources: [{ quality: "HD", url: "https://servidor.com/got/s8/e6.m3u8" }], subtitles: [] }
+                "1": { title: "Episodio 1", sources: [{ quality: "HD", url: "https://servidor.com/got/s8/e1.m3u8" }], subtitles: [] },
+                "2": { title: "Episodio 2", sources: [{ quality: "HD", url: "https://servidor.com/got/s8/e2.m3u8" }], subtitles: [] },
+                "3": { title: "Episodio 3", sources: [{ quality: "HD", url: "https://servidor.com/got/s8/e3.m3u8" }], subtitles: [] },
+                "4": { title: "Episodio 4", sources: [{ quality: "HD", url: "https://servidor.com/got/s8/e4.m3u8" }], subtitles: [] },
+                "5": { title: "Episodio 5", sources: [{ quality: "HD", url: "https://servidor.com/got/s8/e5.m3u8" }], subtitles: [] },
+                "6": { title: "Episodio 6", sources: [{ quality: "HD", url: "https://servidor.com/got/s8/e6.m3u8" }], subtitles: [] }
             }
         }
     }
-},   
+}, 
+  
     "119051": { // Merlina (Wednesday)
         title: "Merlina",
         seasons: {
             "1": { // Temporada 1 (2022)
                 episodes: {
-                    "1": { title: "Episodio 1 - Wednesday’s Child Is Full of Woe", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.onfilom.com/316062eafa0e4027b3b379bb79313ada/3b6c31d6c50b539bec85fce95f23b7a7-sd.m3u8?hdnts=exp=1755910393_acl=/316062eafa0e4027b3b379bb79313ada/*_hmac=0531f5fa97dbb03fa5ad2571384347aa3be7601f74133c4958782f4222aca01d" }], subtitles: [] },
-                    "2": { title: "Episodio 2 - Woe Is the Loneliest Number", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.onfilom.com/d64f92697ef04dd3aef828da5b426f40/659d498776885a808af17a5aa3c83cf4-sd.m3u8?hdnts=exp=1755910655_acl=/d64f92697ef04dd3aef828da5b426f40/*_hmac=60b97b0edc10112a833704b8e3adf1b66a31ed1caf840496744942901046b234" }], subtitles: [] },
-                    "3": { title: "Episodio 3 - Friend or Woe", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.onfilom.com/fe957ab9226d420ba73fdf6f57c62851/61d8361897271ce38d0d87a9d7575e2d-sd.m3u8?hdnts=exp=1755892108_acl=/fe957ab9226d420ba73fdf6f57c62851/*_hmac=9c697abbfe4149cb9c69e523e0dac82beb670491373a65625d78e45bab2be0f7" }], subtitles: [] },
-                    "4": { title: "Episodio 4 - Woe What a Night", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.onfilom.com/5546ce34052c41db9e8a78c892bb0603/5d6a281637b1456116f7a33d3357fe74-sd.m3u8?hdnts=exp=1755910225_acl=/5546ce34052c41db9e8a78c892bb0603/*_hmac=694637dcc0773596fadf2095d25c8f3234a82f17b2ce39545af12a1f10ed122f" }], subtitles: [] },
-                    "5": { title: "Episodio 5 - You Reap What You Woe", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.onfilom.com/ef630bbe20d8480eaa1eb127ca1c03aa/67c273e5abb16e2fe6b1a7558c6f8c76-sd.m3u8?hdnts=exp=1755911672_acl=/ef630bbe20d8480eaa1eb127ca1c03aa/*_hmac=9ad94f916d3b20aef4f00537af3b918bfc54623aaa8c80dc238be9ae8c75582e" }], subtitles: [] },
-                    "6": { title: "Episodio 6 - Quid Pro Woe", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.onfilom.com/80fcd9fca60c4137a6e28800b93c89f0/fbbb2106e2c942d0811bfc85821f9c88-sd.m3u8?hdnts=exp=1755910195_acl=/80fcd9fca60c4137a6e28800b93c89f0/*_hmac=bf78fc4e1085d956f5aa9497b13b3f34a61018482942413237c75cdfd6bab068" }], subtitles: [] },
-                    "7": { title: "Episodio 7 - If You Don’t Woe Me by Now", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.onfilom.com/bb19153313a145eab632601b9e97c0b9/7ccb09a3dc3590346d02d40786b15f74-sd.m3u8?hdnts=exp=1755911594_acl=/bb19153313a145eab632601b9e97c0b9/*_hmac=5dedc924da8a2e43bdb55ac3029a6838d5d61fcb0387e81d69edfab95b4283a0" }], subtitles: [] },
-                    "8": { title: "Episodio 8 - A Murder of Woes", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.onfilom.com/c6c4d4ef5eb740298d075874596e71eb/bf3712b7d119bc379f6c29558c41daf8-sd.m3u8?hdnts=exp=1755911630_acl=/c6c4d4ef5eb740298d075874596e71eb/*_hmac=175f368a1bc2b3310597c32b38b4531dfc963b7c141bf668e66d88f818198aa0" }], subtitles: [] }
+                    "1": { title: "Episodio 1", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.onfilom.com/316062eafa0e4027b3b379bb79313ada/3b6c31d6c50b539bec85fce95f23b7a7-sd.m3u8?hdnts=exp=1755910393_acl=/316062eafa0e4027b3b379bb79313ada/*_hmac=0531f5fa97dbb03fa5ad2571384347aa3be7601f74133c4958782f4222aca01d" }], subtitles: [] },
+                    "2": { title: "Episodio 2", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.onfilom.com/d64f92697ef04dd3aef828da5b426f40/659d498776885a808af17a5aa3c83cf4-sd.m3u8?hdnts=exp=1755910655_acl=/d64f92697ef04dd3aef828da5b426f40/*_hmac=60b97b0edc10112a833704b8e3adf1b66a31ed1caf840496744942901046b234" }], subtitles: [] },
+                    "3": { title: "Episodio 3", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.onfilom.com/fe957ab9226d420ba73fdf6f57c62851/61d8361897271ce38d0d87a9d7575e2d-sd.m3u8?hdnts=exp=1755892108_acl=/fe957ab9226d420ba73fdf6f57c62851/*_hmac=9c697abbfe4149cb9c69e523e0dac82beb670491373a65625d78e45bab2be0f7" }], subtitles: [] },
+                    "4": { title: "Episodio 4", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.onfilom.com/5546ce34052c41db9e8a78c892bb0603/5d6a281637b1456116f7a33d3357fe74-sd.m3u8?hdnts=exp=1755910225_acl=/5546ce34052c41db9e8a78c892bb0603/*_hmac=694637dcc0773596fadf2095d25c8f3234a82f17b2ce39545af12a1f10ed122f" }], subtitles: [] },
+                    "5": { title: "Episodio 5", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.onfilom.com/ef630bbe20d8480eaa1eb127ca1c03aa/67c273e5abb16e2fe6b1a7558c6f8c76-sd.m3u8?hdnts=exp=1755911672_acl=/ef630bbe20d8480eaa1eb127ca1c03aa/*_hmac=9ad94f916d3b20aef4f00537af3b918bfc54623aaa8c80dc238be9ae8c75582e" }], subtitles: [] },
+                    "6": { title: "Episodio 6", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.onfilom.com/80fcd9fca60c4137a6e28800b93c89f0/fbbb2106e2c942d0811bfc85821f9c88-sd.m3u8?hdnts=exp=1755910195_acl=/80fcd9fca60c4137a6e28800b93c89f0/*_hmac=bf78fc4e1085d956f5aa9497b13b3f34a61018482942413237c75cdfd6bab068" }], subtitles: [] },
+                    "7": { title: "Episodio 7", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.onfilom.com/bb19153313a145eab632601b9e97c0b9/7ccb09a3dc3590346d02d40786b15f74-sd.m3u8?hdnts=exp=1755911594_acl=/bb19153313a145eab632601b9e97c0b9/*_hmac=5dedc924da8a2e43bdb55ac3029a6838d5d61fcb0387e81d69edfab95b4283a0" }], subtitles: [] },
+                    "8": { title: "Episodio 8", sources: [{ quality: "HD", url: "https://akm-cdn-play-web.onfilom.com/c6c4d4ef5eb740298d075874596e71eb/bf3712b7d119bc379f6c29558c41daf8-sd.m3u8?hdnts=exp=1755911630_acl=/c6c4d4ef5eb740298d075874596e71eb/*_hmac=175f368a1bc2b3310597c32b38b4531dfc963b7c141bf668e66d88f818198aa0" }], subtitles: [] }
                 }
             },
             "2": { // Temporada 2 (2025)
