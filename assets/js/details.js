@@ -326,7 +326,6 @@ function renderSimilarMedia(similarItems) {
 }
 
 // Función para configurar el botón de reproducción
-// Función para configurar el botón de reproducción
 function setupPlayButton() {
     const playBtn = document.querySelector('.play-btn');
     const urlParams = new URLSearchParams(window.location.search);
@@ -336,15 +335,25 @@ function setupPlayButton() {
     playBtn.disabled = false;
     playBtn.innerHTML = '<i class="fas fa-play"></i> Reproducir';
     
+    // Mapeo de IDs a vídeos en el reproductor nativo de la app
+    const appCreatorVideos = {
+        '1061474': 'superman',  // Superman
+        // Añade más películas aquí:
+        // '123456': 'batman',
+    };
+    
     playBtn.addEventListener('click', () => {
-        // Verificar si es la película de Superman (ID 1061474)
-        if (type === 'movie' && id === '1061474') {
-            // Redirigir al reproductor de appcreator24 para Superman
-            window.location.href = `https://appcreator24.com/reproductor?movie=superman&id=${id}`;
+        if (type === 'movie' && appCreatorVideos[id]) {
+            // Llamar al reproductor nativo de la app directamente
+            if (typeof AppCreator !== 'undefined' && AppCreator.playVideo) {
+                AppCreator.playVideo(appCreatorVideos[id]);
+            } else {
+                console.warn('Reproductor nativo no disponible, abriendo player web');
+                window.location.href = `player.html?type=movie&id=${id}`;
+            }
         } else if (type === 'movie') {
             window.location.href = `player.html?type=movie&id=${id}`;
         } else if (type === 'tv') {
-            // Para series, redirigir al primer episodio de la primera temporada
             window.location.href = `player.html?type=tv&id=${id}&season=1&episode=1`;
         }
     });
