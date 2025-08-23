@@ -326,6 +326,7 @@ function renderSimilarMedia(similarItems) {
 }
 
 // Función para configurar el botón de reproducción
+// Función para configurar el botón de reproducción
 function setupPlayButton() {
     const playBtn = document.querySelector('.play-btn');
     const urlParams = new URLSearchParams(window.location.search);
@@ -336,7 +337,11 @@ function setupPlayButton() {
     playBtn.innerHTML = '<i class="fas fa-play"></i> Reproducir';
     
     playBtn.addEventListener('click', () => {
-        if (type === 'movie') {
+        // Verificar si es la película de Superman (ID 1061474)
+        if (type === 'movie' && id === '1061474') {
+            // Redirigir al reproductor de appcreator24 para Superman
+            window.location.href = `https://appcreator24.com/reproductor?movie=superman&id=${id}`;
+        } else if (type === 'movie') {
             window.location.href = `player.html?type=movie&id=${id}`;
         } else if (type === 'tv') {
             // Para series, redirigir al primer episodio de la primera temporada
