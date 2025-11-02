@@ -11,20 +11,6 @@
     overflow: hidden;
 }
 
-/* Forzar orientación horizontal */
-@media screen and (orientation: portrait) {
-    .player-container {
-        transform: rotate(90deg);
-        transform-origin: center center;
-        width: 100vh;
-        height: 100vw;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%) rotate(90deg);
-    }
-}
-
 /* Notificación de "Estás viendo" */
 .watching-notification {
     position: fixed;
@@ -40,6 +26,115 @@
     transform: translateY(-100%);
     transition: transform 0.5s ease-out;
     box-shadow: 0 4px 20px rgba(229, 9, 20, 0.3);
+}
+/* Diálogo de continuar viendo */
+.continue-dialog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.continue-dialog.show {
+    opacity: 1;
+}
+
+.dialog-content {
+    background: var(--surface-color);
+    border-radius: 20px;
+    padding: 2rem;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.continue-dialog.show .dialog-content {
+    transform: scale(1);
+}
+
+.dialog-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.dialog-content h3 {
+    color: white;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.dialog-content p {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    line-height: 1.5;
+}
+
+.dialog-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.dialog-btn {
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+    min-width: 140px;
+}
+
+.continue-btn {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: white;
+}
+
+.continue-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(229, 9, 20, 0.4);
+}
+
+.restart-btn {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.restart-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+/* Media queries para móviles */
+@media (max-width: 768px) {
+    .dialog-content {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+    
+    .dialog-buttons {
+        flex-direction: column;
+    }
+    
+    .dialog-btn {
+        min-width: auto;
+        width: 100%;
+    }
 }
 
 .watching-notification.show {
@@ -164,7 +259,6 @@
 }
 
 .video-container:hover .custom-controls,
-.video-container:focus-within .custom-controls,
 .custom-controls.visible {
     opacity: 1;
 }
