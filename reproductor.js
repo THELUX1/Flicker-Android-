@@ -560,7 +560,7 @@ function showWatchingNotification(title) {
     setTimeout(() => {
         watchingNotification.classList.remove('show');
         watchingNotification.classList.add('hide');
-    }, 3000);
+    }, 5000);
 }
 
 // Cargar fuente de video
