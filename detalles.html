@@ -3,149 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalles - Flicker</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Detalles - CineMóvil</title>
+    <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/details.css">
-
-    <!-- Firebase App (el core de Firebase compat) -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <!-- Firebase Firestore compat -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <!-- Firebase Auth compat -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <!-- Firebase Storage compat -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
 </head>
 <body>
-   <main class="details-container">
-        <!-- Sección del tráiler -->
-        <section class="trailer-section">
-            <div class="trailer-container" id="trailer-container">
-                <!-- El iframe del tráiler se insertará dinámicamente -->
-                <div class="trailer-placeholder">
-                    <i class="fas fa-play"></i>
-                    <p>Cargando tráiler...</p>
-                </div>
-            </div>
-        </section>
+    <header class="header">
+        <div class="header-content">
+            <button class="back-btn" id="back-btn" aria-label="Volver">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+            <h1 class="logo">CineMóvil</h1>
+            <div class="placeholder"></div>
+        </div>
+    </header>
 
-        <!-- Sección de información -->
-        <section class="info-section">
-            <h1 id="media-title">Cargando</h1>
-            
-            <div class="rating-duration">
-                <span class="rating"><i class="fas fa-star"></i> <span id="media-rating">••</span>/10</span>
-                <span class="year" id="media-year">••••</span>
-                <span class="duration" id="media-duration">•</span>
-            </div>
-
-            <div class="synopsis">
-                <h2>Sinopsis</h2>
-                <p id="media-synopsis">Cargando...</p>
-            </div>
-
-            <div class="actions">
-                <button class="play-btn">
-                    <i class="fas fa-play"></i> Reproducir
-                </button>
-                <div class="secondary-actions">
-                    <button class="action-btn report-btn">
-                        <i class="fas fa-flag"></i> Reportar
-                    </button>
-                    <button class="action-btn dislike-btn">
-                        <i class="fas fa-thumbs-down"></i> No me gusta
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <!-- Sección de títulos similares -->
+    <main class="main details-main">
+        <div id="loading" class="loading">Cargando detalles...</div>
+        <div id="details-container" class="details-container">
+            <!-- Detalles se cargarán aquí -->
+        </div>
+        
         <section class="similar-section">
-            <h2>Más títulos similares</h2>
-            <div class="carousel-container">
-                <div class="carousel-track" id="similar-carousel"></div>
+            <h2 class="section-title">Contenido similar</h2>
+            <div class="similar-container" id="similar-container">
+                <!-- Contenido similar se cargará aquí -->
             </div>
         </section>
     </main>
-    
-    <!-- Sección de comentarios -->
-    <section class="comments-section">
-        <h2>Comentarios</h2>
-        
-        <div class="comments-container" id="comments-container">
-            <div class="comment-form">
-                <div class="user-avatar" id="user-avatar">
-                    <i class="fas fa-user"></i>
-                </div>
-                <div class="comment-input-container">
-                    <textarea id="comment-input" placeholder="Añade un comentario público..." maxlength="500"></textarea>
-                    <div class="comment-actions">
-                        <span class="char-count">0/500</span>
-                        <button id="submit-comment" class="submit-btn" disabled>Comentar</button>
-                    </div>
-                </div>
+
+    <!-- Modal del reproductor -->
+    <div class="modal" id="player-modal">
+        <div class="modal-content player-modal-content">
+            <div class="modal-header">
+                <h3 id="player-title">Reproduciendo</h3>
+                <button class="close-modal" id="close-player">&times;</button>
             </div>
-            <!-- Modal para subir/editar avatar -->
-<div id="avatar-modal" class="avatar-modal">
-    <div class="avatar-modal-content">
-        <span class="avatar-modal-close">&times;</span>
-        <h2>Foto de perfil</h2>
-        
-        <div class="avatar-preview" id="avatar-preview">
-            <i class="fas fa-user"></i>
-        </div>
-        
-        <div class="avatar-options">
-            <input type="file" id="avatar-input" accept="image/*" style="display: none;">
-            <button id="upload-avatar-btn" class="avatar-option-btn">
-                <i class="fas fa-upload"></i> Subir foto
-            </button>
-            <button id="remove-avatar-btn" class="avatar-option-btn">
-                <i class="fas fa-trash"></i> Eliminar foto
-            </button>
-        </div>
-        
-        <div class="avatar-actions">
-            <button id="save-avatar-btn" class="submit-btn" disabled>
-                <i class="fas fa-save"></i> Guardar cambios
-            </button>
+            <div class="player-container" id="player-container">
+                <!-- El reproductor se cargará aquí -->
+            </div>
         </div>
     </div>
-</div>
-            <!-- Modal de inicio de sesión -->
-            <div id="login-modal" class="modal">
-                <div class="modal-content">
-                    <span class="close">&times;</span>
-                    <h2>Iniciar sesión</h2>
-                    <div class="login-options">
-                        <button id="email-login" class="social-login-btn">
-                            <i class="fas fa-envelope"></i> Continuar con Email
-                        </button>
-                    </div>
-                    <p class="login-note">Debes iniciar sesión para comentar y participar.</p>
-                </div>
-            </div>
-            
-            <div class="comments-list" id="comments-list">
-                <div class="loading-comments">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    <p>Cargando comentarios...</p>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <nav class="bottom-nav">
-        <a href="../index.html#movies" class="nav-btn">
-            <i class="fas fa-film"></i>
-            <span>Películas</span>
-        </a>
-        <a href="../index.html#series" class="nav-btn">
-            <i class="fas fa-tv"></i>
-            <span>Series</span>
-        </a>
-    </nav>
-    
-    <script type="module" src="assets/js/details.js"></script>
+
+    <script type="module" src="details.js"></script>
 </body>
 </html>

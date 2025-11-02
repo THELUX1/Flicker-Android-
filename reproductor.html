@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Reproduciendo - CineMóvil</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/reproductor.css">
+</head>
+<body>
+    <div class="player-container">
+        <!-- Notificación de "Estás viendo" -->
+        <div class="watching-notification" id="watching-notification">
+            <span id="watching-text">Estás viendo</span>
+        </div>
+
+        <!-- Video container -->
+        <div class="video-container" id="video-container">
+            <video id="video-player" playsinline>
+                Tu navegador no soporta el elemento de video.
+            </video>
+            
+            <!-- Custom loader -->
+            <div class="custom-loader" id="custom-loader">
+                <div class="loader-spinner">
+                    <div class="spinner-ring"></div>
+                    <div class="spinner-ring"></div>
+                    <div class="spinner-ring"></div>
+                    <div class="spinner-ring"></div>
+                </div>
+                <p class="loader-text">Cargando película...</p>
+            </div>
+
+            <!-- Custom controls -->
+            <div class="custom-controls" id="custom-controls">
+                <!-- Top controls -->
+                <div class="controls-top">
+                    <button class="control-btn back-btn" id="player-back-btn" aria-label="Volver">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </button>
+                    <div class="video-title" id="video-title"></div>
+                    <button class="control-btn quality-btn" id="quality-btn" aria-label="Calidad">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M14 10V2M16 10V2M18 10V2M6 22V16M10 22V16M14 22V16M18 22V16M22 22V16M2 22V16M2 10V2M6 10V2M10 10V2" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Center controls (play/pause) -->
+                <div class="controls-center">
+                    <button class="control-btn play-pause-btn" id="play-pause-btn" aria-label="Reproducir">
+                        <svg class="play-icon" width="60" height="60" viewBox="0 0 24 24" fill="none">
+                            <path d="M8 5V19L19 12L8 5Z" fill="currentColor"/>
+                        </svg>
+                        <svg class="pause-icon" width="60" height="60" viewBox="0 0 24 24" fill="none" style="display: none;">
+                            <path d="M6 4H10V20H6V4ZM14 4H18V20H14V4Z" fill="currentColor"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Bottom controls -->
+                <div class="controls-bottom">
+                    <div class="time-display">
+                        <span id="current-time">0:00</span>
+                        <span class="time-separator">/</span>
+                        <span id="duration">0:00</span>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-bar" id="progress-bar">
+                            <div class="progress-filled" id="progress-filled"></div>
+                            <div class="progress-thumb" id="progress-thumb"></div>
+                        </div>
+                    </div>
+
+                    <div class="controls-right">
+                        <button class="control-btn volume-btn" id="volume-btn" aria-label="Volumen">
+                            <svg class="volume-high" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M11 5L6 9H2V15H6L11 19V5Z" stroke="currentColor" stroke-width="2"/>
+                                <path d="M19.07 4.93C20.9447 6.80528 21.9979 9.34836 21.9979 12C21.9979 14.6516 20.9447 17.1947 19.07 19.07" stroke="currentColor" stroke-width="2"/>
+                                <path d="M15.54 8.46C16.4774 9.39764 17.004 10.6692 17.004 12C17.004 13.3308 16.4774 14.6024 15.54 15.54" stroke="currentColor" stroke-width="2"/>
+                            </svg>
+                            <svg class="volume-mute" width="20" height="20" viewBox="0 0 24 24" fill="none" style="display: none;">
+                                <path d="M11 5L6 9H2V15H6L11 19V5Z" stroke="currentColor" stroke-width="2"/>
+                                <path d="M21 9L15 15" stroke="currentColor" stroke-width="2"/>
+                                <path d="M15 9L21 15" stroke="currentColor" stroke-width="2"/>
+                            </svg>
+                        </button>
+                        
+                        <button class="control-btn fullscreen-btn" id="fullscreen-btn" aria-label="Pantalla completa">
+                            <svg class="fullscreen-enter" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M8 3H5C4.46957 3 3.96086 3.21071 3.58579 3.58579C3.21071 3.96086 3 4.46957 3 5V8M21 8V5C21 4.46957 20.7893 3.96086 20.4142 3.58579C20.0391 3.21071 19.5304 3 19 3H16M16 21H19C19.5304 21 20.0391 20.7893 20.4142 20.4142C20.7893 20.0391 21 19.5304 21 19V16M3 16V19C3 19.5304 3.21071 20.0391 3.58579 20.4142C3.96086 20.7893 4.46957 21 5 21H8" stroke="currentColor" stroke-width="2"/>
+                            </svg>
+                            <svg class="fullscreen-exit" width="20" height="20" viewBox="0 0 24 24" fill="none" style="display: none;">
+                                <path d="M8 3V6C8 6.53043 7.78929 7.03914 7.41421 7.41421C7.03914 7.78929 6.53043 8 6 8H3M21 8H18C17.4696 8 16.9609 7.78929 16.5858 7.41421C16.2107 7.03914 16 6.53043 16 6V3M16 21V18C16 17.4696 16.2107 16.9609 16.5858 16.5858C16.2107 16.2107 16.9609 16 17.4696 16H21M3 16H6C6.53043 16 7.03914 16.2107 7.41421 16.5858C7.78929 16.9609 8 17.4696 8 18V21" stroke="currentColor" stroke-width="2"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error overlay -->
+            <div class="error-overlay" id="error-overlay" style="display: none;">
+                <div class="error-icon">⚠️</div>
+                <h3>Error al cargar el video</h3>
+                <p>No se pudo cargar el contenido solicitado.</p>
+                <button class="retry-btn" id="retry-btn">Reintentar</button>
+            </div>
+        </div>
+
+        <!-- Menú de calidad -->
+        <div class="quality-menu" id="quality-menu" style="display: none;">
+            <h4>Calidad de video</h4>
+            <div class="quality-options" id="quality-options">
+                <!-- Las opciones de calidad se cargarán aquí -->
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="reproductor.js"></script>
+</body>
+</html>

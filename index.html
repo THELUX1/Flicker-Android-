@@ -4,54 +4,71 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flicker - Películas y Series</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/index.css">
     
-    <!-- Añade estas líneas para el PWA -->
-    <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#ff8800">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Flicker">
-<link rel="apple-touch-icon" href="icons/icon-384x384.png">
 </head>
 <body>
-    <header>
-    <div class="logo">Flicker</div>
-    <button class="categories-btn">
-        <i class="fas fa-list"></i>
-        <span>Categorías</span>
-    </button>
-    <div class="original-search-container">
-        <div class="search-container">
-            <button class="search-btn">
-                <i class="fas fa-search"></i>
+    <header class="header">
+        <div class="header-content">
+            <h1 class="logo">Flicker</h1>
+            <button class="search-btn" aria-label="Buscar">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 21L16.514 16.506L21 21ZM19 10.5C19 15.194 15.194 19 10.5 19C5.806 19 2 15.194 2 10.5C2 5.806 5.806 2 10.5 2C15.194 2 19 5.806 19 10.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
             </button>
         </div>
-    </div>
-    <!-- Botón de instalación (inicialmente oculto) -->
-    <button id="installButton" class="install-btn" style="display: none;">
-        <i class="fas fa-download"></i>
-        <span>Instalar</span>
-    </button>
-</header>
+    </header>
 
-    <main>
-        <div id="movies-container" class="content-container"></div>
-        <div id="series-container" class="content-container"></div>
+    <main class="main">
+        <!-- Sección destacada -->
+        <section class="featured-section">
+            <h2 class="section-title">Destacadas</h2>
+            <div class="featured-container" id="featured-container">
+                <!-- Contenido destacado se cargará aquí -->
+            </div>
+        </section>
+
+        <!-- Sección de películas -->
+        <section class="movies-section">
+            <h2 class="section-title">Películas</h2>
+            <div class="filter-container">
+                <button class="filter-btn active" data-filter="all">Todas</button>
+                <button class="filter-btn" data-filter="new">Nuevas</button>
+                <button class="filter-btn" data-filter="action">Acción</button>
+                <button class="filter-btn" data-filter="terror">Terror</button>
+                <button class="filter-btn" data-filter="comedy">Comedia</button>
+            </div>
+            <div class="movies-grid" id="movies-container">
+                <!-- Películas se cargarán aquí -->
+            </div>
+        </section>
+
+        <!-- Sección de series -->
+        <section class="series-section">
+            <h2 class="section-title">Series</h2>
+            <div class="series-grid" id="series-container">
+                <!-- Series se cargarán aquí -->
+            </div>
+        </section>
     </main>
 
-    <nav class="bottom-nav">
-        <a href="#movies-container" class="nav-btn">
-            <i class="fas fa-film"></i>
-            <span>Películas</span>
-        </a>
-        <a href="#series-container" class="nav-btn">
-            <i class="fas fa-tv"></i>
-            <span>Series</span>
-        </a>
-    </nav>
+    <!-- Modal de búsqueda -->
+    <div class="modal" id="search-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Buscar</h3>
+                <button class="close-modal" id="close-search">&times;</button>
+            </div>
+            <div class="search-input-container">
+                <input type="text" id="search-input" placeholder="Buscar películas o series...">
+            </div>
+            <div class="search-results" id="search-results">
+                <!-- Resultados de búsqueda aparecerán aquí -->
+            </div>
+        </div>
+    </div>
 
-    <script type="module" src="assets/js/main.js"></script>
+    <script type="module" src="main.js"></script>
 </body>
 </html>
