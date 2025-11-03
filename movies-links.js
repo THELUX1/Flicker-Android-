@@ -3,8 +3,8 @@ const moviesLinks = {
     "1078605": {
         title: "Weapons",
         sources: [
-            { quality: "HD", url: "https://cdn-kuc3ehpz4wnczfyz.orbitcache.com/engine/hls2-c/01/15175/t7x1xtcbd4ao_,n,.urlset/index-v1-a1.m3u8?t=R67uKCRcg8Gh-xBs-EZ1S8pF3mMSY7rYLS8ruUWT-_I&s=1755890912&e=14400&f=75876826&node=07NuzcM+Z0d69CHSPeoFAVdb5mcUGZnvYS35DG5H5yM=&i=0.1&sp=2500&asn=264738&q=n&rq=glCDBx9xOIgN7OWd8AKYnyxrgMaSBKnOp79qAHEm" },
-            { quality: "SD", url: "https://cdn-kuc3ehpz4wnczfyz.orbitcache.com/engine/hls2-c/01/15175/t7x1xtcbd4ao_,n,.urlset/index-v1-a1.m3u8?t=R67uKCRcg8Gh-xBs-EZ1S8pF3mMSY7rYLS8ruUWT-_I&s=1755890912&e=14400&f=75876826&node=07NuzcM+Z0d69CHSPeoFAVdb5mcUGZnvYS35DG5H5yM=&i=0.1&sp=2500&asn=264738&q=n&rq=glCDBx9xOIgN7OWd8AKYnyxrgMaSBKnOp79qAHEm" }
+            { quality: "HD", url: "https://v3.fiestareel.com/mov/2022/1078605-113794/720/720p.m3u8" },
+            { quality: "SD", url: "https://v3.fiestareel.com/mov/2022/1078605-113794/720/720p.m3u8" }
         ],
         subtitles: [
             { lang: "Español", url: "https://example.com/movies/ziam/subs/es.vtt" },
@@ -190,8 +190,8 @@ const moviesLinks = {
     "1234821": {
         title: "Jurassic World: Renace",
         sources: [
-            { quality: "HD", url: "https://v2.fiestareel.com/mov/2025/1234821-109762/720/720p.m3u8" },
-            { quality: "SD", url: "https://h5.onfilom.com/es/detail/movie/t68TM94R4F31JdsST5v1k-Jurassic-World-Rebirth" }
+            { quality: "HD", url: "https://v3.fiestareel.com/mov/2025/1234821-109762/720/720p.m3u8" },
+            { quality: "SD", url: "https://v3.fiestareel.com/mov/2025/1234821-109762/720/720p.m3u8" }
         ],
         subtitles: [
             { lang: "Español", url: "https://example.com/movies/ziam/subs/es.vtt" },
@@ -201,8 +201,8 @@ const moviesLinks = {
     "1071585": {
         title: "M3GAN 2.0",
         sources: [
-            { quality: "HD", url: "https://v2.fiestareel.com/mov/2025/1071585-110817/720/720p.m3u8" },
-            { quality: "SD", url: "https://v2.fiestareel.com/mov/2025/1071585-110817/480/480p.m3u8" }
+            { quality: "HD", url: "https://v3.fiestareel.com/mov/2025/1071585-110817/720/720p.m3u8" },
+            { quality: "SD", url: "https://v3.fiestareel.com/mov/2025/1071585-110817/720/720p.m3u8" }
         ],
         subtitles: [
             { lang: "Español", url: "https://example.com/movies/ziam/subs/es.vtt" },
@@ -212,8 +212,8 @@ const moviesLinks = {
     "846422": {
         title: "La vieja guardia 2",
         sources: [
-            { quality: "HD", url: "https://v2.fiestareel.com/mov/2025/846422-105290/720/720p.m3u8" },
-            { quality: "SD", url: "https://v2.fiestareel.com/mov/2025/846422-105290/480/480p.m3u8" }
+            { quality: "HD", url: "https://v3.fiestareel.com/mov/2025/846422-105290/720/720p.m3u8" },
+            { quality: "SD", url: "https://v3.fiestareel.com/mov/2025/846422-105290/720/720p.m3u8" }
         ],
         subtitles: [
             { lang: "Español", url: "https://example.com/movies/ziam/subs/es.vtt" },

@@ -8,7 +8,7 @@ export const moviesData = [
         year: "2025",
         genres: ["Terror", "Misterio"],
         addedDate: "2025",
-        isNew: true
+        isNew: false
     },
     {
       id: 1429744,
@@ -17,7 +17,7 @@ export const moviesData = [
           link: "detalles.html?type=movie&id=1429744",
           year: "2025",
           genres: ["Terror", "Suspenso", "Acción"],
-          isNew: true// <-- Asegúrate de que esto esté definido
+          isNew: false// <-- Asegúrate de que esto esté definido
       },
 {
       id: 1307078,
@@ -34,7 +34,7 @@ export const moviesData = [
           link: "detalles.html?type=movie&id=1061474",
           year: "2025",
           genres: ["Ciencia ficción", "Acción", "Aventura"],
-          isNew: true// <-- Asegúrate de que esto esté definido
+          isNew: false// <-- Asegúrate de que esto esté definido
       },
 {
       id: 1287536,
