@@ -1,5 +1,32 @@
 // Películas disponibles (ordenadas por fecha de agregado, más recientes primero)
 export const moviesData = [
+{
+      id: 604079,
+          title: "Camina o muere",
+          image: "https://media.themoviedb.org/t/p/w220_and_h330_face/izA5U09supDy8J2Z4339Po6PIHU.jpg",
+          link: "detalles.html?type=movie&id=604079",
+          year: "2025",
+          genres: ["Terror", "Suspenso", "Ciencia Ficción"],
+          isNew: true// <-- Asegúrate de que esto esté definido
+      },
+    {
+      id: 1204883,
+          title: "Un Día Cualquiera",
+          image: "https://media.themoviedb.org/t/p/w220_and_h330_face/mJSyDRmxwdpwBu2o1G2VdHv8fDZ.jpg",
+          link: "detalles.html?type=movie&id=1204883",
+          year: "2025",
+          genres: ["Terror", "Suspenso"],
+          isNew: true// <-- Asegúrate de que esto esté definido
+      },
+    {
+      id: 1038392,
+          title: "El Conjuro: El Último Rito",
+          image: "https://m.media-amazon.com/images/M/MV5BM2VmMzRkYzgtMzg2ZC00OTFkLTkwMTYtNTMxNjM2YzI1MjgyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
+          link: "detalles.html?type=movie&id=1038392",
+          year: "2025",
+          genres: ["Terror", "Suspenso", "Horror"],
+          isNew: false// <-- Asegúrate de que esto esté definido
+      },
     {
         id: 1078605,
         title: "La Hora De La Desaparición",

@@ -1,5 +1,37 @@
 const moviesLinks = {
-
+"604079": {
+        title: "Camina o muere",
+        sources: [
+            { quality: "HD", url: "https://be7713.rcr82.waw05.i8yz83pn.com/hls2/01/10151/0ys4dpdnn9m2_x/master.m3u8?t=SOU3XN6eOyExFm5TPejeiHzPB1RpXMlYVK9H25abYzQ&s=1762162733&e=10800&f=50755019&srv=1060&asn=264738&sp=5500&p=" },
+            { quality: "SD", url: "" }
+        ],
+        subtitles: [
+            { lang: "Español", url: "https://example.com/movies/ziam/subs/es.vtt" },
+            { lang: "Inglés", url: "https://example.com/movies/ziam/subs/en.vtt" }
+        ]
+    },
+"1204883": {
+        title: "Un Día Cualquiera",
+        sources: [
+            { quality: "HD", url: "https://v3.fiestareel.com/mov/2022/1204883-118777/720/720p.m3u8" },
+            { quality: "SD", url: "https://v3.fiestareel.com/mov/2022/1204883-118777/720/720p.m3u8" }
+        ],
+        subtitles: [
+            { lang: "Español", url: "https://example.com/movies/ziam/subs/es.vtt" },
+            { lang: "Inglés", url: "https://example.com/movies/ziam/subs/en.vtt" }
+        ]
+    },
+    "1038392": {
+        title: "El Conjuro 4",
+        sources: [
+            { quality: "HD", url: "https://be4235.rcr32.ams02.i8yz83pn.com/hls2/06/09995/csbsivsho09j_x/master.m3u8?t=e7bLcy98vJvwsSEUk8qwVacq9mJMjeXYd7PXG69EZYM&s=1762161975&e=10800&f=49978016&srv=1070&asn=264738&sp=5500&p=" },
+            { quality: "SD", url: "https://be4235.rcr32.ams02.i8yz83pn.com/hls2/06/09995/csbsivsho09j_x/index-v1-a1.m3u8?t=e7bLcy98vJvwsSEUk8qwVacq9mJMjeXYd7PXG69EZYM&s=1762161975&e=10800&f=49978016&srv=1070&asn=264738&sp=5500&p=" }
+        ],
+        subtitles: [
+            { lang: "Español", url: "https://example.com/movies/ziam/subs/es.vtt" },
+            { lang: "Inglés", url: "https://example.com/movies/ziam/subs/en.vtt" }
+        ]
+    },
     "1078605": {
         title: "Weapons",
         sources: [
