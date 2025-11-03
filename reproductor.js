@@ -11,24 +11,33 @@ const retryBtn = document.getElementById('retry-btn');
 const playerBackBtn = document.getElementById('player-back-btn');
 const videoTitle = document.getElementById('video-title');
 const qualityBtn = document.getElementById('quality-btn');
+const qualityBadge = document.getElementById('quality-badge');
 const qualityMenu = document.getElementById('quality-menu');
 const qualityOptions = document.getElementById('quality-options');
 const playPauseBtn = document.getElementById('play-pause-btn');
 const playIcon = playPauseBtn.querySelector('.play-icon');
 const pauseIcon = playPauseBtn.querySelector('.pause-icon');
+const skipBackBtn = document.getElementById('skip-back-btn');
+const skipForwardBtn = document.getElementById('skip-forward-btn');
 const currentTimeEl = document.getElementById('current-time');
 const durationEl = document.getElementById('duration');
 const progressBar = document.getElementById('progress-bar');
 const progressFilled = document.getElementById('progress-filled');
+const progressBuffer = document.getElementById('progress-buffer');
 const progressThumb = document.getElementById('progress-thumb');
 const volumeBtn = document.getElementById('volume-btn');
 const volumeHigh = volumeBtn.querySelector('.volume-high');
 const volumeMute = volumeBtn.querySelector('.volume-mute');
+const volumeSliderContainer = document.getElementById('volume-slider-container');
+const volumeSlider = document.getElementById('volume-slider');
+const volumeLevel = document.getElementById('volume-level');
+const volumeThumb = document.getElementById('volume-thumb');
 const fullscreenBtn = document.getElementById('fullscreen-btn');
 const fullscreenEnter = fullscreenBtn.querySelector('.fullscreen-enter');
 const fullscreenExit = fullscreenBtn.querySelector('.fullscreen-exit');
 const watchingNotification = document.getElementById('watching-notification');
 const watchingText = document.getElementById('watching-text');
+const gestureOverlay = document.getElementById('gesture-overlay');
 
 // Variables de estado
 let currentMovieId = null;
@@ -36,11 +45,16 @@ let currentSources = [];
 let currentQuality = 'HD';
 let movieData = null;
 let isSeeking = false;
+let isVolumeSliding = false;
 let controlsTimeout = null;
 let isFullscreen = false;
 let isControlsVisible = false;
 let savedProgress = 0;
 let hasShownContinueDialog = false;
+let isVolumeMenuOpen = false;
+let lastTapTime = 0;
+let doubleTapTimeout = null;
+let gestureFeedback = null;
 
 // Inicializar el reproductor
 document.addEventListener('DOMContentLoaded', () => {
@@ -58,7 +72,38 @@ document.addEventListener('DOMContentLoaded', () => {
     loadMovie(movieId);
     setupEventListeners();
     setupVideoEvents();
+    setupGestureControls();
+    
+    // Crear elemento de feedback para gestos
+    createGestureFeedback();
 });
+
+// Crear elemento de feedback para gestos
+function createGestureFeedback() {
+    gestureFeedback = document.createElement('div');
+    gestureFeedback.className = 'gesture-feedback';
+    gestureFeedback.innerHTML = `
+        <div class="gesture-icon"></div>
+        <div class="gesture-text"></div>
+    `;
+    gestureFeedback.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        display: none;
+        align-items: center;
+        gap: 0.75rem;
+        z-index: 10000;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    `;
+    document.body.appendChild(gestureFeedback);
+}
 
 // Cargar progreso guardado desde localStorage
 function loadSavedProgress(movieId) {
@@ -153,8 +198,7 @@ function setupEventListeners() {
     // Calidad
     qualityBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        const isVisible = qualityMenu.style.display === 'block';
-        qualityMenu.style.display = isVisible ? 'none' : 'block';
+        toggleQualityMenu();
         showControls();
         resetControlsTimeout();
     });
@@ -167,10 +211,25 @@ function setupEventListeners() {
         resetControlsTimeout();
     });
     
+    // Skip controls
+    skipBackBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        skipBackward();
+        showControls();
+        resetControlsTimeout();
+    });
+    
+    skipForwardBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        skipForward();
+        showControls();
+        resetControlsTimeout();
+    });
+    
     // Volumen
     volumeBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        toggleMute();
+        toggleVolumeMenu();
         showControls();
         resetControlsTimeout();
     });
@@ -242,6 +301,9 @@ function setupEventListeners() {
         }
     });
     
+    // Volume slider
+    setupVolumeSlider();
+    
     // Mostrar controles al mover el mouse o tocar
     videoContainer.addEventListener('mousemove', () => {
         if (!videoPlayer.paused) {
@@ -262,7 +324,8 @@ function setupEventListeners() {
         // Solo toggle play/pause si no se hizo click en un control
         if (!e.target.closest('.control-btn') && 
             !e.target.closest('.quality-menu') && 
-            !e.target.closest('.progress-container')) {
+            !e.target.closest('.progress-container') &&
+            !e.target.closest('.volume-slider-container')) {
             togglePlayPause();
             showControls();
             resetControlsTimeout();
@@ -272,7 +335,11 @@ function setupEventListeners() {
     // Cerrar menús al hacer clic fuera
     document.addEventListener('click', (e) => {
         if (!qualityBtn.contains(e.target) && !qualityMenu.contains(e.target)) {
-            qualityMenu.style.display = 'none';
+            hideQualityMenu();
+        }
+        
+        if (!volumeBtn.contains(e.target) && !volumeSliderContainer.contains(e.target)) {
+            hideVolumeMenu();
         }
     });
     
@@ -287,6 +354,277 @@ function setupEventListeners() {
     // Detectar cambios de orientación sin recargar
     window.addEventListener('orientationchange', handleOrientationChange);
     screen.orientation?.addEventListener('change', handleOrientationChange);
+}
+
+// Configurar controles de gestos para móviles
+function setupGestureControls() {
+    let startX = 0;
+    let startY = 0;
+    let currentX = 0;
+    let currentY = 0;
+    let isSwiping = false;
+    let swipeType = null; // 'volume', 'brightness', 'seek'
+    
+    gestureOverlay.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+            currentX = startX;
+            currentY = startY;
+            isSwiping = true;
+            
+            // Detectar doble tap
+            const currentTime = new Date().getTime();
+            const tapLength = currentTime - lastTapTime;
+            if (tapLength < 300 && tapLength > 0) {
+                // Doble tap detectado
+                clearTimeout(doubleTapTimeout);
+                handleDoubleTap(e);
+                lastTapTime = 0;
+            } else {
+                doubleTapTimeout = setTimeout(() => {
+                    lastTapTime = currentTime;
+                }, 300);
+            }
+        }
+    });
+    
+    gestureOverlay.addEventListener('touchmove', (e) => {
+        if (!isSwiping || e.touches.length !== 1) return;
+        
+        currentX = e.touches[0].clientX;
+        currentY = e.touches[0].clientY;
+        
+        const deltaX = currentX - startX;
+        const deltaY = currentY - startY;
+        
+        // Determinar tipo de gesto después de un umbral mínimo
+        if (!swipeType && (Math.abs(deltaX) > 10 || Math.abs(deltaY) > 10)) {
+            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                swipeType = 'seek';
+            } else {
+                // Izquierda: brillo, Derecha: volumen
+                if (startX < window.innerWidth / 2) {
+                    swipeType = 'brightness';
+                } else {
+                    swipeType = 'volume';
+                }
+            }
+        }
+        
+        if (swipeType === 'seek') {
+            handleSeekGesture(deltaX);
+        } else if (swipeType === 'volume') {
+            handleVolumeGesture(deltaY);
+        } else if (swipeType === 'brightness') {
+            handleBrightnessGesture(deltaY);
+        }
+        
+        showControls();
+        resetControlsTimeout();
+    });
+    
+    gestureOverlay.addEventListener('touchend', () => {
+        if (isSwiping) {
+            isSwiping = false;
+            swipeType = null;
+            hideGestureFeedback();
+        }
+    });
+}
+
+function handleDoubleTap(e) {
+    const tapX = e.touches ? e.touches[0].clientX : e.clientX;
+    const screenWidth = window.innerWidth;
+    
+    if (tapX < screenWidth / 2) {
+        // Tap izquierdo: retroceder 10s
+        skipBackward();
+    } else {
+        // Tap derecho: avanzar 10s
+        skipForward();
+    }
+    
+    showControls();
+    resetControlsTimeout();
+}
+
+function handleSeekGesture(deltaX) {
+    if (!videoPlayer.duration) return;
+    
+    const seekAmount = (deltaX / window.innerWidth) * videoPlayer.duration * 0.5;
+    const newTime = Math.max(0, Math.min(videoPlayer.duration, videoPlayer.currentTime + seekAmount));
+    
+    // Mostrar feedback visual del seek
+    showSeekFeedback(seekAmount > 0 ? 'forward' : 'backward', Math.abs(seekAmount));
+    
+    // Aplicar el seek
+    videoPlayer.currentTime = newTime;
+}
+
+function handleVolumeGesture(deltaY) {
+    const volumeChange = -deltaY / window.innerHeight;
+    const newVolume = Math.max(0, Math.min(1, videoPlayer.volume + volumeChange));
+    videoPlayer.volume = newVolume;
+    updateVolumeSlider();
+    updateVolumeIcon();
+    
+    // Mostrar feedback visual del volumen
+    showVolumeFeedback(newVolume);
+}
+
+function handleBrightnessGesture(deltaY) {
+    // Nota: El control de brillo requiere una API específica que puede no estar disponible
+    // Esta es una implementación de ejemplo
+    const brightnessChange = -deltaY / window.innerHeight;
+    // En una implementación real, aquí controlarías el brillo de la pantalla
+    console.log('Brightness change:', brightnessChange);
+    showBrightnessFeedback(brightnessChange);
+}
+
+function showSeekFeedback(direction, amount) {
+    if (!gestureFeedback) return;
+    
+    const seconds = Math.round(amount);
+    const icon = direction === 'forward' ? '⏩' : '⏪';
+    
+    gestureFeedback.querySelector('.gesture-icon').textContent = icon;
+    gestureFeedback.querySelector('.gesture-text').textContent = `${seconds}s`;
+    gestureFeedback.style.display = 'flex';
+    
+    // Auto-ocultar después de 1 segundo
+    clearTimeout(gestureFeedback.timeout);
+    gestureFeedback.timeout = setTimeout(() => {
+        gestureFeedback.style.display = 'none';
+    }, 1000);
+}
+
+function showVolumeFeedback(volume) {
+    if (!gestureFeedback) return;
+    
+    const level = Math.round(volume * 100);
+    const icon = volume === 0 ? '🔇' : volume < 0.5 ? '🔈' : '🔊';
+    
+    gestureFeedback.querySelector('.gesture-icon').textContent = icon;
+    gestureFeedback.querySelector('.gesture-text').textContent = `${level}%`;
+    gestureFeedback.style.display = 'flex';
+    
+    // Auto-ocultar después de 1 segundo
+    clearTimeout(gestureFeedback.timeout);
+    gestureFeedback.timeout = setTimeout(() => {
+        gestureFeedback.style.display = 'none';
+    }, 1000);
+}
+
+function showBrightnessFeedback(change) {
+    if (!gestureFeedback) return;
+    
+    const icon = change > 0 ? '🔆' : '🔅';
+    
+    gestureFeedback.querySelector('.gesture-icon').textContent = icon;
+    gestureFeedback.querySelector('.gesture-text').textContent = 'Brillo';
+    gestureFeedback.style.display = 'flex';
+    
+    // Auto-ocultar después de 1 segundo
+    clearTimeout(gestureFeedback.timeout);
+    gestureFeedback.timeout = setTimeout(() => {
+        gestureFeedback.style.display = 'none';
+    }, 1000);
+}
+
+function hideGestureFeedback() {
+    if (gestureFeedback) {
+        gestureFeedback.style.display = 'none';
+    }
+}
+
+function skipBackward() {
+    if (!videoPlayer.duration) return;
+    videoPlayer.currentTime = Math.max(0, videoPlayer.currentTime - 10);
+    showSeekFeedback('backward', 10);
+}
+
+function skipForward() {
+    if (!videoPlayer.duration) return;
+    videoPlayer.currentTime = Math.min(videoPlayer.duration, videoPlayer.currentTime + 10);
+    showSeekFeedback('forward', 10);
+}
+
+// Configurar el control deslizante de volumen
+function setupVolumeSlider() {
+    volumeSlider.addEventListener('mousedown', startVolumeSliding);
+    volumeSlider.addEventListener('touchstart', startVolumeSliding);
+    
+    document.addEventListener('mousemove', handleVolumeSliding);
+    document.addEventListener('touchmove', handleVolumeSliding);
+    
+    document.addEventListener('mouseup', stopVolumeSliding);
+    document.addEventListener('touchend', stopVolumeSliding);
+}
+
+function startVolumeSliding(e) {
+    isVolumeSliding = true;
+    handleVolumeSliding(e);
+    showVolumeMenu();
+}
+
+function handleVolumeSliding(e) {
+    if (!isVolumeSliding) return;
+    
+    const rect = volumeSlider.getBoundingClientRect();
+    const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+    const percent = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+    
+    videoPlayer.volume = percent;
+    updateVolumeSlider();
+    updateVolumeIcon();
+}
+
+function stopVolumeSliding() {
+    isVolumeSliding = false;
+}
+
+function updateVolumeSlider() {
+    const percent = videoPlayer.volume * 100;
+    volumeLevel.style.width = `${percent}%`;
+    volumeThumb.style.left = `${percent}%`;
+}
+
+// Control del menú de volumen
+function toggleVolumeMenu() {
+    if (isVolumeMenuOpen) {
+        hideVolumeMenu();
+    } else {
+        showVolumeMenu();
+    }
+}
+
+function showVolumeMenu() {
+    volumeSliderContainer.classList.add('visible');
+    isVolumeMenuOpen = true;
+    updateVolumeSlider();
+}
+
+function hideVolumeMenu() {
+    volumeSliderContainer.classList.remove('visible');
+    isVolumeMenuOpen = false;
+}
+
+// Control del menú de calidad
+function toggleQualityMenu() {
+    if (qualityMenu.classList.contains('visible')) {
+        hideQualityMenu();
+    } else {
+        showQualityMenu();
+    }
+}
+
+function showQualityMenu() {
+    qualityMenu.classList.add('visible');
+}
+
+function hideQualityMenu() {
+    qualityMenu.classList.remove('visible');
 }
 
 // Manejar cambio de orientación
@@ -456,6 +794,11 @@ function setupVideoEvents() {
         }
     });
     
+    // Progress buffer events
+    videoPlayer.addEventListener('progress', () => {
+        updateBufferProgress();
+    });
+    
     // Guardar progreso cuando se cierre la página
     window.addEventListener('beforeunload', () => {
         if (currentMovieId && videoPlayer.duration && !videoPlayer.ended) {
@@ -471,6 +814,15 @@ function setupVideoEvents() {
     });
 }
 
+// Actualizar progreso del buffer
+function updateBufferProgress() {
+    if (videoPlayer.buffered.length > 0 && videoPlayer.duration > 0) {
+        const bufferedEnd = videoPlayer.buffered.end(videoPlayer.buffered.length - 1);
+        const bufferPercent = (bufferedEnd / videoPlayer.duration) * 100;
+        progressBuffer.style.width = `${bufferPercent}%`;
+    }
+}
+
 // Mostrar controles temporalmente (3 segundos)
 function showControlsTemporarily() {
     showControls();
@@ -484,7 +836,7 @@ function showControlsTemporarily() {
 // Mostrar controles
 function showControls() {
     if (!isControlsVisible) {
-        customControls.style.opacity = '1';
+        customControls.classList.add('visible');
         isControlsVisible = true;
     }
     clearTimeout(controlsTimeout);
@@ -493,7 +845,7 @@ function showControls() {
 // Ocultar controles
 function hideControls() {
     if (isControlsVisible) {
-        customControls.style.opacity = '0';
+        customControls.classList.remove('visible');
         isControlsVisible = false;
     }
     clearTimeout(controlsTimeout);
@@ -575,6 +927,9 @@ function loadVideoSource() {
     customLoader.style.display = 'flex';
     errorOverlay.style.display = 'none';
     
+    // Actualizar badge de calidad
+    qualityBadge.textContent = source.quality;
+    
     // Configurar el video player
     videoPlayer.innerHTML = '';
     
@@ -614,9 +969,10 @@ function changeQuality(quality) {
     if (quality === currentQuality) return;
     
     currentQuality = quality;
+    qualityBadge.textContent = quality;
     loadVideoSource();
     setupQualityOptions();
-    qualityMenu.style.display = 'none';
+    hideQualityMenu();
 }
 
 // Toggle play/pause
@@ -677,6 +1033,7 @@ function formatTime(seconds) {
 // Buscar en el video
 function startSeeking(e) {
     isSeeking = true;
+    progressBar.classList.add('active');
     handleSeeking(e);
 }
 
@@ -696,6 +1053,7 @@ function stopSeeking() {
     if (!isSeeking || !videoPlayer.duration) return;
     
     isSeeking = false;
+    progressBar.classList.remove('active');
     const percent = parseFloat(progressFilled.style.width) / 100;
     videoPlayer.currentTime = percent * videoPlayer.duration;
 }
@@ -730,19 +1088,20 @@ function handleKeyboard(e) {
             break;
         case 'arrowleft':
             e.preventDefault();
-            videoPlayer.currentTime = Math.max(0, videoPlayer.currentTime - 10);
+            skipBackward();
             showControls();
             resetControlsTimeout();
             break;
         case 'arrowright':
             e.preventDefault();
-            videoPlayer.currentTime = Math.min(videoPlayer.duration, videoPlayer.currentTime + 10);
+            skipForward();
             showControls();
             resetControlsTimeout();
             break;
         case 'arrowup':
             e.preventDefault();
             videoPlayer.volume = Math.min(1, videoPlayer.volume + 0.1);
+            updateVolumeSlider();
             updateVolumeIcon();
             showControls();
             resetControlsTimeout();
@@ -750,6 +1109,7 @@ function handleKeyboard(e) {
         case 'arrowdown':
             e.preventDefault();
             videoPlayer.volume = Math.max(0, videoPlayer.volume - 0.1);
+            updateVolumeSlider();
             updateVolumeIcon();
             showControls();
             resetControlsTimeout();
