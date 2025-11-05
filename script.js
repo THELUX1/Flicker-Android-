@@ -283,3 +283,28 @@ loadMoviesLinks();
 
     // Cargar películas al iniciar
     loadMovies();
+// Detectar botón "atrás" del sistema en Android / WebView
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" || e.key === "Backspace") {
+    handleBackButton();
+  }
+});
+
+// También funciona para WebView con historial
+window.addEventListener("popstate", handleBackButton);
+
+function handleBackButton() {
+  const detailsVisible = document.getElementById("details").style.display === "block";
+  if (detailsVisible) {
+    // Si estamos viendo una película, volvemos al catálogo
+    showList();
+    // Evitamos que Android cierre la app
+    history.pushState(null, "", location.href);
+  } else {
+    // Si ya estamos en el catálogo, dejamos que Android cierre la app
+    return false;
+  }
+}
+
+// Para asegurar que haya un estado inicial
+history.pushState(null, "", location.href);
