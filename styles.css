@@ -20,6 +20,7 @@ body {
   background: var(--negro);
   color: var(--texto);
   line-height: 1.6;
+  overflow-x: hidden;
 }
 
 /* Header mejorado con bordes redondeados */
@@ -160,6 +161,16 @@ body {
   padding: 25px 20px;
   max-width: 1400px;
   margin: 0 auto;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Estados de animación para el contenedor principal */
+.container.hidden {
+  animation: slideOutLeft 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.container:not(.hidden) {
+  animation: slideInRight 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
 .section-header {
@@ -203,6 +214,25 @@ body {
   overflow: hidden;
   background: var(--gris-medio);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  animation: cardAppear 0.5s ease forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.movie-card:nth-child(1) { animation-delay: 0.1s; }
+.movie-card:nth-child(2) { animation-delay: 0.15s; }
+.movie-card:nth-child(3) { animation-delay: 0.2s; }
+.movie-card:nth-child(4) { animation-delay: 0.25s; }
+.movie-card:nth-child(5) { animation-delay: 0.3s; }
+.movie-card:nth-child(6) { animation-delay: 0.35s; }
+.movie-card:nth-child(7) { animation-delay: 0.4s; }
+.movie-card:nth-child(8) { animation-delay: 0.45s; }
+
+@keyframes cardAppear {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .movie-card:hover {
@@ -277,15 +307,84 @@ body {
   padding: 0;
   max-width: 100%;
   margin: 0;
-  animation: fadeIn 0.4s ease;
+  position: relative;
+}
+
+/* Animaciones para el contenedor de detalles */
+.details-container[style*="display: block"] {
+  animation: slideInUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.details-container.hiding {
+  animation: slideOutDown 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* Animaciones principales */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideOutDown {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOutLeft {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
 }
 
-
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
 
 .details-hero {
   position: relative;
@@ -296,6 +395,18 @@ body {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  animation: heroSlideIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes heroSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(1.1);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .details-hero::before {
@@ -320,6 +431,18 @@ body {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
+  animation: contentSlideUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s both;
+}
+
+@keyframes contentSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .details-info {
@@ -332,6 +455,18 @@ body {
   margin-bottom: 20px;
   color: var(--texto);
   text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+  animation: titleSlideIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s both;
+}
+
+@keyframes titleSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .details-meta {
@@ -340,6 +475,18 @@ body {
   margin-bottom: 25px;
   flex-wrap: wrap;
   align-items: center;
+  animation: metaSlideIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.4s both;
+}
+
+@keyframes metaSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .details-year {
@@ -372,6 +519,18 @@ body {
   color: var(--texto);
   margin-bottom: 30px;
   text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+  animation: overviewSlideIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.5s both;
+}
+
+@keyframes overviewSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .play-btn {
@@ -388,6 +547,18 @@ body {
   align-items: center;
   gap: 10px;
   margin-bottom: 30px;
+  animation: buttonScaleIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.6s both;
+}
+
+@keyframes buttonScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .play-btn:hover {
@@ -398,6 +569,18 @@ body {
 .trailer-container {
   background: var(--gris-oscuro);
   padding: 40px 20px;
+  animation: trailerSlideIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.7s both;
+}
+
+@keyframes trailerSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .trailer-content {
@@ -492,6 +675,81 @@ input, textarea {
   appearance: none;
 }
 
+/* Botón de volver principal */
+.back-button {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  animation: backButtonSlideIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s both;
+}
+
+@keyframes backButtonSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.back-button:hover {
+  background: rgba(0, 0, 0, 0.9);
+  transform: translateX(-5px);
+}
+
+/* Botón de volver móvil (se oculta en desktop) */
+.back-button-mobile {
+  display: none;
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  z-index: 1000;
+  background: #ff0a00a3;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  backdrop-filter: blur(10px);
+  animation: backButtonSlideIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s both;
+}
+
+/* Responsive: En móviles mostrar solo el botón móvil */
+@media (max-width: 768px) {
+  .back-button {
+    display: none;
+  }
+  
+  .back-button-mobile {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+}
+
+/* Asegurar que el contenido no quede detrás del botón */
+.details-hero {
+  position: relative;
+  z-index: 1;
+}
+
 /* Mejoras responsive */
 @media (max-width: 768px) {
   .header {
@@ -553,6 +811,29 @@ input, textarea {
     margin: 15px;
     top: 15px;
     left: 15px;
+  }
+
+  /* Ajustes de animaciones para móviles */
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(-15px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slideOutLeft {
+    from {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateX(-15px);
+    }
   }
 }
 
