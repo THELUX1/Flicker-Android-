@@ -29,10 +29,12 @@ document.addEventListener('click', (e) => {
   }
 });
 
-// MEJORA: Sistema mejorado de navegación con botón de atrás
+// ===================================================
+// 🔙 SISTEMA DE BOTÓN ATRÁS CORREGIDO
+// ===================================================
 function initializeBackButton() {
   // Manejar el botón de atrás del navegador
-  window.addEventListener('popstate', function(event) {
+  window.addEventListener('popstate', function (event) {
     if (isInDetailsView) {
       showList();
     }
@@ -40,27 +42,37 @@ function initializeBackButton() {
 
   // Manejar el botón de atrás físico en Android
   document.addEventListener('backbutton', handleBackButton, false);
-  
+
   // Manejar tecla Escape en desktop
-  document.addEventListener('keydown', function(e) {
+  document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && isInDetailsView) {
       showList();
     }
   });
 }
 
-function handleBackButton() {
+function handleBackButton(event) {
+  if (event) event.preventDefault();
+
   if (isInDetailsView) {
     showList();
-    // Prevenir el comportamiento por defecto
-    if (typeof event !== 'undefined') {
-      event.preventDefault();
+  } else {
+    // Confirmar salida de la app
+    if (confirm("¿Deseas salir de Flicker?")) {
+      if (navigator.app && navigator.app.exitApp) {
+        navigator.app.exitApp();
+      } else {
+        window.close();
+      }
     }
-    return false;
   }
-  return true;
+
+  return false;
 }
 
+// ===================================================
+// CARGA DE PELÍCULAS
+// ===================================================
 async function loadMovies() {
   try {
     document.getElementById("movies").innerHTML = `
@@ -111,7 +123,6 @@ function renderMovies(movies) {
     const movieCard = document.createElement("div");
     movieCard.className = "movie-card";
     
-    // CORRECCIÓN: Calcular los géneros correctamente
     const genres = movie.genres || [];
     const genresToShow = genres.slice(0, 2);
     const remainingGenres = genres.length > 2 ? genres.length - 2 : 0;
@@ -125,9 +136,7 @@ function renderMovies(movies) {
         <div class="movie-title">${movie.title}</div>
         <div class="movie-year">${movie.year}</div>
         <div class="movie-genres">
-          ${genresToShow.map(genre => 
-            `<span class="genre-tag">${genre}</span>`
-          ).join('')}
+          ${genresToShow.map(genre => `<span class="genre-tag">${genre}</span>`).join('')}
           ${remainingGenres > 0 ? `<span class="genre-tag">+${remainingGenres}</span>` : ''}
         </div>
       </div>
@@ -139,8 +148,10 @@ function renderMovies(movies) {
   updateMoviesCount(movies.length);
 }
 
+// ===================================================
+// DETALLES DE PELÍCULA
+// ===================================================
 async function showDetails(movie) {
-  // MEJORA: Actualizar estado y historial
   isInDetailsView = true;
   history.pushState({ page: 'details', movieId: movie.id }, '', `#${movie.id}`);
   
@@ -152,9 +163,7 @@ async function showDetails(movie) {
   
   document.getElementById("header").classList.add("hidden");
   document.getElementById("mainContainer").classList.add("hidden");
-  
-  const details = document.getElementById("details");
-  details.style.display = "block";
+  document.getElementById("details").style.display = "block";
 
   try {
     const [movieRes, trailerRes] = await Promise.all([
@@ -174,9 +183,7 @@ async function showDetails(movie) {
             <div class="details-meta">
               <span class="details-year">${movie.year}</span>
               <div class="details-genres">
-                ${(movie.genres || []).map(genre => 
-                  `<span class="details-genre">${genre}</span>`
-                ).join('')}
+                ${(movie.genres || []).map(genre => `<span class="details-genre">${genre}</span>`).join('')}
               </div>
             </div>
             <p class="details-overview">${data.overview || "Sin descripción disponible."}</p>
@@ -189,8 +196,8 @@ async function showDetails(movie) {
       <div class="trailer-container">
         <div class="trailer-content">
           <h3 class="trailer-title">Tráiler</h3>
-          ${trailer ? 
-            `<iframe class="trailer-frame" src="https://www.youtube.com/embed/${trailer.key}" frameborder="0" allowfullscreen></iframe>` : 
+          ${trailer ?
+            `<iframe class="trailer-frame" src="https://www.youtube.com/embed/${trailer.key}" frameborder="0" allowfullscreen></iframe>` :
             '<div class="no-trailer">🎬 Tráiler no disponible</div>'
           }
         </div>
@@ -207,78 +214,76 @@ async function showDetails(movie) {
   }
 }
 
+// ===================================================
+// VOLVER AL CATÁLOGO
+// ===================================================
 function showList() {
-  // MEJORA: Actualizar estado y historial
   isInDetailsView = false;
-  
-  // Solo hacer replaceState si estamos en detalles
-  if (history.state && history.state.page === 'details') {
-    history.replaceState({ page: 'list' }, '', '#');
-  }
-  
+
+  // Reiniciar historial para evitar cierre accidental
+  history.pushState({ page: 'list' }, '', '#');
+
   document.getElementById("header").classList.remove("hidden");
   document.getElementById("mainContainer").classList.remove("hidden");
   document.getElementById("details").style.display = "none";
-  
+
   document.getElementById('search').value = '';
   currentSearchTerm = '';
   renderMovies(allMovies);
 }
 
-// Función para cargar los enlaces de películas
+// ===================================================
+// REPRODUCCIÓN Y DATOS
+// ===================================================
 async function loadMoviesLinks() {
-    try {
-        const res = await fetch(MOVIES_LINKS_URL);
-        moviesLinksData = await res.json();
-        console.log('Enlaces de películas cargados correctamente');
-    } catch (err) {
-        console.error('Error al cargar enlaces de películas:', err);
-    }
+  try {
+    const res = await fetch(MOVIES_LINKS_URL);
+    moviesLinksData = await res.json();
+    console.log('Enlaces de películas cargados correctamente');
+  } catch (err) {
+    console.error('Error al cargar enlaces de películas:', err);
+  }
 }
 
-// Función para reproducir película
 async function playMovieWithOptions(id, title) {
-    try {
-        const movieData = moviesLinksData[id];
-        
-        if (movieData && movieData.sources && movieData.sources.length > 0) {
-            const availableSource = movieData.sources.find(source => source.url) || movieData.sources[0];
-            
-            if (availableSource && availableSource.url) {
-                if (window.AppCreator24 && window.AppCreator24.playVideo) {
-                    window.AppCreator24.playVideo(availableSource.url, title);
-                } else if (window.android && window.android.playVideo) {
-                    window.android.playVideo(availableSource.url, title);
-                } else {
-                    window.open(availableSource.url, '_blank');
-                }
-            } else {
-                alert(`No hay enlace disponible para: ${title}`);
-            }
+  try {
+    const movieData = moviesLinksData[id];
+    
+    if (movieData && movieData.sources && movieData.sources.length > 0) {
+      const availableSource = movieData.sources.find(source => source.url) || movieData.sources[0];
+      
+      if (availableSource && availableSource.url) {
+        if (window.AppCreator24 && window.AppCreator24.playVideo) {
+          window.AppCreator24.playVideo(availableSource.url, title);
+        } else if (window.android && window.android.playVideo) {
+          window.android.playVideo(availableSource.url, title);
         } else {
-            alert(`No se encontraron enlaces para: ${title}`);
+          window.open(availableSource.url, '_blank');
         }
-    } catch (err) {
-        console.error('Error al reproducir película:', err);
-        alert(`Error al reproducir: ${title}`);
+      } else {
+        alert(`No hay enlace disponible para: ${title}`);
+      }
+    } else {
+      alert(`No se encontraron enlaces para: ${title}`);
     }
+  } catch (err) {
+    console.error('Error al reproducir película:', err);
+    alert(`Error al reproducir: ${title}`);
+  }
 }
 
-// MEJORA: Manejar carga inicial y estado del historial
-window.addEventListener('load', function() {
-  // Inicializar el sistema de botón de atrás
+// ===================================================
+// INICIALIZACIÓN
+// ===================================================
+window.addEventListener('load', function () {
   initializeBackButton();
-  
-  // Manejar estado inicial del historial
+
   if (window.location.hash) {
-    // Si hay un hash en la URL, podríamos cargar directamente los detalles
-    // pero por simplicidad, siempre mostramos la lista
     history.replaceState({ page: 'list' }, '', '#');
   } else {
     history.replaceState({ page: 'list' }, '', '');
   }
-  
-  // Cargar datos
+
   loadMovies();
   loadMoviesLinks();
 });
@@ -287,7 +292,7 @@ window.addEventListener('load', function() {
 document.getElementById("search").addEventListener("input", (e) => {
   const term = e.target.value.toLowerCase().trim();
   currentSearchTerm = term;
-  const filtered = allMovies.filter(m => 
+  const filtered = allMovies.filter(m =>
     m.title?.toLowerCase().includes(term) ||
     (m.genres || []).some(genre => genre.toLowerCase().includes(term)) ||
     m.year?.includes(term)
@@ -295,7 +300,7 @@ document.getElementById("search").addEventListener("input", (e) => {
   renderMovies(filtered);
 });
 
-// MEJORA: Manejar también el evento beforeunload para limpiar el estado
-window.addEventListener('beforeunload', function() {
+// Reset al cerrar
+window.addEventListener('beforeunload', function () {
   isInDetailsView = false;
 });
