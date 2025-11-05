@@ -187,9 +187,7 @@ async function loadMovieDetails(movie) {
 
     document.getElementById("details-content").innerHTML = `
       <!-- Botón de volver móvil (se muestra solo en móviles) -->
-      <button class="back-button-mobile" onclick="showList()">
-        <span>←</span> Volver
-      </button>
+      
       
       <div class="details-hero" style="background-image: url('${movie.image}')">
         <div class="details-content">
