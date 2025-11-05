@@ -1,5 +1,5 @@
 // Películas disponibles (ordenadas por fecha de agregado, más recientes primero)
-export const moviesData = [
+const moviesData = [
 {
       id: 604079,
           title: "Camina o muere",
