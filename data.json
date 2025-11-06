@@ -1,12 +1,21 @@
 [
   {
+    "id": 1197137,
+    "title": "Teléfono Negro",
+    "image": "https://media.themoviedb.org/t/p/w220_and_h330_face/A6QNBDV1u3oaq3guBHGKcEJkYkX.jpg",
+    "link": "detalles.html?type=movie&id=1197137",
+    "year": "2025",
+    "genres": ["Terror", "Suspenso", "Acción"],
+    "isNew": true
+  },
+  {
     "id": 604079,
     "title": "Camina o muere",
     "image": "https://media.themoviedb.org/t/p/w220_and_h330_face/izA5U09supDy8J2Z4339Po6PIHU.jpg",
     "link": "detalles.html?type=movie&id=604079",
     "year": "2025",
     "genres": ["Terror", "Suspenso", "Ciencia Ficción"],
-    "isNew": true
+    "isNew": false
   },
   {
     "id": 1204883,
@@ -15,7 +24,7 @@
     "link": "detalles.html?type=movie&id=1204883",
     "year": "2025",
     "genres": ["Terror", "Suspenso"],
-    "isNew": true
+    "isNew": false
   },
   {
     "id": 1038392,
