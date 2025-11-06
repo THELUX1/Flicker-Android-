@@ -1,6 +1,6 @@
-const DATA_URL = "https://cdn.statically.io/gh/THELUX1/Flicker-Android-/main/data.json?v=2";
+const DATA_URL = "https://cdn.jsdelivr.net/gh/THELUX1/Flicker-Android-@main/data.json?v=4";
 const TMDB_API_KEY = "995449ccaf6d840acc029f95c7d210dd";
-const MOVIES_LINKS_URL = "https://cdn.statically.io/gh/THELUX1/Flicker-Android-/main/movies-links.json?v=2";
+const MOVIES_LINKS_URL = "https://cdn.jsdelivr.net/gh/THELUX1/Flicker-Android-@main/movies-links.json?v=4";
 
 let allMovies = [];
 let currentSearchTerm = '';
