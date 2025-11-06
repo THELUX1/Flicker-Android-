@@ -7,266 +7,478 @@ let currentSearchTerm = '';
 let moviesLinksData = {};
 let isInDetailsView = false;
 
+// Variables simplificadas para carouseles
+let carousels = {};
+
+// Función para alternar la visibilidad del buscador
+// ... (código anterior se mantiene igual)
+
 // Función para alternar la visibilidad del buscador
 function toggleSearch() {
   const searchContainer = document.getElementById('searchContainer');
-  searchContainer.classList.toggle('active');
+  const isActive = searchContainer.classList.contains('active');
   
-  if (searchContainer.classList.contains('active')) {
+  if (!isActive) {
+    searchContainer.classList.add('active');
     setTimeout(() => {
       document.getElementById('search').focus();
     }, 100);
+  } else {
+    closeSearch();
   }
 }
 
-// Cerrar buscador al hacer clic fuera
+// Función para cerrar la búsqueda
+function closeSearch() {
+  const searchContainer = document.getElementById('searchContainer');
+  const searchInput = document.getElementById('search');
+  
+  searchContainer.classList.remove('active');
+  searchInput.value = '';
+  currentSearchTerm = '';
+  
+  // Restaurar vista normal si estaba en búsqueda
+  if (allMovies.length > 0) {
+    renderAllSections();
+  }
+}
+
+// Cerrar buscador al hacer clic fuera o con Escape
 document.addEventListener('click', (e) => {
   const searchContainer = document.getElementById('searchContainer');
   const searchToggle = document.querySelector('.search-toggle');
+  const searchClose = document.querySelector('.search-close');
   
-  if (!searchContainer.contains(e.target) && !searchToggle.contains(e.target)) {
-    searchContainer.classList.remove('active');
+  if (!searchContainer.contains(e.target) && 
+      !searchToggle.contains(e.target) && 
+      !searchClose.contains(e.target)) {
+    closeSearch();
   }
 });
 
-// ===================================================
-// 🔙 SISTEMA DE BOTÓN ATRÁS CORREGIDO
-// ===================================================
-function initializeBackButton() {
-  // Manejar el botón de atrás del navegador
-  window.addEventListener('popstate', function (event) {
-    if (isInDetailsView) {
-      showList();
-    }
-  });
-
-  // Manejar el botón de atrás físico en Android
-  document.addEventListener('backbutton', handleBackButton, false);
-
-  // Manejar tecla Escape en desktop
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && isInDetailsView) {
-      showList();
-    }
-  });
-}
-
-function handleBackButton(event) {
-  if (event) event.preventDefault();
-
-  if (isInDetailsView) {
-    showList();
-  } else {
-    // Confirmar salida de la app
-    if (confirm("¿Deseas salir de Flicker?")) {
-      if (navigator.app && navigator.app.exitApp) {
-        navigator.app.exitApp();
-      } else {
-        window.close();
-      }
+// Cerrar con tecla Escape
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const searchContainer = document.getElementById('searchContainer');
+    if (searchContainer.classList.contains('active')) {
+      closeSearch();
     }
   }
+});
 
-  return false;
-}
+// ... (el resto del código se mantiene igual)
 
 // ===================================================
 // CARGA DE PELÍCULAS
 // ===================================================
 async function loadMovies() {
   try {
-    document.getElementById("movies").innerHTML = `
-      <div style="grid-column: 1 / -1; text-align: center; padding: 60px; color: var(--texto-secundario);">
-        <div class="loading" style="font-size: 1.5rem;">Cargando películas...</div>
-      </div>
-    `;
-    
+    showLoading();
     const res = await fetch(DATA_URL);
     const data = await res.json();
     allMovies = data.moviesData || data;
-    renderMovies(allMovies);
-    updateMoviesCount(allMovies.length);
+    
+    renderAllSections();
+    initializeCarouselControls();
+    
   } catch (err) {
     console.error('Error al cargar películas:', err);
-    document.getElementById("movies").innerHTML = `
-      <div style="grid-column: 1 / -1; text-align: center; padding: 60px; color: var(--texto-secundario);">
-        <p style="font-size: 1.3rem; margin-bottom: 15px;">⚠️ Error al cargar películas</p>
-        <p style="font-size: 1rem;">Intenta recargar la página o verifica tu conexión</p>
-        <button onclick="loadMovies()" style="margin-top: 20px; padding: 12px 24px; background: var(--rojo); color: white; border: none; border-radius: 25px; cursor: pointer; font-size: 1rem;">
-          Reintentar
-        </button>
-      </div>
-    `;
+    showError();
   }
 }
 
+function showLoading() {
+  document.getElementById("movies").innerHTML = `
+    <div style="grid-column: 1 / -1; text-align: center; padding: 60px; color: var(--texto-secundario);">
+      <div style="font-size: 1.5rem;">Cargando películas...</div>
+    </div>
+  `;
+}
+
+function showError() {
+  document.getElementById("movies").innerHTML = `
+    <div style="grid-column: 1 / -1; text-align: center; padding: 60px; color: var(--texto-secundario);">
+      <p style="font-size: 1.3rem; margin-bottom: 15px;">⚠️ Error al cargar películas</p>
+      <button onclick="loadMovies()" style="margin-top: 20px; padding: 12px 24px; background: var(--rojo); color: white; border: none; border-radius: 25px; cursor: pointer;">
+        Reintentar
+      </button>
+    </div>
+  `;
+}
+
 function updateMoviesCount(count) {
-  document.getElementById('moviesCount').textContent = `${count} ${count === 1 ? 'película disponible' : 'películas disponibles'}`;
+  document.getElementById('moviesCount').textContent = `${count} ${count === 1 ? 'película' : 'películas'}`;
+}
+
+// ===================================================
+// RENDERIZADO DE SECCIONES
+// ===================================================
+function renderAllSections() {
+  renderMovies(allMovies);
+  renderNewReleases();
+  renderRecentMovies();
+  updateMoviesCount(allMovies.length);
+}
+
+function renderNewReleases() {
+  const newReleases = allMovies.filter(movie => movie.isNew);
+  const carousel = document.getElementById('newReleasesCarousel');
+  const section = document.getElementById('newReleasesSection');
+  
+  if (newReleases.length === 0) {
+    section.style.display = 'none';
+    return;
+  }
+  
+  section.style.display = 'block';
+  carousel.innerHTML = '';
+  
+  newReleases.forEach((movie, index) => {
+    const carouselItem = createCarouselItem(movie, index);
+    carousel.appendChild(carouselItem);
+  });
+  
+  // Inicializar carousel
+  initializeCarousel('newReleases', newReleases.length);
+}
+
+function renderRecentMovies() {
+  const recentMovies = [...allMovies].reverse().slice(0, 10);
+  const carousel = document.getElementById('recentCarousel');
+  const section = document.getElementById('recentSection');
+  
+  if (recentMovies.length === 0) {
+    section.style.display = 'none';
+    return;
+  }
+  
+  section.style.display = 'block';
+  carousel.innerHTML = '';
+  
+  recentMovies.forEach((movie, index) => {
+    const carouselItem = createCarouselItem(movie, index);
+    carousel.appendChild(carouselItem);
+  });
+  
+  // Inicializar carousel
+  initializeCarousel('recent', recentMovies.length);
+}
+
+function createCarouselItem(movie, index) {
+  const carouselItem = document.createElement('div');
+  carouselItem.className = 'carousel-item';
+  carouselItem.style.animationDelay = `${(index % 8) * 0.05}s`;
+  
+  carouselItem.innerHTML = `
+    ${movie.isNew ? '<div class="new-badge">NUEVO</div>' : ''}
+    <img src="${movie.image}" alt="${movie.title}" class="carousel-poster" 
+         onerror="this.src='https://via.placeholder.com/300x450/2d2d2d/ffffff?text=Imagen+No+Disponible'"
+         loading="lazy">
+    <div class="carousel-info">
+      <div class="carousel-title">${movie.title}</div>
+      <div class="carousel-year">${movie.year}</div>
+    </div>
+  `;
+  carouselItem.onclick = () => showDetails(movie);
+  return carouselItem;
 }
 
 function renderMovies(movies) {
-  const grid = document.getElementById("movies");
-  grid.innerHTML = "";
+  const moviesContainer = document.getElementById("movies");
   
-  if (!movies.length) {
-    grid.innerHTML = `
+  if (movies.length === 0) {
+    moviesContainer.innerHTML = `
       <div style="grid-column: 1 / -1; text-align: center; padding: 60px; color: var(--texto-secundario);">
-        <p style="font-size: 1.3rem; margin-bottom: 15px;">🎬 No se encontraron películas</p>
-        <p style="font-size: 1rem;">Intenta con otros términos de búsqueda</p>
+        <p style="font-size: 1.3rem; margin-bottom: 15px;">🔍 No se encontraron películas</p>
       </div>
     `;
     updateMoviesCount(0);
     return;
   }
-
+  
+  moviesContainer.innerHTML = '';
   movies.forEach((movie, index) => {
-    const movieCard = document.createElement("div");
-    movieCard.className = "movie-card";
-    movieCard.style.animationDelay = `${(index % 8) * 0.05}s`;
-    
-    const genres = movie.genres || [];
-    const genresToShow = genres.slice(0, 2);
-    const remainingGenres = genres.length > 2 ? genres.length - 2 : 0;
-    
-    movieCard.innerHTML = `
-      ${movie.isNew ? '<div class="new-badge">NUEVO</div>' : ''}
-      <img src="${movie.image}" alt="${movie.title}" class="movie-poster" 
-           onerror="this.src='https://via.placeholder.com/300x450/2d2d2d/ffffff?text=Imagen+No+Disponible'"
-           loading="lazy">
-      <div class="movie-info">
-        <div class="movie-title">${movie.title}</div>
-        <div class="movie-year">${movie.year}</div>
-        <div class="movie-genres">
-          ${genresToShow.map(genre => `<span class="genre-tag">${genre}</span>`).join('')}
-          ${remainingGenres > 0 ? `<span class="genre-tag">+${remainingGenres}</span>` : ''}
-        </div>
-      </div>
-    `;
-    movieCard.onclick = () => showDetails(movie);
-    grid.appendChild(movieCard);
+    const movieCard = createMovieCard(movie, index);
+    moviesContainer.appendChild(movieCard);
   });
-
+  
   updateMoviesCount(movies.length);
 }
 
+function createMovieCard(movie, index) {
+  const movieCard = document.createElement("div");
+  movieCard.className = "movie-card";
+  movieCard.style.animationDelay = `${(index % 8) * 0.05}s`;
+  
+  movieCard.innerHTML = `
+    ${movie.isNew ? '<div class="new-badge">NUEVO</div>' : ''}
+    <img src="${movie.image}" alt="${movie.title}" class="movie-poster" 
+         onerror="this.src='https://via.placeholder.com/300x450/2d2d2d/ffffff?text=Imagen+No+Disponible'"
+         loading="lazy">
+    <div class="movie-info">
+      <div class="movie-title">${movie.title}</div>
+      <div class="movie-year">${movie.year}</div>
+    </div>
+  `;
+  movieCard.onclick = () => showDetails(movie);
+  return movieCard;
+}
+
 // ===================================================
-// DETALLES DE PELÍCULA CON ANIMACIONES
+// SISTEMA DE CAROUSEL SIMPLIFICADO
+// ===================================================
+function initializeCarousel(name, itemCount) {
+  const container = document.getElementById(`${name}CarouselContainer`);
+  const element = document.getElementById(`${name}Carousel`);
+  
+  if (!container || !element) return;
+  
+  carousels[name] = {
+    element: element,
+    position: 0,
+    maxPosition: calculateMaxPosition(container, itemCount)
+  };
+}
+
+function calculateMaxPosition(container, itemCount) {
+  const containerWidth = container.offsetWidth;
+  const itemWidth = 180 + 20; // 180px + 20px gap
+  const visibleItems = Math.floor(containerWidth / itemWidth);
+  return Math.max(0, itemCount - visibleItems);
+}
+
+function initializeCarouselControls() {
+  // Controles para estrenos
+  document.getElementById('newReleasesPrev').addEventListener('click', () => moveCarousel('newReleases', -1));
+  document.getElementById('newReleasesNext').addEventListener('click', () => moveCarousel('newReleases', 1));
+  
+  // Controles para recientes
+  document.getElementById('recentPrev').addEventListener('click', () => moveCarousel('recent', -1));
+  document.getElementById('recentNext').addEventListener('click', () => moveCarousel('recent', 1));
+}
+
+function moveCarousel(name, direction) {
+  const carousel = carousels[name];
+  if (!carousel) return;
+  
+  const newPosition = carousel.position + direction;
+  
+  if (newPosition >= 0 && newPosition <= carousel.maxPosition) {
+    carousel.position = newPosition;
+    updateCarouselPosition(carousel);
+  }
+}
+
+function updateCarouselPosition(carousel) {
+  const translateX = -carousel.position * (180 + 20);
+  carousel.element.style.transform = `translateX(${translateX}px)`;
+}
+
+// ===================================================
+// SISTEMA DE BÚSQUEDA
+// ===================================================
+function setupSearch() {
+  const searchInput = document.getElementById("search");
+  
+  searchInput.addEventListener("input", (e) => {
+    currentSearchTerm = e.target.value.trim().toLowerCase();
+    
+    if (currentSearchTerm === '') {
+      renderAllSections();
+      return;
+    }
+    
+    const filteredMovies = allMovies.filter(movie => 
+      movie.title.toLowerCase().includes(currentSearchTerm) ||
+      (movie.genres && movie.genres.some(genre => 
+        genre.toLowerCase().includes(currentSearchTerm)
+      ))
+    );
+    
+    renderMovies(filteredMovies);
+    document.getElementById('newReleasesSection').style.display = 'none';
+    document.getElementById('recentSection').style.display = 'none';
+  });
+}
+
+// ===================================================
+// VISTA DE DETALLES
 // ===================================================
 async function showDetails(movie) {
   isInDetailsView = true;
-  history.pushState({ page: 'details', movieId: movie.id }, '', `#${movie.id}`);
   
-  // Animación de salida del catálogo
-  document.getElementById("mainContainer").classList.add("hidden");
+  // Ocultar header y main container
   document.getElementById("header").classList.add("hidden");
+  document.getElementById("mainContainer").classList.add("hidden");
   
-  // Esperar a que termine la animación de salida antes de mostrar detalles
-  setTimeout(() => {
-    document.getElementById("details").style.display = "block";
-    
-    document.getElementById("details-content").innerHTML = `
-      <div style="text-align: center; padding: 100px; color: var(--texto-secundario);">
-        <div class="loading" style="font-size: 1.5rem;">Cargando detalles...</div>
+  history.pushState({ detailView: true }, '', `#${movie.id}`);
+  
+  const detailsContainer = document.getElementById("details");
+  const detailsContent = document.getElementById("details-content");
+  
+  // Mostrar loading
+  detailsContent.innerHTML = `
+    <div style="display: flex; justify-content: center; align-items: center; height: 100vh; background: var(--negro);">
+      <div style="text-align: center; color: var(--texto-secundario);">
+        <div style="font-size: 1.5rem; margin-bottom: 15px;">Cargando detalles...</div>
+        <div style="width: 40px; height: 40px; border: 3px solid var(--gris-claro); border-top: 3px solid var(--rojo); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto;"></div>
       </div>
-    `;
-
-    loadMovieDetails(movie);
-  }, 400); // Tiempo que coincide con la duración de la animación
+    </div>
+  `;
+  
+  detailsContainer.style.display = 'block';
+  await loadMovieDetails(movie);
 }
+
+// ... (mantener todo el código anterior hasta la función loadMovieDetails)
 
 async function loadMovieDetails(movie) {
   try {
-    const [movieRes, trailerRes] = await Promise.all([
-      fetch(`https://api.themoviedb.org/3/movie/${movie.id}?api_key=${TMDB_API_KEY}&language=es-ES`),
-      fetch(`https://api.themoviedb.org/3/movie/${movie.id}/videos?api_key=${TMDB_API_KEY}&language=es-ES`)
+    const detailsContent = document.getElementById("details-content");
+    
+    const [movieDetails, trailerData] = await Promise.all([
+      fetch(`https://api.themoviedb.org/3/movie/${movie.id}?api_key=${TMDB_API_KEY}&language=es-ES`).then(res => res.json()),
+      fetch(`https://api.themoviedb.org/3/movie/${movie.id}/videos?api_key=${TMDB_API_KEY}&language=es-ES`).then(res => res.json())
     ]);
-
-    const data = await movieRes.json();
-    const trailerData = await trailerRes.json();
-    const trailer = trailerData.results.find(v => v.type === "Trailer" && v.site === "YouTube");
-
-    document.getElementById("details-content").innerHTML = `
-      <!-- Botón de volver móvil (se muestra solo en móviles) -->
+    
+    const trailer = trailerData.results?.find(v => v.type === "Trailer" && v.site === "YouTube");
+    
+    // Calcular duración en formato legible
+    const duration = movieDetails.runtime ? 
+      `${Math.floor(movieDetails.runtime / 60)}h ${movieDetails.runtime % 60}m` : 
+      'No disponible';
+    
+    // Formatear fecha de lanzamiento
+    const releaseDate = movieDetails.release_date ?
+      new Date(movieDetails.release_date).toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      }) : 'No disponible';
+    
+    detailsContent.innerHTML = `
+      <button class="back-button" onclick="showList()">←</button>
       
-      
-      <div class="details-hero" style="background-image: url('${movie.image}')">
-        <div class="details-content">
-          <div class="details-info">
-            <h1 class="details-title">${movie.title}</h1>
-            <div class="details-meta">
-              <span class="details-year">${movie.year}</span>
-              <div class="details-genres">
-                ${(movie.genres || []).map(genre => `<span class="details-genre">${genre}</span>`).join('')}
+      <div class="details-hero">
+        <div class="trailer-hero">
+          ${trailer ?
+            `<iframe class="trailer-frame" 
+                    src="https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=1&controls=1&showinfo=0&rel=0" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+            </iframe>` :
+            `<div class="trailer-placeholder">
+              <div style="text-align: center;">
+                <div style="font-size: 3rem; margin-bottom: 15px;">🎬</div>
+                <div>Tráiler no disponible</div>
               </div>
+            </div>`
+          }
+        </div>
+        <div class="hero-gradient"></div>
+        <div class="hero-overlay"></div>
+      </div>
+      
+      <div class="details-content">
+        <div class="details-info">
+          <h1 class="details-title">${movie.title}</h1>
+          
+          <div class="details-meta">
+            <span class="details-year">${movie.year}</span>
+            <div class="details-genres">
+              ${(movie.genres || []).map(genre => `<span class="details-genre">${genre}</span>`).join('')}
             </div>
-            <p class="details-overview">${data.overview || "Sin descripción disponible."}</p>
+          </div>
+          
+          <p class="details-overview">${movieDetails.overview || "Sin descripción disponible."}</p>
+          
+          <div class="details-actions">
             <button class="play-btn" onclick="playMovieWithOptions(${movie.id}, '${movie.title.replace(/'/g, "\\'")}')">
-              <span>▶</span> Ver ahora
+              <span style="font-size: 1.4rem;">▶</span> Reproducir
+            </button>
+            <button class="secondary-btn">
+              <span style="font-size: 1.2rem;">ⓘ</span> Más información
             </button>
           </div>
-        </div>
-      </div>
-      <div class="trailer-container">
-        <div class="trailer-content">
-          <h3 class="trailer-title">Tráiler</h3>
-          ${trailer ?
-            `<iframe class="trailer-frame" src="https://www.youtube.com/embed/${trailer.key}" frameborder="0" allowfullscreen></iframe>` :
-            '<div class="no-trailer">🎬 Tráiler no disponible</div>'
-          }
+          
+          <div class="details-extra">
+            <h3 class="extra-title">Información de la película</h3>
+            <div class="extra-grid">
+              <div class="extra-item">
+                <span class="extra-label">Duración</span>
+                <span class="extra-value">${duration}</span>
+              </div>
+              <div class="extra-item">
+                <span class="extra-label">Fecha de estreno</span>
+                <span class="extra-value">${releaseDate}</span>
+              </div>
+              <div class="extra-item">
+                <span class="extra-label">Calificación</span>
+                <span class="extra-value">${movieDetails.vote_average ? movieDetails.vote_average.toFixed(1) + '/10' : 'No disponible'}</span>
+              </div>
+              <div class="extra-item">
+                <span class="extra-label">Presupuesto</span>
+                <span class="extra-value">${movieDetails.budget ? '$' + (movieDetails.budget / 1000000).toFixed(1) + 'M' : 'No disponible'}</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     `;
   } catch (err) {
     console.error('Error al cargar detalles:', err);
-    document.getElementById("details-content").innerHTML = `
-      <div style="text-align: center; padding: 80px; color: var(--texto-secundario);">
+    const detailsContent = document.getElementById("details-content");
+    detailsContent.innerHTML = `
+      <div style="text-align: center; padding: 80px; color: var(--texto-secundario); background: var(--negro); min-height: 100vh;">
+        <button class="back-button" onclick="showList()">←</button>
         <p style="font-size: 1.3rem; margin-bottom: 15px;">⚠️ Error al cargar detalles</p>
-        <p style="font-size: 1rem;">Intenta nuevamente más tarde</p>
-        <button class="back-button" onclick="showList()" style="margin-top: 20px;">
-          <span>←</span> Volver al catálogo
+        <button onclick="showList()" style="margin-top: 20px; padding: 12px 24px; background: var(--rojo); color: white; border: none; border-radius: 25px; cursor: pointer;">
+          Volver al catálogo
         </button>
       </div>
     `;
   }
 }
 
-// ===================================================
-// VOLVER AL CATÁLOGO CON ANIMACIONES
-// ===================================================
+// ... (mantener el resto del código igual)
+
 function showList() {
   isInDetailsView = false;
-
-  // Animación de salida de detalles
+  
   const detailsContainer = document.getElementById("details");
-  detailsContainer.classList.add("hiding");
-
-  // Esperar a que termine la animación de salida antes de mostrar el catálogo
+  const mainContainer = document.getElementById("mainContainer");
+  const header = document.getElementById("header");
+  
+  detailsContainer.classList.add('hiding');
+  
   setTimeout(() => {
-    // Reiniciar historial para evitar cierre accidental
-    history.pushState({ page: 'list' }, '', '#');
-
-    detailsContainer.style.display = "none";
-    detailsContainer.classList.remove("hiding");
-
-    document.getElementById("header").classList.remove("hidden");
-    document.getElementById("mainContainer").classList.remove("hidden");
-
+    detailsContainer.style.display = 'none';
+    detailsContainer.classList.remove('hiding');
+    
+    header.classList.remove('hidden');
+    mainContainer.classList.remove('hidden');
+    
+    if (currentSearchTerm === '') {
+      renderNewReleases();
+      renderRecentMovies();
+    }
+    
     document.getElementById('search').value = '';
     currentSearchTerm = '';
     renderMovies(allMovies);
-  }, 400); // Tiempo que coincide con la duración de la animación
+  }, 400);
 }
 
 // ===================================================
-// REPRODUCCIÓN Y DATOS
+// REPRODUCCIÓN
 // ===================================================
 async function loadMoviesLinks() {
   try {
     const res = await fetch(MOVIES_LINKS_URL);
     moviesLinksData = await res.json();
-    console.log('Enlaces de películas cargados correctamente');
   } catch (err) {
-    console.error('Error al cargar enlaces de películas:', err);
+    console.error('Error al cargar enlaces:', err);
   }
 }
 
@@ -274,25 +486,23 @@ async function playMovieWithOptions(id, title) {
   try {
     const movieData = moviesLinksData[id];
     
-    if (movieData && movieData.sources && movieData.sources.length > 0) {
-      const availableSource = movieData.sources.find(source => source.url) || movieData.sources[0];
+    if (movieData?.sources?.length > 0) {
+      const source = movieData.sources.find(s => s.url) || movieData.sources[0];
       
-      if (availableSource && availableSource.url) {
-        if (window.AppCreator24 && window.AppCreator24.playVideo) {
-          window.AppCreator24.playVideo(availableSource.url, title);
-        } else if (window.android && window.android.playVideo) {
-          window.android.playVideo(availableSource.url, title);
+      if (source?.url) {
+        if (window.AppCreator24?.playVideo) {
+          window.AppCreator24.playVideo(source.url, title);
+        } else if (window.android?.playVideo) {
+          window.android.playVideo(source.url, title);
         } else {
-          window.open(availableSource.url, '_blank');
+          window.open(source.url, '_blank');
         }
-      } else {
-        alert(`No hay enlace disponible para: ${title}`);
+        return;
       }
-    } else {
-      alert(`No se encontraron enlaces para: ${title}`);
     }
+    alert(`No hay enlace disponible para: ${title}`);
   } catch (err) {
-    console.error('Error al reproducir película:', err);
+    console.error('Error al reproducir:', err);
     alert(`Error al reproducir: ${title}`);
   }
 }
@@ -300,32 +510,31 @@ async function playMovieWithOptions(id, title) {
 // ===================================================
 // INICIALIZACIÓN
 // ===================================================
-window.addEventListener('load', function () {
-  initializeBackButton();
-
-  if (window.location.hash) {
-    history.replaceState({ page: 'list' }, '', '#');
-  } else {
-    history.replaceState({ page: 'list' }, '', '');
-  }
-
+document.addEventListener("DOMContentLoaded", () => {
+  setupSearch();
   loadMovies();
   loadMoviesLinks();
+  
+  // Manejar botón atrás
+  window.addEventListener('popstate', () => {
+    if (isInDetailsView) showList();
+  });
+  
+  // Tecla Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && isInDetailsView) showList();
+  });
 });
 
-// Buscador dinámico
-document.getElementById("search").addEventListener("input", (e) => {
-  const term = e.target.value.toLowerCase().trim();
-  currentSearchTerm = term;
-  const filtered = allMovies.filter(m =>
-    m.title?.toLowerCase().includes(term) ||
-    (m.genres || []).some(genre => genre.toLowerCase().includes(term)) ||
-    m.year?.includes(term)
-  );
-  renderMovies(filtered);
-});
+// Agregar estilo para spinner
+const style = document.createElement('style');
+style.textContent = `@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`;
+document.head.appendChild(style);
 
-// Reset al cerrar
-window.addEventListener('beforeunload', function () {
-  isInDetailsView = false;
+// Recalcular carousels al redimensionar
+window.addEventListener('resize', () => {
+  if (!isInDetailsView) {
+    renderNewReleases();
+    renderRecentMovies();
+  }
 });
