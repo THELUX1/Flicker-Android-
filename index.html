@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flicker - Catálogo de Películas</title>
+  
+  <!-- CSS desde GitHub via statically.io -->
+  <link rel="stylesheet" href="styles.css">
+  
+  <style>
+    /* =================================================== */
+    /* PANTALLA DE CARGA ELEGANTE */
+    /* =================================================== */
+    .loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, var(--negro) 0%, var(--gris-oscuro) 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    .loading-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .loading-logo {
+      font-size: 4rem;
+      font-weight: 800;
+      color: var(--rojo);
+      margin-bottom: 30px;
+      letter-spacing: 3px;
+      text-shadow: 0 0 20px rgba(229, 9, 20, 0.7);
+      animation: logoPulse 2s infinite alternate;
+    }
+
+    @keyframes logoPulse {
+      0% {
+        transform: scale(1);
+        text-shadow: 0 0 20px rgba(229, 9, 20, 0.7);
+      }
+      100% {
+        transform: scale(1.05);
+        text-shadow: 0 0 30px rgba(229, 9, 20, 0.9);
+      }
+    }
+
+    .loading-text {
+      font-size: 1.3rem;
+      color: var(--texto-secundario);
+      margin-bottom: 40px;
+      text-align: center;
+      animation: textFade 2s infinite alternate;
+    }
+
+    @keyframes textFade {
+      0% {
+        opacity: 0.7;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+
+    .loading-animation {
+      display: flex;
+      gap: 8px;
+    }
+
+    .loading-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--rojo);
+      animation: dotBounce 1.4s infinite ease-in-out both;
+    }
+
+    .loading-dot:nth-child(1) {
+      animation-delay: -0.32s;
+    }
+
+    .loading-dot:nth-child(2) {
+      animation-delay: -0.16s;
+    }
+
+    @keyframes dotBounce {
+      0%, 80%, 100% {
+        transform: scale(0.8);
+        opacity: 0.5;
+      }
+      40% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .loading-progress {
+      width: 200px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      margin-top: 30px;
+      overflow: hidden;
+    }
+
+    .loading-progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--rojo), #ff4757);
+      border-radius: 10px;
+      transition: width 0.3s ease;
+      box-shadow: 0 0 10px rgba(229, 9, 20, 0.5);
+    }
+
+    /* Responsive para pantalla de carga */
+    @media (max-width: 768px) {
+      .loading-logo {
+        font-size: 3rem;
+      }
+      
+      .loading-text {
+        font-size: 1.1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Pantalla de carga -->
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loading-logo">Flicker</div>
+    <div class="loading-text">Cargando catálogo de películas</div>
+    <div class="loading-animation">
+      <div class="loading-dot"></div>
+      <div class="loading-dot"></div>
+      <div class="loading-dot"></div>
+    </div>
+    <div class="loading-progress">
+      <div class="loading-progress-bar" id="loadingProgress"></div>
+    </div>
+  </div>
+
+  <!-- Contenido principal (oculto inicialmente) -->
+  <div class="header" id="header" style="display: none;">
+    <div class="header-content">
+      <div class="logo">Flicker</div>
+      <div class="header-controls">
+        <button class="search-toggle" onclick="toggleSearch()">🔍</button>
+      </div>
+    </div>
+    <div class="search-container" id="searchContainer">
+      <div class="search-box">
+        <div class="search-icon">🔍</div>
+        <input type="text" id="search" placeholder="Buscar películas...">
+      </div>
+    </div>
+  </div>
+
+  <div class="container" id="mainContainer" style="display: none;">
+    <!-- Sección de Estrenos -->
+    <div class="section" id="newReleasesSection">
+      <div class="section-header">
+        <h2 class="section-title">Estrenos de Cine</h2>
+        <div class="section-controls">
+          <button class="nav-btn prev-btn" id="newReleasesPrev">‹</button>
+          <button class="nav-btn next-btn" id="newReleasesNext">›</button>
+        </div>
+      </div>
+      <div class="carousel-container" id="newReleasesCarouselContainer">
+        <div class="carousel" id="newReleasesCarousel"></div>
+      </div>
+    </div>
+
+    <!-- Sección de Recientes -->
+    <div class="section" id="recentSection">
+      <div class="section-header">
+        <h2 class="section-title">Recientemente Agregadas</h2>
+        <div class="section-controls">
+          <button class="nav-btn prev-btn" id="recentPrev">‹</button>
+          <button class="nav-btn next-btn" id="recentNext">›</button>
+        </div>
+      </div>
+      <div class="carousel-container" id="recentCarouselContainer">
+        <div class="carousel" id="recentCarousel"></div>
+      </div>
+    </div>
+
+    <!-- Sección de Todas las Películas -->
+    <div class="section" id="allMoviesSection">
+      <div class="section-header">
+        <h2 class="section-title">Todas las Películas</h2>
+        <div class="movies-count" id="moviesCount"></div>
+      </div>
+      <div id="movies" class="grid"></div>
+    </div>
+  </div>
+
+  <div id="details" class="details-container">
+    <div id="details-content"></div>
+  </div>
+
+  <!-- Script desde GitHub via statically.io -->
+  <script src="script.js"></script>
+  
+  <script>
+    // ===================================================
+    // SISTEMA DE CARGA CON PROGRESO
+    // ===================================================
+    let loadingProgress = 0;
+    let loadingInterval;
+    const loadingScreen = document.getElementById('loadingScreen');
+    const loadingProgressBar = document.getElementById('loadingProgress');
+    const header = document.getElementById('header');
+    const mainContainer = document.getElementById('mainContainer');
+    
+    // Función para simular progreso de carga
+    function simulateLoadingProgress() {
+      loadingInterval = setInterval(() => {
+        // Incremento aleatorio para simular carga real
+        const increment = Math.random() * 10 + 5;
+        loadingProgress = Math.min(loadingProgress + increment, 90);
+        loadingProgressBar.style.width = `${loadingProgress}%`;
+        
+        // Si llegamos al 90%, detenemos la simulación
+        if (loadingProgress >= 90) {
+          clearInterval(loadingInterval);
+        }
+      }, 300);
+    }
+    
+    // Función para completar la carga
+    function completeLoading() {
+      clearInterval(loadingInterval);
+      loadingProgress = 100;
+      loadingProgressBar.style.width = '100%';
+      
+      // Esperar un poco para mostrar la animación completa
+      setTimeout(() => {
+        loadingScreen.classList.add('hidden');
+        
+        // Mostrar contenido principal
+        header.style.display = 'block';
+        mainContainer.style.display = 'block';
+        
+        // Eliminar la pantalla de carga del DOM después de la transición
+        setTimeout(() => {
+          loadingScreen.remove();
+        }, 500);
+      }, 500);
+    }
+    
+    // Modificar la función loadMovies para integrar con el sistema de carga
+    const originalLoadMovies = window.loadMovies;
+    window.loadMovies = async function() {
+      // Iniciar simulación de progreso
+      simulateLoadingProgress();
+      
+      try {
+        showLoading();
+        const res = await fetch(DATA_URL);
+        const data = await res.json();
+        allMovies = data.moviesData || data;
+        
+        // Completar la carga cuando los datos estén listos
+        completeLoading();
+        
+        renderAllSections();
+        initializeCarouselControls();
+        
+      } catch (err) {
+        console.error('Error al cargar películas:', err);
+        // Completar carga incluso en caso de error
+        completeLoading();
+        showError();
+      }
+    };
+    
+    // Iniciar la aplicación
+    document.addEventListener("DOMContentLoaded", () => {
+      setupSearch();
+      loadMovies();
+      loadMoviesLinks();
+      
+      // Manejar botón atrás
+      window.addEventListener('popstate', () => {
+        if (isInDetailsView) showList();
+      });
+      
+      // Tecla Escape
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && isInDetailsView) showList();
+      });
+    });
+  </script>
+</body>
+</html>
