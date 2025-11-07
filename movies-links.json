@@ -5,44 +5,15 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2024/1011985-155951/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2024/1011985-155951/720/720p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
-{
   "426063": {
     "title": "Nosferatu",
     "sources": [
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2024/426063-156552/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2024/426063-156552/720/720p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -52,20 +23,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2024/516729-92646/720/720p.m3u8?did=Ur3a-ToHk81RdltNWN5Js&dt=3"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2024/516729-92646/480/480p.m3u8?did=Ur3a-ToHk81RdltNWN5Js&dt=3"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -75,20 +32,6 @@
       {
         "quality": "HD",
         "url": "https://n07ghaasti.guardstorage.net/hls_3/H-6ry62OghIqSGo6GScLSHEPSTjHkOqWH5NomP4YUatRPAbsCsH-H7MSQZvKDRReCmGfJ8L9B6L1AgOPzNGoKw/master.m3u8?sig=bffCuUCRDgy7sdLgVY0uHQ&expires=1762385020"
-      },
-      {
-        "quality": "SD",
-        "url": "https://n07ghaasti.guardstorage.net/hls_3/H-6ry62OghIqSGo6GScLSHEPSTjHkOqWH5NomP4YUatRPAbsCsH-H7MSQZvKDRReCmGfJ8L9B6L1AgOPzNGoKw/master.m3u8?sig=bffCuUCRDgy7sdLgVY0uHQ&expires=1762385020"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -98,20 +41,6 @@
       {
         "quality": "HD",
         "url": "https://hfs296.serversicuro.cc/hls/dnzpemdh5pg4a3gyvakh5klvtwdikblg2flfctdiobfv5qqv4xfy4btjxqwq/index-v1-a1.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://hfs296.serversicuro.cc/hls/dnzpemdh5pg4a3gyvakh5klvtwdikblg2flfctdiobfv5qqv4xfy4btjxqwq/index-v1-a1.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -121,20 +50,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/552524-104491/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/552524-104491/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -144,20 +59,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2024/558449-156225/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2024/558449-156225/720/720p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -167,20 +68,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2022/574475-104245/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2022/574475-104245/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -190,20 +77,6 @@
       {
         "quality": "HD",
         "url": "https://be6721.rcr72.waw04.i8yz83pn.com/hls2/01/10151/0ys4dpdnn9m2_x/index-v1-a1.m3u8?t=oP9ABFLFxiZ8WpeOauDVU0syFPBmJhnar7DakDAfcJA&s=1762507334&e=10800&f=50755019&srv=1060&asn=264738&sp=5500&p="
-      },
-      {
-        "quality": "SD",
-        "url": "https://be6721.rcr72.waw04.i8yz83pn.com/hls2/01/10151/0ys4dpdnn9m2_x/index-v1-a1.m3u8?t=oP9ABFLFxiZ8WpeOauDVU0syFPBmJhnar7DakDAfcJA&s=1762507334&e=10800&f=50755019&srv=1060&asn=264738&sp=5500&p="
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -213,20 +86,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2022/650033-94938/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2022/650033-94938/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -236,20 +95,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2024/661539-93794/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2024/661539-93794/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -259,20 +104,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/668489-94014/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/668489-94014/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -282,20 +113,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/696506-93029/720/720p.m3u8?did=Ur3a-ToHk81RdltNWN5Js&dt=3"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/696506-93029/480/480p.m3u8?did=Ur3a-ToHk81RdltNWN5Js&dt=3"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -305,20 +122,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/710295-156575/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/710295-156575/720/720p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -328,20 +131,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/749170-104859/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/749170-104859/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -351,20 +140,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/755898-113219/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/755898-113219/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -374,20 +149,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2024/762509-156193/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2024/762509-156193/720/720p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -397,20 +158,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/774370-156686/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/774370-156686/720/720p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -420,20 +167,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2022/777443-113160/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2022/777443-113160/720/720p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -443,20 +176,6 @@
       {
         "quality": "HD",
         "url": "https://cdn-jskkcc2bycmlhjaf.edgeon-bandwidth.com/engine/hls2/01/13912/a3waz5dqg61a_,n,.urlset/master.m3u8?t=n7s-akkr9T1Z2togWcpI5JkP6MDAf8_KGNHuq3l4uiM&s=1762373797&e=14400&f=69561327&node=ZYUtiwOZprYX2uTlI43nctwk8nbQ5NzA0wPG02UH1pc=&i=0.1&sp=2500&asn=264738&q=n&rq=jdAHQq7xjKqQerq2VkurmiyyRr4XuL9ivIYbDBww"
-      },
-      {
-        "quality": "SD",
-        "url": "https://cdn-jskkcc2bycmlhjaf.edgeon-bandwidth.com/engine/hls2/01/13912/a3waz5dqg61a_,n,.urlset/master.m3u8?t=n7s-akkr9T1Z2togWcpI5JkP6MDAf8_KGNHuq3l4uiM&s=1762373797&e=14400&f=69561327&node=ZYUtiwOZprYX2uTlI43nctwk8nbQ5NzA0wPG02UH1pc=&i=0.1&sp=2500&asn=264738&q=n&rq=jdAHQq7xjKqQerq2VkurmiyyRr4XuL9ivIYbDBww"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -466,20 +185,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2022/803796-104247/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2022/803796-104247/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -489,20 +194,6 @@
       {
         "quality": "HD",
         "url": "https://fin-3dg-b1.i8yz83pn.com/hls2/06/06553/3gpe7qhw4cxt_h/master.m3u8?t=n7zFzFbGstUBBgh2xT7XyivF-klNyq_xd4ZrwVmWvf8&s=1762376787&e=10800&f=32765162&srv=1055&asn=264738&sp=4000&p="
-      },
-      {
-        "quality": "SD",
-        "url": "https://fin-3dg-b1.i8yz83pn.com/hls2/06/06553/3gpe7qhw4cxt_h/master.m3u8?t=n7zFzFbGstUBBgh2xT7XyivF-klNyq_xd4ZrwVmWvf8&s=1762376787&e=10800&f=32765162&srv=1055&asn=264738&sp=4000&p="
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -512,20 +203,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2024/823219-155485/720/720p.m3u8?did=Ur3a-ToHk81RdltNWN5Js&dt=3"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2024/823219-155485/480/480p.m3u8?did=Ur3a-ToHk81RdltNWN5Js&dt=3"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -535,20 +212,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/846422-105290/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/846422-105290/720/720p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -558,20 +221,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/850920-90165/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/850920-90165/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -581,20 +230,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/896536-94904/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/896536-94904/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -604,20 +239,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2023/906126-5/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2023/906126-5/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -627,20 +248,6 @@
       {
         "quality": "HD",
         "url": "https://s27t5fwaxz.guardstorage.net/hls_3/wWuB3y6TE1omIOlMQRV6dCv1YeJhMg5BuqXgUqNXag_iL2QrbfkB81d0AjivJO8xWwDXXmO9hwGFqK2rV-t_7w/master.m3u8?sig=NXDe2xMS0OMHuqJpczQZ7w&expires=1762384696"
-      },
-      {
-        "quality": "SD",
-        "url": "https://s27t5fwaxz.guardstorage.net/hls_3/wWuB3y6TE1omIOlMQRV6dCv1YeJhMg5BuqXgUqNXag_iL2QrbfkB81d0AjivJO8xWwDXXmO9hwGFqK2rV-t_7w/master.m3u8?sig=NXDe2xMS0OMHuqJpczQZ7w&expires=1762384696"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -650,20 +257,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2024/929204-156586/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2024/929204-156586/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -673,20 +266,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/931349-93920/720/720p.m3u8?did=Ur3a-ToHk81RdltNWN5Js&dt=3"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/931349-93920/480/480p.m3u8?did=Ur3a-ToHk81RdltNWN5Js&dt=3"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -696,20 +275,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2024/933260-156010/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2024/933260-156010/720/720p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -719,20 +284,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2024/939243-156549/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2024/939243-156549/720/720p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -742,20 +293,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/950387-92962/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/950387-92962/720/720p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -765,20 +302,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/950396-156617/720/720p.m3u8?did=Ur3a-ToHk81RdltNWN5Js&dt=3"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/950396-156617/480/480p.m3u8?did=Ur3a-ToHk81RdltNWN5Js&dt=3"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -788,20 +311,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/974573-94326/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/974573-94326/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -811,20 +320,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2024/974576-156443/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2024/974576-156443/720/720p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -834,20 +329,6 @@
       {
         "quality": "HD",
         "url": "https://q1yjnqk2oi.guardstorage.net/hls_3/aUIZBJdPV7QBVs7fkAWSMcdIVloCXdfq6hJFT09gbsirhMRbcUE1N8SKdWF60NmmPxIFAcDkZwKCl3Nnbu88TQ/master.m3u8?sig=1e64r7sJ5mPon6RtGK-j0w&expires=1762418210"
-      },
-      {
-        "quality": "SD",
-        "url": "https://q1yjnqk2oi.guardstorage.net/hls_3/aUIZBJdPV7QBVs7fkAWSMcdIVloCXdfq6hJFT09gbsirhMRbcUE1N8SKdWF60NmmPxIFAcDkZwKCl3Nnbu88TQ/master.m3u8?sig=1e64r7sJ5mPon6RtGK-j0w&expires=1762418210u"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -857,20 +338,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2022/1001414-98854/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2022/1001414-98854/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -880,20 +347,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/668489-94014/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/668489-94014/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -903,20 +356,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/1013601-93809/720/720p.m3u8?did=Ur3a-ToHk81RdltNWN5Js&dt=3"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/1013601-93809/480/480p.m3u8?did=Ur3a-ToHk81RdltNWN5Js&dt=3"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -926,20 +365,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2024/1035048-156466/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2024/1035048-156466/720/720p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -949,20 +374,6 @@
       {
         "quality": "HD",
         "url": "https://fin-3dg-b1.i8yz83pn.com/hls2/06/09995/csbsivsho09j_x/index-v1-a1.m3u8?t=BX2ZGkH2xACj61Soob6xmtShPoqT-pyRyI9aebH8yzY&s=1762507178&e=10800&f=49978016&srv=1070&asn=264738&sp=5500&p="
-      },
-      {
-        "quality": "SD",
-        "url": ""
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -972,20 +383,6 @@
       {
         "quality": "HD",
         "url": "https://pdct1bvv0d.guardstorage.net/hls_3/kHXo3Bx85x4cg56N1GtjDJ22342UH2OYDhEY4tmGLkscpwyJP139lfhUkX4rmr4OZQ-LG-6HHfiGqCXLWymsoWLD2KVlykJwJ9Ep_apwhKRHwkqspsoVcwZ4u9lqIp4q1B1GV4b5NIoh-Mazj5UBLAcuSiCQcfg3XfdjVy4OOqtU42griruUYXaZD4L8YHJ-YTuCS39AgIzAQ1QX5_OknA/master.m3u8?sig=4V7hGrAo9lEOZ6V76zqXoQ&expires=1755842418"
-      },
-      {
-        "quality": "SD",
-        "url": "https://pdct1bvv0d.guardstorage.net/hls_3/kHXo3Bx85x4cg56N1GtjDJ22342UH2OYDhEY4tmGLkscpwyJP139lfhUkX4rmr4OZQ-LG-6HHfiGqCXLWymsoWLD2KVlykJwJ9Ep_apwhKRHwkqspsoVcwZ4u9lqIp4q1B1GV4b5NIoh-Mazj5UBLAcuSiCQcfg3XfdjVy4OOqtU42griruUYXaZD4L8YHJ-YTuCS39AgIzAQ1QX5_OknA/master.m3u8?sig=4V7hGrAo9lEOZ6V76zqXoQ&expires=1755842418"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -995,20 +392,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2024/1061699-92488/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2024/1061699-92488/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1018,20 +401,6 @@
       {
         "quality": "HD",
         "url": "https://be6721.rcr72.waw04.i8yz83pn.com/hls2/01/08299/6hpy7icb243u_h/master.m3u8?t=5OflQ-i1iZEVdYbVcbiU_6MFI0M5Y02bgQbyWxuVIbU&s=1762374726&e=10800&f=41495454&srv=30&asn=264738&sp=4000&p="
-      },
-      {
-        "quality": "SD",
-        "url": "https://be6721.rcr72.waw04.i8yz83pn.com/hls2/01/08299/6hpy7icb243u_h/master.m3u8?t=5OflQ-i1iZEVdYbVcbiU_6MFI0M5Y02bgQbyWxuVIbU&s=1762374726&e=10800&f=41495454&srv=30&asn=264738&sp=4000&p="
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1041,20 +410,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2024/1069387-155860/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2024/1069387-155860/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1064,20 +419,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/1071585-110817/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/1071585-110817/720/720p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1087,20 +428,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/1075456-89958/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/1075456-89958/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1110,20 +437,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2022/1078605-113794/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2022/1078605-113794/720/720p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1133,20 +446,6 @@
       {
         "quality": "HD",
         "url": "https://p1lk1rore6.guardstorage.net/hls_3/W3Dmp1uxIMzSNMSvJKakuOiWm0X76rRcfcjv2mSTi3oamZa7ora6QI28W_LBBhezNWs_i5sFA3du3YeNLPkRCp7eQ4HHqroeEK4pZM8YJECVGffhVCwarVM3GvvN5qdYlUV_Aotu6hDnDP9ed1ZfRcp-3LhH8VwUy1Lu9KlaEcvJ75LrvMuY3HRUHexAzuzcaPoyJQm5FT2QEFu5HWMw9Q/master.m3u8?sig=byUd7LVVjWLUe33qThn1yQ&expires=1762486510"
-      },
-      {
-        "quality": "SD",
-        "url": "https://p1lk1rore6.guardstorage.net/hls_3/W3Dmp1uxIMzSNMSvJKakuOiWm0X76rRcfcjv2mSTi3oamZa7ora6QI28W_LBBhezNWs_i5sFA3du3YeNLPkRCp7eQ4HHqroeEK4pZM8YJECVGffhVCwarVM3GvvN5qdYlUV_Aotu6hDnDP9ed1ZfRcp-3LhH8VwUy1Lu9KlaEcvJ75LrvMuY3HRUHexAzuzcaPoyJQm5FT2QEFu5HWMw9Q/master.m3u8?sig=byUd7LVVjWLUe33qThn1yQ&expires=1762486510"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1156,20 +455,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/1084199-156685/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/1084199-156685/720/720p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1179,20 +464,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/1087192-110804/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/1087192-110804/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1202,20 +473,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/1087891-93642/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/1087891-93642/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1225,20 +482,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/1097311-103768/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/1097311-103768/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1248,20 +491,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2022/1098006-96436/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2022/1098006-96436/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1271,20 +500,6 @@
       {
         "quality": "HD",
         "url": "https://g95f4354ev.guardstorage.net/hls_3/0kqj2uHCNluP1PYaqis1w8SycdQCBTw_EVEtWaFT6AZ0dbLXwhtbnGUNsSVHGpj6kkzME-AMWO7_bkTsdTBSEaKrHvW4Pyeza1WB574-Q01WNwrBgCJxr_Dh_Zwd2SHX_jj-R9KhAc7sGmYiSZdn8vCDH3XaR7_6LLpmHzrnbgAfacJBd5eVTt6E0O7xY9LtUwxjgwyO_cBLU3vo4L6ymQ/master.m3u8?sig=QmqhYzeU_S9-qtD2C56RJQ&expires=1762380458"
-      },
-      {
-        "quality": "SD",
-        "url": "https://g95f4354ev.guardstorage.net/hls_3/0kqj2uHCNluP1PYaqis1w8SycdQCBTw_EVEtWaFT6AZ0dbLXwhtbnGUNsSVHGpj6kkzME-AMWO7_bkTsdTBSEaKrHvW4Pyeza1WB574-Q01WNwrBgCJxr_Dh_Zwd2SHX_jj-R9KhAc7sGmYiSZdn8vCDH3XaR7_6LLpmHzrnbgAfacJBd5eVTt6E0O7xY9LtUwxjgwyO_cBLU3vo4L6ymQ/master.m3u8?sig=QmqhYzeU_S9-qtD2C56RJQ&expires=1762380458"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1294,20 +509,6 @@
       {
         "quality": "HD",
         "url": "https://be7713.rcr82.waw05.i8yz83pn.com/hls2/02/08397/6ifdep70d4m8_h/master.m3u8?t=VJEjRTp7HwaGB3zGKm28R3Bo8Vut9F7PFmc5Hooj_SM&s=1762374331&e=10800&f=41987539&srv=1050&asn=264738&sp=4000&p="
-      },
-      {
-        "quality": "SD",
-        "url": "https://be7713.rcr82.waw05.i8yz83pn.com/hls2/02/08397/6ifdep70d4m8_h/master.m3u8?t=VJEjRTp7HwaGB3zGKm28R3Bo8Vut9F7PFmc5Hooj_SM&s=1762374331&e=10800&f=41987539&srv=1050&asn=264738&sp=4000&p="
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1317,20 +518,6 @@
       {
         "quality": "HD",
         "url": "https://sv2.iboprufeno.lat/?s=5jvl9ylUDkR8ZppnFgrxTjaeUz3I0ph5IMqSlMMY6E763wtJNVgHerV81ZR1o977WyZhk"
-      },
-      {
-        "quality": "SD",
-        "url": "https://sv2.iboprufeno.lat/?s=5jvl9ylUDkR8ZppnFgrxTjaeUz3I0ph5IMqSlMMY6E763wtJNVgHerV81ZR1o977WyZhk"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1340,20 +527,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/1126166-156540/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/1126166-156540/720/720p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1363,20 +536,6 @@
       {
         "quality": "HD",
         "url": "https://be6721.rcr72.waw04.i8yz83pn.com/hls2/09/08164/wq8a73c2rndq_h/master.m3u8?t=sFXNXGnX35oxqGuFmvcnXdacI1SGKa3p6lvk0PJosus&s=1762375591&e=10800&f=40824750&srv=1060&asn=264738&sp=4000&p="
-      },
-      {
-        "quality": "SD",
-        "url": "https://be6721.rcr72.waw04.i8yz83pn.com/hls2/09/08164/wq8a73c2rndq_h/master.m3u8?t=sFXNXGnX35oxqGuFmvcnXdacI1SGKa3p6lvk0PJosus&s=1762375591&e=10800&f=40824750&srv=1060&asn=264738&sp=4000&p="
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1386,20 +545,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/1140535-94440/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/1140535-94440/720/720p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1409,20 +554,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/1144430-94413/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/1144430-94413/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1432,20 +563,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2022/1151031-113273/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2022/1151031-113273/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1455,20 +572,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/1195506-93746/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/1195506-93746/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1478,20 +581,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/1197306-92430/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/1197306-92430/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1501,20 +590,6 @@
       {
         "quality": "HD",
         "url": "https://hy53gd.cfglobalcdn.com/silverlight/secip/89/264738/vF4xTw0o7kRjj_apLEy8oA/MTgxLjE5MS4xNDMuMjE3/1762396907/hls-vod-s0011/flv/api/files/videos/2020/02/11/1581444455j1r5r.mp4.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://hy53gd.cfglobalcdn.com/silverlight/secip/89/264738/vF4xTw0o7kRjj_apLEy8oA/MTgxLjE5MS4xNDMuMjE3/1762396907/hls-vod-s0011/flv/api/files/videos/2020/02/11/1581444455j1r5r.mp4.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1524,20 +599,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2022/1204883-118777/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2022/1204883-118777/720/720p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1547,20 +608,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/1210938-90148/720/720p.m3u8?did=Ur3a-ToHk81RdltNWN5Js&dt=3"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/1210938-90148/480/480p.m3u8?did=Ur3a-ToHk81RdltNWN5Js&dt=3"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1570,20 +617,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/1232546-102886/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/1232546-102886/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1593,20 +626,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/1233069-94188/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/1233069-94188/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1616,20 +635,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/1233413-103457/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/1233413-103457/720/720p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1639,20 +644,6 @@
       {
         "quality": "HD",
         "url": "https://gj92t0fr3c.guardstorage.net/hls_3/XfpkgCvcoiqcZzVdHE1nbXXXap331JKqu5583OWAGXKCwjbqTf3Lv7CY4kzRPtqCMReumNOSMfkv-sxDSqEg7CFKehzGXaV6dYHbP9Uz0V2TRUVkMfQEDdwk8KaRnfxgjEtxcUQS0tzyraAOhNPrcqmMmLts71kRIsOuNN6nhBHWrQI28WyuC28akEl1YqQcRa6eBN4GDwBZ3FWNPS73lQ/master.m3u8?sig=CydtmX5JiDJpvYM36xmovg&expires=1762380328"
-      },
-      {
-        "quality": "SD",
-        "url": "https://gj92t0fr3c.guardstorage.net/hls_3/XfpkgCvcoiqcZzVdHE1nbXXXap331JKqu5583OWAGXKCwjbqTf3Lv7CY4kzRPtqCMReumNOSMfkv-sxDSqEg7CFKehzGXaV6dYHbP9Uz0V2TRUVkMfQEDdwk8KaRnfxgjEtxcUQS0tzyraAOhNPrcqmMmLts71kRIsOuNN6nhBHWrQI28WyuC28akEl1YqQcRa6eBN4GDwBZ3FWNPS73lQ/master.m3u8?sig=CydtmX5JiDJpvYM36xmovg&expires=1762380328"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1662,20 +653,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/1236197-112984/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/1236197-112984/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1685,20 +662,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/1239193-103747/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/1239193-103747/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1708,20 +671,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/1241436-94559/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/1241436-94559/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1731,20 +680,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2022/1241470-113324/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2022/1241470-113324/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1754,20 +689,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2024/1241982-156362/720/720p.m3u8?did=Ur3a-ToHk81RdltNWN5Js&dt=3"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2024/1241982-156362/480/480p.m3u8?did=Ur3a-ToHk81RdltNWN5Js&dt=3"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1777,20 +698,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/1244944-93805/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/1244944-93805/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1800,20 +707,6 @@
       {
         "quality": "HD",
         "url": ""
-      },
-      {
-        "quality": "SD",
-        "url": "https://v2.fiestareel.com/mov/2024/1247019-156535/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1823,20 +716,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/1249213-94336/720/720p.m3u8?did=Ur3a-ToHk81RdltNWN5Js&dt=3"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/1249213-94336/480/480p.m3u8?did=Ur3a-ToHk81RdltNWN5Js&dt=3"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1846,20 +725,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/1254786-93807/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/1254786-93807/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1869,20 +734,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/1269208-112162/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/1269208-112162/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1892,20 +743,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/1272149-92982/720/720p.m3u8?did=Ur3a-ToHk81RdltNWN5Js&dt=3"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/1272149-92982/480/480p.m3u8?did=Ur3a-ToHk81RdltNWN5Js&dt=3"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1915,20 +752,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/1276073-94333/720/720p.m3u8?did=Ur3a-ToHk81RdltNWN5Js&dt=3"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/1276073-94333/480/480p.m3u8?did=Ur3a-ToHk81RdltNWN5Js&dt=3"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1938,20 +761,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/1287536-110811/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/1287536-110811/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1961,20 +770,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/1294203-156787/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/1294203-156787/720/720p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -1984,20 +779,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/1297763-156864/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/1297763-156864/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -2007,20 +788,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2024/1299652-156589/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2024/1299652-156589/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -2030,20 +797,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2022/1307078-113094/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2022/1307078-113094/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -2053,20 +806,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2024/1333100-92495/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2024/1333100-92495/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -2076,20 +815,6 @@
       {
         "quality": "HD",
         "url": "https://be7713.rcr82.waw05.i8yz83pn.com/hls2/02/09720/n26fijoqbyab_x/master.m3u8?t=dZkTq7bLbDquhL_RbVDw5ykGHRFdMIt2k024QJoJas0&s=1762375059&e=10800&f=48600081&srv=1055&asn=264738&sp=5500&p="
-      },
-      {
-        "quality": "SD",
-        "url": "https://be7713.rcr82.waw05.i8yz83pn.com/hls2/02/09720/n26fijoqbyab_x/master.m3u8?t=dZkTq7bLbDquhL_RbVDw5ykGHRFdMIt2k024QJoJas0&s=1762375059&e=10800&f=48600081&srv=1055&asn=264738&sp=5500&p="
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -2099,20 +824,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/1356039-156661/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/1356039-156661/720/720p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -2122,20 +833,6 @@
       {
         "quality": "HD",
         "url": "https://v2.fiestareel.com/mov/2024/1357633-156148/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v2.fiestareel.com/mov/2024/1357633-156148/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -2145,20 +842,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2022/1376434-103327/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2022/1376434-103327/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -2168,20 +851,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/1390394-94892/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/1390394-94892/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -2191,20 +860,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/1405338-156756/720/720p.m3u8?did=Ur3a-ToHk81RdltNWN5Js&dt=3"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/1405338-156756/480/480p.m3u8?did=Ur3a-ToHk81RdltNWN5Js&dt=3"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -2214,20 +869,6 @@
       {
         "quality": "HD",
         "url": "https://be6721.rcr72.waw04.i8yz83pn.com/hls2/09/08395/0jj9ynj04eya_h/master.m3u8?t=dizdgT5g7q7Ar0MKjmfKI9nVq7StYGWki4J4ZIpWPUY&s=1762373416&e=10800&f=41978672&srv=1050&asn=264738&sp=4000&p="
-      },
-      {
-        "quality": "SD",
-        "url": "https://be6721.rcr72.waw04.i8yz83pn.com/hls2/09/08395/0jj9ynj04eya_h/master.m3u8?t=dizdgT5g7q7Ar0MKjmfKI9nVq7StYGWki4J4ZIpWPUY&s=1762373416&e=10800&f=41978672&srv=1050&asn=264738&sp=4000&p="
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -2237,20 +878,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2022/1426680-103611/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2022/1426680-103611/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -2260,20 +887,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2022/1429744-113159/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2022/1429744-113159/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -2283,20 +896,6 @@
       {
         "quality": "HD",
         "url": ""
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/1450599-103378/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   },
@@ -2306,20 +905,6 @@
       {
         "quality": "HD",
         "url": "https://v3.fiestareel.com/mov/2025/1469239-94512/720/720p.m3u8"
-      },
-      {
-        "quality": "SD",
-        "url": "https://v3.fiestareel.com/mov/2025/1469239-94512/480/480p.m3u8"
-      }
-    ],
-    "subtitles": [
-      {
-        "lang": "Español",
-        "url": "https://example.com/movies/ziam/subs/es.vtt"
-      },
-      {
-        "lang": "Inglés",
-        "url": "https://example.com/movies/ziam/subs/en.vtt"
       }
     ]
   }
