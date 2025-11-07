@@ -1,4 +1,27 @@
-
+{
+  "1011985": {
+    "title": "Kung Fu Panda 4",
+    "sources": [
+      {
+        "quality": "HD",
+        "url": "https://v3.fiestareel.com/mov/2024/1011985-155951/720/720p.m3u8"
+      },
+      {
+        "quality": "SD",
+        "url": "https://v3.fiestareel.com/mov/2024/1011985-155951/720/720p.m3u8"
+      }
+    ],
+    "subtitles": [
+      {
+        "lang": "Español",
+        "url": "https://example.com/movies/ziam/subs/es.vtt"
+      },
+      {
+        "lang": "Inglés",
+        "url": "https://example.com/movies/ziam/subs/en.vtt"
+      }
+    ]
+  },
 {
   "426063": {
     "title": "Nosferatu",
@@ -1500,7 +1523,7 @@
     "sources": [
       {
         "quality": "HD",
-        "url": "https://s611vla.storage.yandex.net/rdisk/6f2aa9c4e83e2cd7bdae686a9f24e3ee42f726f9d2553a8720557a247bb3d737/690b0947/Umj8mA-6ZMsEM_oUGHonr0S-QLjYoGqqoMK7m5zLAYnHNr9TbXGaL1Yj-2ZqGqrA9X63qV75nby_zVbwV4Y1Jg==?uid=0&filename=Osiris%201080p%20DUAL%20id_1241470.mkv&disposition=attachment&hash=kJPZGNYz9lBEshUrKuhA2O9Y6WFycO4n/al/IahfWvZxvUwagNKSGSIP9LFuK8SYq/J6bpmRyOJonT3VoXnDag%3D%3D&limit=0&content_type=video%2Fx-matroska&owner_uid=2235168135&fsize=3708772735&hid=fe9fcce0b4db04a40ff6aa0ce8d8ff04&media_type=video&tknv=v3&ts=642d4a64f9fc0&s=151d9a927a65265d1d5219f7efc1e3175945e9a15054169375296f6af2852ad6&pb=U2FsdGVkX1_aOnYN2uxhZ6b1ghJ3CmANxtm_zcMTApaVJ22pxZV7SNzHhGTjO7b24vuP1dHF-Ft6B7FND7fFsHqONPp9bhTTQgm6fnORr1k"
+        "url": "https://v3.fiestareel.com/mov/2022/1204883-118777/720/720p.m3u8"
       },
       {
         "quality": "SD",
