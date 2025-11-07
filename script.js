@@ -1,11 +1,5 @@
-// Generar un parámetro único basado en la hora actual (para evitar caché)
-const VERSION = Date.now();
-
-// URLs dinámicas que siempre cargan la versión más reciente
-const BASE_URL = "https://cdn.jsdelivr.net/gh/THELUX1/Flicker-Android-@main/";
-
-const DATA_URL = `${BASE_URL}data.json?v=${VERSION}`;
-const MOVIES_LINKS_URL = `${BASE_URL}movies-links.json?v=${VERSION}`;
+const MOVIES_LINKS_URL = "https://raw.githubusercontent.com/THELUX1/Flicker-Android-/main/movies-links.json";
+const DATA_URL = "https://raw.githubusercontent.com/THELUX1/Flicker-Android-/main/data.json";
 const TMDB_API_KEY = "995449ccaf6d840acc029f95c7d210dd";
 
 let allMovies = [];
