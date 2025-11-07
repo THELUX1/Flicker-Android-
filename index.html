@@ -211,7 +211,7 @@
   
   <script>
     // ===================================================
-    // SISTEMA DE CARGA CON PROGRESO
+    // SISTEMA DE CARGA MEJORADO
     // ===================================================
     let loadingProgress = 0;
     let loadingInterval;
@@ -220,25 +220,95 @@
     const header = document.getElementById('header');
     const mainContainer = document.getElementById('mainContainer');
     
-    // Función para simular progreso de carga
-    function simulateLoadingProgress() {
-      loadingInterval = setInterval(() => {
-        // Incremento aleatorio para simular carga real
-        const increment = Math.random() * 10 + 5;
-        loadingProgress = Math.min(loadingProgress + increment, 90);
-        loadingProgressBar.style.width = `${loadingProgress}%`;
+    // Variables para el seguimiento de recursos
+    let resourcesLoaded = 0;
+    let totalResources = 0;
+    let isPageFullyLoaded = false;
+    let isDataLoaded = false;
+    
+    // Función para contar recursos externos
+    function countExternalResources() {
+      const links = document.querySelectorAll('link[rel="stylesheet"]');
+      const scripts = document.querySelectorAll('script[src]');
+      const images = document.querySelectorAll('img');
+      
+      totalResources = links.length + scripts.length + images.length;
+      
+      // Si no hay recursos externos, considerar que ya están cargados
+      if (totalResources === 0) {
+        resourcesLoaded = 1;
+        updateLoadingProgress();
+      }
+    }
+    
+    // Función para verificar si un recurso está cargado
+    function checkResourceLoaded() {
+      resourcesLoaded++;
+      updateLoadingProgress();
+    }
+    
+    // Función para actualizar la barra de progreso
+    function updateLoadingProgress() {
+      // Calcular progreso basado en recursos cargados (70%) y datos cargados (30%)
+      const resourceProgress = totalResources > 0 ? (resourcesLoaded / totalResources) * 70 : 70;
+      const dataProgress = isDataLoaded ? 30 : 0;
+      
+      loadingProgress = Math.min(resourceProgress + dataProgress, 100);
+      loadingProgressBar.style.width = `${loadingProgress}%`;
+      
+      // Verificar si todo está listo
+      if (loadingProgress >= 100 && !isPageFullyLoaded) {
+        isPageFullyLoaded = true;
+        completeLoading();
+      }
+    }
+    
+    // Observador para recursos
+    function setupResourceObserver() {
+      // Observar hojas de estilo
+      document.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
+        link.addEventListener('load', checkResourceLoaded);
+        link.addEventListener('error', checkResourceLoaded); // Contar incluso si hay error
+      });
+      
+      // Observar scripts
+      document.querySelectorAll('script[src]').forEach(script => {
+        script.addEventListener('load', checkResourceLoaded);
+        script.addEventListener('error', checkResourceLoaded);
+      });
+      
+      // Observar imágenes
+      document.querySelectorAll('img').forEach(img => {
+        img.addEventListener('load', checkResourceLoaded);
+        img.addEventListener('error', checkResourceLoaded);
+      });
+    }
+    
+    // Función para simular progreso mínimo si la carga es muy rápida
+    function ensureMinimumLoadingTime() {
+      let elapsedTime = 0;
+      const minLoadingTime = 1500; // 1.5 segundos mínimo
+      
+      const startTime = Date.now();
+      
+      const checkTime = setInterval(() => {
+        elapsedTime = Date.now() - startTime;
         
-        // Si llegamos al 90%, detenemos la simulación
-        if (loadingProgress >= 90) {
-          clearInterval(loadingInterval);
+        if (elapsedTime >= minLoadingTime && isPageFullyLoaded) {
+          clearInterval(checkTime);
+          completeLoading();
+        } else if (elapsedTime >= minLoadingTime * 2) {
+          // Forzar finalización después del doble del tiempo mínimo
+          clearInterval(checkTime);
+          isPageFullyLoaded = true;
+          completeLoading();
         }
-      }, 300);
+      }, 100);
     }
     
     // Función para completar la carga
     function completeLoading() {
       clearInterval(loadingInterval);
-      loadingProgress = 100;
       loadingProgressBar.style.width = '100%';
       
       // Esperar un poco para mostrar la animación completa
@@ -259,31 +329,38 @@
     // Modificar la función loadMovies para integrar con el sistema de carga
     const originalLoadMovies = window.loadMovies;
     window.loadMovies = async function() {
-      // Iniciar simulación de progreso
-      simulateLoadingProgress();
-      
       try {
         showLoading();
         const res = await fetch(DATA_URL);
         const data = await res.json();
         allMovies = data.moviesData || data;
         
-        // Completar la carga cuando los datos estén listos
-        completeLoading();
+        // Marcar datos como cargados
+        isDataLoaded = true;
+        updateLoadingProgress();
         
         renderAllSections();
         initializeCarouselControls();
         
       } catch (err) {
         console.error('Error al cargar películas:', err);
-        // Completar carga incluso en caso de error
-        completeLoading();
+        // Marcar datos como cargados incluso en caso de error
+        isDataLoaded = true;
+        updateLoadingProgress();
         showError();
       }
     };
     
     // Iniciar la aplicación
     document.addEventListener("DOMContentLoaded", () => {
+      // Contar recursos y configurar observadores
+      countExternalResources();
+      setupResourceObserver();
+      
+      // Iniciar temporizador para tiempo mínimo de carga
+      ensureMinimumLoadingTime();
+      
+      // Iniciar la aplicación
       setupSearch();
       loadMovies();
       loadMoviesLinks();
@@ -297,6 +374,15 @@
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && isInDetailsView) showList();
       });
+    });
+    
+    // También verificar cuando la ventana se carga completamente
+    window.addEventListener('load', () => {
+      // Si todos los recursos ya están cargados, marcar como listo
+      if (document.readyState === 'complete') {
+        resourcesLoaded = totalResources;
+        updateLoadingProgress();
+      }
     });
   </script>
 </body>
