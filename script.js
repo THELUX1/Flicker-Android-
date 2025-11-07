@@ -1,5 +1,6 @@
-const MOVIES_LINKS_URL = "https://raw.githubusercontent.com/THELUX1/Flicker-Android-/main/movies-links.json";
-const DATA_URL = "https://raw.githubusercontent.com/THELUX1/Flicker-Android-/main/data.json";
+// Acceso local dentro del mismo repositorio
+const DATA_URL = './data.json';
+const MOVIES_LINKS_URL = './movies-links.json';
 const TMDB_API_KEY = "995449ccaf6d840acc029f95c7d210dd";
 
 let allMovies = [];
