@@ -1,6 +1,5 @@
 // script-series.js
 const TMDB_API_KEY = "995449ccaf6d840acc029f95c7d210dd";
-// const BASE_URL = "https://raw.githubusercontent.com/THELUX1/Flicker-Android-/main/";
 const DATA_URL = `./data-series.json?nocache=${Date.now()}`;
 const SERIES_LINKS_URL = `./series-links.json?nocache=${Date.now()}`;
 
@@ -46,11 +45,9 @@ function closeSearch() {
 document.addEventListener('click', (e) => {
   const searchContainer = document.getElementById('searchContainer');
   const searchToggle = document.querySelector('.search-toggle');
-  const searchClose = document.querySelector('.search-close');
   
   if (!searchContainer.contains(e.target) && 
-      !searchToggle.contains(e.target) && 
-      !searchClose.contains(e.target)) {
+      !searchToggle.contains(e.target)) {
     closeSearch();
   }
 });
@@ -321,14 +318,6 @@ async function loadSeriesDetails(series) {
         day: 'numeric'
       }) : 'No disponible';
     
-    // Obtener temporadas y episodios
-    const seasonsData = await Promise.all(
-      seriesDetails.seasons.map(season => 
-        fetch(`https://api.themoviedb.org/3/tv/${series.id}/season/${season.season_number}?api_key=${TMDB_API_KEY}&language=es-ES`)
-          .then(res => res.json())
-      )
-    );
-    
     detailsContent.innerHTML = `
       <button class="back-button" onclick="showList()">←</button>
       
@@ -366,10 +355,21 @@ async function loadSeriesDetails(series) {
           
           <p class="details-overview">${seriesDetails.overview || "Sin descripción disponible."}</p>
           
-          <div class="details-actions">
-            <button class="secondary-btn">
-              <span style="font-size: 1.2rem;">ⓘ</span> Más información
-            </button>
+          <!-- SELECTOR DE TEMPORADAS MOVIDO AQUÍ, ANTES DE LA INFORMACIÓN -->
+          <div class="season-selector-section">
+            <h3 class="season-section-title">Temporadas y Episodios</h3>
+            <div class="season-selector-container">
+              <div class="season-selector">
+                <button class="season-selector-toggle" id="seasonToggle">
+                  <span>Seleccionar Temporada</span>
+                  <span class="dropdown-arrow">▼</span>
+                </button>
+                <div class="season-dropdown" id="seasonDropdown">
+                  ${generateSeasonOptions(seriesDetails.seasons || [], series.id)}
+                </div>
+              </div>
+              <div class="episodes-container" id="episodesContainer"></div>
+            </div>
           </div>
           
           <div class="details-extra">
@@ -397,38 +397,13 @@ async function loadSeriesDetails(series) {
               </div>
             </div>
           </div>
-          
-          <!-- Temporadas y episodios -->
-          <div class="seasons-container">
-            <h3 class="seasons-title">Temporadas y Episodios</h3>
-            <div class="seasons-list">
-              ${seasonsData.map((season, index) => `
-                <div class="season-item">
-                  <div class="season-header">
-                    <h4 class="season-title">${season.name || `Temporada ${season.season_number}`}</h4>
-                    <span class="season-episodes">${season.episodes ? season.episodes.length : 0} episodios</span>
-                  </div>
-                  <div class="episodes-list">
-                    ${season.episodes ? season.episodes.map(episode => `
-                      <div class="episode-item" onclick="playEpisode(${series.id}, ${season.season_number}, ${episode.episode_number}, '${series.title.replace(/'/g, "\\'")} - ${episode.name.replace(/'/g, "\\'")}')">
-                        <div class="episode-number">${episode.episode_number}</div>
-                        <div class="episode-info">
-                          <div class="episode-title">${episode.name || 'Episodio sin título'}</div>
-                          <div class="episode-overview">${episode.overview ? episode.overview.substring(0, 100) + '...' : 'Sin descripción disponible.'}</div>
-                        </div>
-                        <button class="play-episode-btn">
-                          <span style="font-size: 1.2rem;">▶</span>
-                        </button>
-                      </div>
-                    `).join('') : '<div class="no-episodes">No hay episodios disponibles</div>'}
-                  </div>
-                </div>
-              `).join('')}
-            </div>
-          </div>
         </div>
       </div>
     `;
+    
+    // Inicializar el selector de temporadas después de un breve delay
+    setTimeout(initializeSeasonSelector, 100);
+    
   } catch (err) {
     console.error('Error al cargar detalles:', err);
     const detailsContent = document.getElementById("details-content");
@@ -441,6 +416,101 @@ async function loadSeriesDetails(series) {
         </button>
       </div>
     `;
+  }
+}
+
+// ===================================================
+// SELECTOR DE TEMPORADAS
+// ===================================================
+function generateSeasonOptions(seasons, seriesId) {
+  const availableSeasons = seriesLinksData[seriesId]?.seasons || {};
+  
+  return seasons.map(season => {
+    const seasonNum = season.season_number;
+    const hasEpisodes = availableSeasons[seasonNum] && Object.keys(availableSeasons[seasonNum].episodes || {}).length > 0;
+    const episodeCount = hasEpisodes ? Object.keys(availableSeasons[seasonNum].episodes).length : 0;
+    
+    return `
+      <div class="season-option ${hasEpisodes ? 'available' : 'unavailable'}" 
+           data-season="${seasonNum}" 
+           onclick="selectSeason(${seriesId}, ${seasonNum}, '${(season.name || `Temporada ${seasonNum}`).replace(/'/g, "\\'")}')">
+        <span class="season-option-text">
+          ${season.name || `Temporada ${seasonNum}`}
+          ${episodeCount > 0 ? ` (${episodeCount} episodios)` : ''}
+        </span>
+        ${!hasEpisodes ? '<span class="no-episodes-badge">No disponible</span>' : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+function selectSeason(seriesId, seasonNumber, seasonName) {
+  const seriesData = seriesLinksData[seriesId];
+  const episodes = seriesData?.seasons?.[seasonNumber]?.episodes || {};
+  
+  const episodesContainer = document.getElementById('episodesContainer');
+  const seasonToggle = document.getElementById('seasonToggle');
+  const seasonDropdown = document.getElementById('seasonDropdown');
+  
+  // Actualizar el texto del toggle
+  seasonToggle.querySelector('span').textContent = seasonName;
+  
+  // Cerrar el dropdown
+  seasonDropdown.classList.remove('active');
+  document.querySelector('.season-selector-section').classList.remove('dropdown-open');
+  
+  // Generar episodios
+  if (Object.keys(episodes).length > 0) {
+    episodesContainer.innerHTML = `
+      <div class="episodes-grid">
+        ${Object.entries(episodes).map(([epNum, episode]) => `
+          <div class="episode-card" 
+               onclick="playEpisode(${seriesId}, ${seasonNumber}, ${epNum}, '${episode.title.replace(/'/g, "\\'")}')">
+            <div class="episode-number">${epNum}</div>
+            <div class="episode-title">${episode.title}</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  } else {
+    episodesContainer.innerHTML = `
+      <div class="no-episodes-message">
+        No hay episodios disponibles para esta temporada
+      </div>
+    `;
+  }
+  
+  // Mostrar el contenedor de episodios con animación
+  episodesContainer.style.display = 'block';
+  setTimeout(() => {
+    episodesContainer.classList.add('active');
+  }, 10);
+}
+
+function initializeSeasonSelector() {
+  const seasonToggle = document.getElementById('seasonToggle');
+  const seasonDropdown = document.getElementById('seasonDropdown');
+  
+  if (seasonToggle && seasonDropdown) {
+    seasonToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      seasonDropdown.classList.toggle('active');
+      
+      // Si se abre el dropdown, agregar clase al contenedor padre
+      if (seasonDropdown.classList.contains('active')) {
+        document.querySelector('.season-selector-section').classList.add('dropdown-open');
+      } else {
+        document.querySelector('.season-selector-section').classList.remove('dropdown-open');
+      }
+    });
+    
+    // Cerrar dropdown al hacer clic fuera
+    document.addEventListener('click', (e) => {
+      if (!seasonToggle.contains(e.target) && !seasonDropdown.contains(e.target)) {
+        seasonDropdown.classList.remove('active');
+        document.querySelector('.season-selector-section').classList.remove('dropdown-open');
+      }
+    });
   }
 }
 
@@ -527,7 +597,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-// Agregar estilo para spinner
+// Agregar estilo para spinner y selector de temporadas
 const style = document.createElement('style');
 style.textContent = `
   @keyframes spin { 
@@ -535,122 +605,327 @@ style.textContent = `
     100% { transform: rotate(360deg); } 
   }
   
-  /* Estilos para temporadas y episodios */
-  .seasons-container {
-    margin-top: 40px;
+  /* =================================================== */
+  /* SELECTOR DE TEMPORADAS PERSONALIZADO */
+  /* =================================================== */
+  .season-selector-container {
+    width: 100%;
+    max-width: 100%;
+    position: relative;
   }
   
-  .seasons-title {
-    font-size: 1.5rem;
-    margin-bottom: 20px;
+  .season-selector {
+    position: relative;
+    width: 100%;
+  }
+  
+  .season-selector-toggle {
+    background: rgba(255, 255, 255, 0.15);
     color: var(--texto);
-    font-weight: 600;
-  }
-  
-  .seasons-list {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-  
-  .season-item {
-    background: rgba(26, 26, 26, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 16px 20px;
     border-radius: 12px;
-    padding: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    z-index: 100;
+    position: relative;
   }
   
-  .season-header {
+  .season-selector-toggle:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+  
+  .dropdown-arrow {
+    transition: transform 0.3s ease;
+    font-size: 0.9rem;
+    margin-left: 10px;
+  }
+  
+  .season-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 300px;
+    background: linear-gradient(135deg, rgba(26, 26, 26, 0.98), rgba(11, 11, 11, 0.98));
+    backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 10px;
+    margin-top: 8px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 1001; /* Z-index muy alto para que esté por encima de todo */
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  
+  .season-dropdown.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  
+  .season-dropdown.active + .season-selector-toggle .dropdown-arrow {
+    transform: rotate(180deg);
+  }
+  
+  .season-option {
+    padding: 12px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
   }
   
-  .season-title {
-    font-size: 1.2rem;
-    color: var(--texto);
-    font-weight: 600;
-  }
-  
-  .season-episodes {
-    color: var(--texto-secundario);
-    font-size: 0.9rem;
-  }
-  
-  .episodes-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .episode-item {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding: 12px;
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.05);
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-  
-  .episode-item:hover {
+  .season-option.available:hover {
     background: rgba(255, 255, 255, 0.1);
     transform: translateX(5px);
   }
   
-  .episode-number {
-    background: var(--rojo);
-    color: white;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    font-size: 0.9rem;
-    flex-shrink: 0;
+  .season-option.unavailable {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
   
-  .episode-info {
-    flex: 1;
+  .season-option-text {
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+  
+  .no-episodes-badge {
+    background: var(--gris-medio);
+    color: var(--texto-secundario);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+  
+  /* =================================================== */
+  /* SECCIÓN DE SELECTOR DE TEMPORADAS (PRIMERO) */
+  /* =================================================== */
+  .season-selector-section {
+    margin: 30px 0;
+    padding: 25px;
+    background: linear-gradient(135deg, rgba(26, 26, 26, 0.8), rgba(11, 11, 11, 0.9));
+    border-radius: 16px;
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    animation: slideUp 0.8s ease 0.6s both;
+    position: relative;
+    z-index: 10;
+  }
+  
+  /* Estilo cuando el dropdown está abierto */
+  .season-selector-section.dropdown-open {
+    z-index: 1000;
+  }
+  
+  .season-section-title {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: var(--texto);
+    font-weight: 600;
+    border-left: 4px solid var(--rojo);
+    padding-left: 12px;
+  }
+  
+  /* =================================================== */
+  /* CONTENEDOR DE EPISODIOS */
+  /* =================================================== */
+  .episodes-container {
+    display: none;
+    margin-top: 20px;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.4s ease;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .episodes-container.active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .episodes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 15px;
+    animation: fadeInUp 0.5s ease;
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .episode-card {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 20px 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    aspect-ratio: 3/4;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .episode-card:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: var(--rojo);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(229, 9, 20, 0.3);
+  }
+  
+  .episode-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--rojo), #ff4757);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .episode-card:hover::before {
+    opacity: 1;
+  }
+  
+  .episode-number {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--texto);
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, var(--rojo), #ff4757);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
   
   .episode-title {
-    font-weight: 600;
-    margin-bottom: 5px;
-    color: var(--texto);
-  }
-  
-  .episode-overview {
     font-size: 0.85rem;
     color: var(--texto-secundario);
-    line-height: 1.4;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-weight: 500;
   }
   
-  .play-episode-btn {
-    background: transparent;
-    border: none;
-    color: var(--rojo);
-    font-size: 1.2rem;
-    cursor: pointer;
-    padding: 8px;
-    border-radius: 50%;
-    transition: all 0.3s ease;
-  }
-  
-  .play-episode-btn:hover {
-    background: rgba(229, 9, 20, 0.2);
-    transform: scale(1.1);
-  }
-  
-  .no-episodes {
+  .no-episodes-message {
     text-align: center;
     color: var(--texto-secundario);
-    padding: 20px;
+    padding: 30px;
     font-style: italic;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  /* Asegurar que el contenido de abajo tenga menor z-index */
+  .details-extra {
+    position: relative;
+    z-index: 1;
+  }
+  
+  /* Responsive para el selector de temporadas */
+  @media (max-width: 768px) {
+    .season-selector-section {
+      margin: 25px 0;
+      padding: 20px;
+    }
+    
+    .season-section-title {
+      font-size: 1.3rem;
+      margin-bottom: 15px;
+    }
+    
+    .season-dropdown {
+      width: 250px;
+      right: 0;
+      left: auto;
+    }
+    
+    .episodes-grid {
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 12px;
+    }
+    
+    .episode-card {
+      padding: 15px 10px;
+    }
+    
+    .episode-number {
+      font-size: 1.5rem;
+    }
+    
+    .episode-title {
+      font-size: 0.8rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .season-selector-section {
+      margin: 20px 0;
+      padding: 15px;
+    }
+    
+    .season-section-title {
+      font-size: 1.2rem;
+    }
+    
+    .season-dropdown {
+      width: 100%;
+      right: 0;
+      left: 0;
+    }
+    
+    .episodes-grid {
+      grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+      gap: 10px;
+    }
+    
+    .episode-card {
+      padding: 12px 8px;
+    }
+    
+    .episode-number {
+      font-size: 1.3rem;
+    }
+    
+    .episode-title {
+      font-size: 0.75rem;
+    }
   }
 `;
 document.head.appendChild(style);

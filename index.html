@@ -316,7 +316,7 @@
         if (elapsedTime >= minLoadingTime && isPageFullyLoaded) {
           clearInterval(checkTime);
           completeLoading();
-        } else if (elapsedTime >= minLoadingTime * 2) {
+        } else if (elapsedTime >= minLoadingTime * 0.5) {
           clearInterval(checkTime);
           isPageFullyLoaded = true;
           completeLoading();

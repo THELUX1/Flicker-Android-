@@ -709,7 +709,341 @@ body {
 .hidden {
   display: none !important;
 }
+// Reemplazar la sección de estilos del season-dropdown en el <style>:
+style.textContent = `
+  @keyframes spin { 
+    0% { transform: rotate(0deg); } 
+    100% { transform: rotate(360deg); } 
+  }
+  
+  /* =================================================== */
+  /* SELECTOR DE TEMPORADAS PERSONALIZADO */
+  /* =================================================== */
+  .season-selector-container {
+    width: 100%;
+    max-width: 100%;
+    position: relative;
+  }
+  
+  .season-selector {
+    position: relative;
+    width: 100%;
+  }
+  
+  .season-selector-toggle {
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--texto);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 16px 20px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    z-index: 100;
+    position: relative;
+  }
+  
+  .season-selector-toggle:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+  
+  .dropdown-arrow {
+    transition: transform 0.3s ease;
+    font-size: 0.9rem;
+    margin-left: 10px;
+  }
+  
+  .season-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 300px;
+    background: linear-gradient(135deg, rgba(26, 26, 26, 0.98), rgba(11, 11, 11, 0.98));
+    backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 10px;
+    margin-top: 8px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 1000; /* Aumentado para que esté por encima de todo */
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  
+  .season-dropdown.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  
+  .season-dropdown.active + .season-selector-toggle .dropdown-arrow {
+    transform: rotate(180deg);
+  }
+  
+  .season-option {
+    padding: 12px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .season-option.available:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(5px);
+  }
+  
+  .season-option.unavailable {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .season-option-text {
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+  
+  .no-episodes-badge {
+    background: var(--gris-medio);
+    color: var(--texto-secundario);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+  
+  /* =================================================== */
+  /* SECCIÓN DE SELECTOR DE TEMPORADAS (PRIMERO) */
+  /* =================================================== */
+  .season-selector-section {
+    margin: 30px 0;
+    padding: 25px;
+    background: linear-gradient(135deg, rgba(26, 26, 26, 0.8), rgba(11, 11, 11, 0.9));
+    border-radius: 16px;
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    animation: slideUp 0.8s ease 0.6s both;
+    position: relative;
+    z-index: 10;
+  }
+  
+  .season-section-title {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: var(--texto);
+    font-weight: 600;
+    border-left: 4px solid var(--rojo);
+    padding-left: 12px;
+  }
+  
+  /* =================================================== */
+  /* CONTENEDOR DE EPISODIOS */
+  /* =================================================== */
+  .episodes-container {
+    display: none;
+    margin-top: 20px;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.4s ease;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .episodes-container.active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .episodes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 15px;
+    animation: fadeInUp 0.5s ease;
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .episode-card {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 20px 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    aspect-ratio: 3/4;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .episode-card:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: var(--rojo);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(229, 9, 20, 0.3);
+  }
+  
+  .episode-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--rojo), #ff4757);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .episode-card:hover::before {
+    opacity: 1;
+  }
+  
+  .episode-number {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--texto);
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, var(--rojo), #ff4757);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .episode-title {
+    font-size: 0.85rem;
+    color: var(--texto-secundario);
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-weight: 500;
+  }
+  
+  .no-episodes-message {
+    text-align: center;
+    color: var(--texto-secundario);
+    padding: 30px;
+    font-style: italic;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  /* Asegurar que el contenido de abajo tenga menor z-index */
+  .details-extra {
+    position: relative;
+    z-index: 1;
+  }
+  
+  /* Responsive para el selector de temporadas */
+  @media (max-width: 768px) {
+    .season-selector-section {
+      margin: 25px 0;
+      padding: 20px;
+    }
+    
+    .season-section-title {
+      font-size: 1.3rem;
+      margin-bottom: 15px;
+    }
+    
+    .season-dropdown {
+      width: 250px;
+      right: 0;
+      left: auto;
+    }
+    
+    .episodes-grid {
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 12px;
+    }
+    
+    .episode-card {
+      padding: 15px 10px;
+    }
+    
+    .episode-number {
+      font-size: 1.5rem;
+    }
+    
+    .episode-title {
+      font-size: 0.8rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .season-selector-section {
+      margin: 20px 0;
+      padding: 15px;
+    }
+    
+    .season-section-title {
+      font-size: 1.2rem;
+    }
+    
+    .season-dropdown {
+      width: 100%;
+      right: 0;
+      left: 0;
+    }
+    
+    .episodes-grid {
+      grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+      gap: 10px;
+    }
+    
+    .episode-card {
+      padding: 12px 8px;
+    }
+    
+    .episode-number {
+      font-size: 1.3rem;
+    }
+    
+    .episode-title {
+      font-size: 0.75rem;
+    }
+  }
+`;
+/* Estilo cuando el dropdown está abierto */
+.season-selector-section.dropdown-open {
+  z-index: 1000;
+  position: relative;
+}
 
+/* Asegurar que el dropdown tenga el z-index más alto */
+.season-dropdown {
+  z-index: 1001 !important;
+}
 /* Animaciones del contenedor principal */
 @keyframes slideInRight {
   from {

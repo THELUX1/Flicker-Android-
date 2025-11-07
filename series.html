@@ -204,7 +204,7 @@
     <!-- Sección de Nuevas Series -->
     <div class="section" id="newReleasesSection">
       <div class="section-header">
-        <h2 class="section-title">Nuevas Series</h2>
+        <h2 class="section-title">Nuevos Episodios</h2>
         <div class="section-controls">
           <button class="nav-btn prev-btn" id="newReleasesPrev">‹</button>
           <button class="nav-btn next-btn" id="newReleasesNext">›</button>
@@ -316,7 +316,7 @@
         if (elapsedTime >= minLoadingTime && isPageFullyLoaded) {
           clearInterval(checkTime);
           completeLoading();
-        } else if (elapsedTime >= minLoadingTime * 2) {
+        } else if (elapsedTime >= minLoadingTime * 0.5) {
           clearInterval(checkTime);
           isPageFullyLoaded = true;
           completeLoading();
