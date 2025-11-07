@@ -1,0 +1,47 @@
+[
+  {
+    "id": 1399,
+    "title": "Juego de Tronos",
+    "image": "https://image.tmdb.org/t/p/w200/u3bZgnGQ9T01sWNhyveQz0wH0Hl.jpg",
+    "link": "detalles.html?type=tv&id=1399",
+    "year": "2011-2019",
+    "genres": ["Drama", "Fantasía", "Aventura"],
+    "isNew": false
+  },
+  {
+    "id": 66732,
+    "title": "Stranger Things",
+    "image": "https://image.tmdb.org/t/p/w200/49WJfeN0moxb9IPfGn8AIqMGskD.jpg",
+    "link": "detalles.html?type=tv&id=66732",
+    "year": "2016-2025",
+    "genres": ["Drama", "Ciencia ficción", "Terror"],
+    "isNew": true
+  },
+  {
+    "id": 60574,
+    "title": "The Witcher",
+    "image": "https://image.tmdb.org/t/p/w200/7vjaCdMw15FEbXyLQTVa04URsPm.jpg",
+    "link": "detalles.html?type=tv&id=60574",
+    "year": "2019-2023",
+    "genres": ["Fantasía", "Drama", "Acción"],
+    "isNew": false
+  },
+  {
+    "id": 94605,
+    "title": "Euphoria",
+    "image": "https://image.tmdb.org/t/p/w200/jtnfNzqZ2PwKQ3uJ7Z1Rq2HZc2q.jpg",
+    "link": "detalles.html?type=tv&id=94605",
+    "year": "2019-2024",
+    "genres": ["Drama"],
+    "isNew": true
+  },
+  {
+    "id": 82856,
+    "title": "The Mandalorian",
+    "image": "https://image.tmdb.org/t/p/w200/sWgBv7LV2PRoQgkxwlibdGXKz1S.jpg",
+    "link": "detalles.html?type=tv&id=82856",
+    "year": "2019-2023",
+    "genres": ["Ciencia ficción", "Aventura", "Acción"],
+    "isNew": false
+  }
+]

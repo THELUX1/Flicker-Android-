@@ -1,0 +1,111 @@
+{
+  "1399": {
+    "title": "Juego de Tronos",
+    "seasons": {
+      "1": {
+        "episodes": {
+          "1": {
+            "title": "Winter Is Coming",
+            "url": "https://example.com/got-s1e1.m3u8"
+          },
+          "2": {
+            "title": "The Kingsroad",
+            "url": "https://example.com/got-s2e2.m3u8"
+          },
+          "3": {
+            "title": "Lord Snow",
+            "url": "https://example.com/got-s1e3.m3u8"
+          }
+        }
+      },
+      "2": {
+        "episodes": {
+          "1": {
+            "title": "The North Remembers",
+            "url": "https://example.com/got-s2e1.m3u8"
+          },
+          "2": {
+            "title": "The Night Lands",
+            "url": "https://example.com/got-s2e2.m3u8"
+          }
+        }
+      }
+    }
+  },
+  "66732": {
+    "title": "Stranger Things",
+    "seasons": {
+      "1": {
+        "episodes": {
+          "1": {
+            "title": "Chapter One: The Vanishing of Will Byers",
+            "url": "https://example.com/st-s1e1.m3u8"
+          },
+          "2": {
+            "title": "Chapter Two: The Weirdo on Maple Street",
+            "url": "https://example.com/st-s1e2.m3u8"
+          }
+        }
+      },
+      "2": {
+        "episodes": {
+          "1": {
+            "title": "Chapter One: MADMAX",
+            "url": "https://example.com/st-s2e1.m3u8"
+          }
+        }
+      }
+    }
+  },
+  "60574": {
+    "title": "The Witcher",
+    "seasons": {
+      "1": {
+        "episodes": {
+          "1": {
+            "title": "The End's Beginning",
+            "url": "https://example.com/witcher-s1e1.m3u8"
+          },
+          "2": {
+            "title": "Four Marks",
+            "url": "https://example.com/witcher-s1e2.m3u8"
+          }
+        }
+      }
+    }
+  },
+  "94605": {
+    "title": "Euphoria",
+    "seasons": {
+      "1": {
+        "episodes": {
+          "1": {
+            "title": "Pilot",
+            "url": "https://example.com/euphoria-s1e1.m3u8"
+          },
+          "2": {
+            "title": "Stuntin' Like My Daddy",
+            "url": "https://example.com/euphoria-s1e2.m3u8"
+          }
+        }
+      }
+    }
+  },
+  "82856": {
+    "title": "The Mandalorian",
+    "seasons": {
+      "1": {
+        "episodes": {
+          "1": {
+            "title": "Chapter 1: The Mandalorian",
+            "url": "https://example.com/mando-s1e1.m3u8"
+          },
+          "2": {
+            "title": "Chapter 2: The Child",
+            "url": "https://example.com/mando-s1e2.m3u8"
+          }
+        }
+      }
+    }
+  }
+}

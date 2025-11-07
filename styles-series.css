@@ -1,3 +1,4 @@
+/* styles-series.css */
 :root {
   --rojo: #e50914;
   --rojo-hover: #ff1a1a;
@@ -36,7 +37,7 @@ button:hover,
 a:hover,
 img:hover,
 .carousel-item:hover,
-.movie-card:hover {
+.series-card:hover {
   transform: translateY(-4px);
   filter: brightness(1.15);
   box-shadow: 0 0 15px var(--rojo);
@@ -220,7 +221,7 @@ body {
   justify-content: center;
 }
 
-.movies-count {
+.series-count {
   color: var(--texto-secundario);
   font-size: 1rem;
   background: var(--gris-medio);
@@ -300,7 +301,7 @@ body {
   z-index: 2;
 }
 
-/* Grid de películas */
+/* Grid de series */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -308,7 +309,7 @@ body {
   margin-bottom: 40px;
 }
 
-.movie-card {
+.series-card {
   position: relative;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -328,18 +329,18 @@ body {
   }
 }
 
-.movie-poster {
+.series-poster {
   width: 100%;
   height: 240px;
   object-fit: cover;
   display: block;
 }
 
-.movie-info {
+.series-info {
   padding: 12px;
 }
 
-.movie-title {
+.series-title {
   font-size: 0.9rem;
   font-weight: 600;
   margin-bottom: 5px;
@@ -350,7 +351,7 @@ body {
   overflow: hidden;
 }
 
-.movie-year {
+.series-year {
   font-size: 0.8rem;
   color: var(--texto-secundario);
 }
@@ -757,7 +758,7 @@ body {
     gap: 15px;
   }
   
-  .movie-poster {
+  .series-poster {
     height: 210px;
   }
   
@@ -790,15 +791,15 @@ body {
     gap: 12px;
   }
   
-  .movie-poster {
+  .series-poster {
     height: 180px;
   }
   
-  .movie-info {
+  .series-info {
     padding: 8px;
   }
   
-  .movie-title {
+  .series-title {
     font-size: 0.8rem;
   }
 

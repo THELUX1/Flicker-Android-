@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Flicker - Catálogo de Películas</title>
+  <title>Flicker - Catálogo de Series</title>
   
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles-series.css">
   
   <style>
     /* Estilos de carga (los mismos que antes) */
@@ -173,7 +173,7 @@
   <!-- Pantalla de carga -->
   <div class="loading-screen" id="loadingScreen">
     <div class="loading-logo">Flicker</div>
-    <div class="loading-text">Cargando catálogo de películas</div>
+    <div class="loading-text">Cargando catálogo de series</div>
     <div class="loading-animation">
       <div class="loading-dot"></div>
       <div class="loading-dot"></div>
@@ -195,16 +195,16 @@
     <div class="search-container" id="searchContainer">
       <div class="search-box">
         <div class="search-icon">🔍</div>
-        <input type="text" id="search" placeholder="Buscar películas...">
+        <input type="text" id="search" placeholder="Buscar series...">
       </div>
     </div>
   </div>
 
   <div class="container" id="mainContainer" style="display: none;">
-    <!-- Sección de Estrenos -->
+    <!-- Sección de Nuevas Series -->
     <div class="section" id="newReleasesSection">
       <div class="section-header">
-        <h2 class="section-title">Estrenos</h2>
+        <h2 class="section-title">Nuevas Series</h2>
         <div class="section-controls">
           <button class="nav-btn prev-btn" id="newReleasesPrev">‹</button>
           <button class="nav-btn next-btn" id="newReleasesNext">›</button>
@@ -215,23 +215,23 @@
       </div>
     </div>
 
-    <!-- Sección de Todas las Películas -->
-    <div class="section" id="allMoviesSection">
+    <!-- Sección de Todas las Series -->
+    <div class="section" id="allSeriesSection">
       <div class="section-header">
-        <h2 class="section-title">Todas las Películas</h2>
-        <div class="movies-count" id="moviesCount"></div>
+        <h2 class="section-title">Todas las Series</h2>
+        <div class="series-count" id="seriesCount"></div>
       </div>
-      <div id="movies" class="grid"></div>
+      <div id="series" class="grid"></div>
     </div>
   </div>
 
   <!-- Menú inferior -->
   <div class="bottom-nav">
-    <a href="index.html" class="nav-item active">
+    <a href="index.html" class="nav-item">
       <div class="nav-icon">🎬</div>
       <div>Películas</div>
     </a>
-    <a href="series.html" class="nav-item">
+    <a href="series.html" class="nav-item active">
       <div class="nav-icon">📺</div>
       <div>Series</div>
     </a>
@@ -241,7 +241,7 @@
     <div id="details-content"></div>
   </div>
 
-  <script src="script.js"></script>
+  <script src="script-series.js"></script>
   
   <script>
     // Sistema de carga (el mismo que antes)
@@ -345,10 +345,10 @@
       setupResourceObserver();
       ensureMinimumLoadingTime();
       
-      // Iniciar la aplicación de películas
+      // Iniciar la aplicación de series
       if (typeof setupSearch === 'function') setupSearch();
-      if (typeof loadMovies === 'function') loadMovies();
-      if (typeof loadMoviesLinks === 'function') loadMoviesLinks();
+      if (typeof loadSeries === 'function') loadSeries();
+      if (typeof loadSeriesLinks === 'function') loadSeriesLinks();
       
       window.addEventListener('popstate', () => {
         if (window.isInDetailsView) showList();

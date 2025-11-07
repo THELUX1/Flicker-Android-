@@ -1,11 +1,12 @@
+// script-series.js
 const TMDB_API_KEY = "995449ccaf6d840acc029f95c7d210dd";
 // const BASE_URL = "https://raw.githubusercontent.com/THELUX1/Flicker-Android-/main/";
-const DATA_URL = `./data.json?nocache=${Date.now()}`;
-const MOVIES_LINKS_URL = `./movies-links.json?nocache=${Date.now()}`;
+const DATA_URL = `./data-series.json?nocache=${Date.now()}`;
+const SERIES_LINKS_URL = `./series-links.json?nocache=${Date.now()}`;
 
-let allMovies = [];
+let allSeries = [];
 let currentSearchTerm = '';
-let moviesLinksData = {};
+let seriesLinksData = {};
 let isInDetailsView = false;
 
 // Variables simplificadas para carouseles
@@ -36,7 +37,7 @@ function closeSearch() {
   currentSearchTerm = '';
   
   // Restaurar vista normal si estaba en búsqueda
-  if (allMovies.length > 0) {
+  if (allSeries.length > 0) {
     renderAllSections();
   }
 }
@@ -65,58 +66,58 @@ document.addEventListener('keydown', (e) => {
 });
 
 // ===================================================
-// CARGA DE PELÍCULAS
+// CARGA DE SERIES
 // ===================================================
-async function loadMovies() {
+async function loadSeries() {
   try {
     showLoading();
     const res = await fetch(DATA_URL);
     const data = await res.json();
-    allMovies = data.moviesData || data;
+    allSeries = data.seriesData || data;
     
     renderAllSections();
     initializeCarouselControls();
     
   } catch (err) {
-    console.error('Error al cargar películas:', err);
+    console.error('Error al cargar series:', err);
     showError();
   }
 }
 
 function showLoading() {
-  document.getElementById("movies").innerHTML = `
+  document.getElementById("series").innerHTML = `
     <div style="grid-column: 1 / -1; text-align: center; padding: 60px; color: var(--texto-secundario);">
-      <div style="font-size: 1.5rem;">Cargando películas...</div>
+      <div style="font-size: 1.5rem;">Cargando series...</div>
     </div>
   `;
 }
 
 function showError() {
-  document.getElementById("movies").innerHTML = `
+  document.getElementById("series").innerHTML = `
     <div style="grid-column: 1 / -1; text-align: center; padding: 60px; color: var(--texto-secundario);">
-      <p style="font-size: 1.3rem; margin-bottom: 15px;">⚠️ Error al cargar películas</p>
-      <button onclick="loadMovies()" style="margin-top: 20px; padding: 12px 24px; background: var(--rojo); color: white; border: none; border-radius: 25px; cursor: pointer;">
+      <p style="font-size: 1.3rem; margin-bottom: 15px;">⚠️ Error al cargar series</p>
+      <button onclick="loadSeries()" style="margin-top: 20px; padding: 12px 24px; background: var(--rojo); color: white; border: none; border-radius: 25px; cursor: pointer;">
         Reintentar
       </button>
     </div>
   `;
 }
 
-function updateMoviesCount(count) {
-  document.getElementById('moviesCount').textContent = `${count} ${count === 1 ? 'película' : 'películas'}`;
+function updateSeriesCount(count) {
+  document.getElementById('seriesCount').textContent = `${count} ${count === 1 ? 'serie' : 'series'}`;
 }
 
 // ===================================================
 // RENDERIZADO DE SECCIONES
 // ===================================================
 function renderAllSections() {
-  renderMovies(allMovies);
+  renderSeries(allSeries);
   renderNewReleases();
-  updateMoviesCount(allMovies.length);
+  updateSeriesCount(allSeries.length);
 }
 
 function renderNewReleases() {
-  const newReleases = allMovies.filter(movie => movie.isNew);
+  const newReleases = allSeries.filter(series => series.isNew);
   const carousel = document.getElementById('newReleasesCarousel');
   const section = document.getElementById('newReleasesSection');
   
@@ -128,8 +129,8 @@ function renderNewReleases() {
   section.style.display = 'block';
   carousel.innerHTML = '';
   
-  newReleases.forEach((movie, index) => {
-    const carouselItem = createCarouselItem(movie, index);
+  newReleases.forEach((series, index) => {
+    const carouselItem = createCarouselItem(series, index);
     carousel.appendChild(carouselItem);
   });
   
@@ -137,64 +138,64 @@ function renderNewReleases() {
   initializeCarousel('newReleases', newReleases.length);
 }
 
-function createCarouselItem(movie, index) {
+function createCarouselItem(series, index) {
   const carouselItem = document.createElement('div');
   carouselItem.className = 'carousel-item';
   carouselItem.style.animationDelay = `${(index % 8) * 0.05}s`;
   
   carouselItem.innerHTML = `
-    ${movie.isNew ? '<div class="new-badge">NUEVO</div>' : ''}
-    <img src="${movie.image}" alt="${movie.title}" class="carousel-poster" 
+    ${series.isNew ? '<div class="new-badge">NUEVO</div>' : ''}
+    <img src="${series.image}" alt="${series.title}" class="carousel-poster" 
          onerror="this.src='https://via.placeholder.com/300x450/2d2d2d/ffffff?text=Imagen+No+Disponible'"
          loading="lazy">
     <div class="carousel-info">
-      <div class="carousel-title">${movie.title}</div>
-      <div class="carousel-year">${movie.year}</div>
+      <div class="carousel-title">${series.title}</div>
+      <div class="carousel-year">${series.year}</div>
     </div>
   `;
-  carouselItem.onclick = () => showDetails(movie);
+  carouselItem.onclick = () => showDetails(series);
   return carouselItem;
 }
 
-function renderMovies(movies) {
-  const moviesContainer = document.getElementById("movies");
+function renderSeries(series) {
+  const seriesContainer = document.getElementById("series");
   
-  if (movies.length === 0) {
-    moviesContainer.innerHTML = `
+  if (series.length === 0) {
+    seriesContainer.innerHTML = `
       <div style="grid-column: 1 / -1; text-align: center; padding: 60px; color: var(--texto-secundario);">
-        <p style="font-size: 1.3rem; margin-bottom: 15px;">🔍 No se encontraron películas</p>
+        <p style="font-size: 1.3rem; margin-bottom: 15px;">🔍 No se encontraron series</p>
       </div>
     `;
-    updateMoviesCount(0);
+    updateSeriesCount(0);
     return;
   }
   
-  moviesContainer.innerHTML = '';
-  movies.forEach((movie, index) => {
-    const movieCard = createMovieCard(movie, index);
-    moviesContainer.appendChild(movieCard);
+  seriesContainer.innerHTML = '';
+  series.forEach((series, index) => {
+    const seriesCard = createSeriesCard(series, index);
+    seriesContainer.appendChild(seriesCard);
   });
   
-  updateMoviesCount(movies.length);
+  updateSeriesCount(series.length);
 }
 
-function createMovieCard(movie, index) {
-  const movieCard = document.createElement("div");
-  movieCard.className = "movie-card";
-  movieCard.style.animationDelay = `${(index % 8) * 0.05}s`;
+function createSeriesCard(series, index) {
+  const seriesCard = document.createElement("div");
+  seriesCard.className = "series-card";
+  seriesCard.style.animationDelay = `${(index % 8) * 0.05}s`;
   
-  movieCard.innerHTML = `
-    ${movie.isNew ? '<div class="new-badge">NUEVO</div>' : ''}
-    <img src="${movie.image}" alt="${movie.title}" class="movie-poster" 
+  seriesCard.innerHTML = `
+    ${series.isNew ? '<div class="new-badge">NUEVO</div>' : ''}
+    <img src="${series.image}" alt="${series.title}" class="series-poster" 
          onerror="this.src='https://via.placeholder.com/300x450/2d2d2d/ffffff?text=Imagen+No+Disponible'"
          loading="lazy">
-    <div class="movie-info">
-      <div class="movie-title">${movie.title}</div>
-      <div class="movie-year">${movie.year}</div>
+    <div class="series-info">
+      <div class="series-title">${series.title}</div>
+      <div class="series-year">${series.year}</div>
     </div>
   `;
-  movieCard.onclick = () => showDetails(movie);
-  return movieCard;
+  seriesCard.onclick = () => showDetails(series);
+  return seriesCard;
 }
 
 // ===================================================
@@ -257,14 +258,14 @@ function setupSearch() {
       return;
     }
     
-    const filteredMovies = allMovies.filter(movie => 
-      movie.title.toLowerCase().includes(currentSearchTerm) ||
-      (movie.genres && movie.genres.some(genre => 
+    const filteredSeries = allSeries.filter(series => 
+      series.title.toLowerCase().includes(currentSearchTerm) ||
+      (series.genres && series.genres.some(genre => 
         genre.toLowerCase().includes(currentSearchTerm)
       ))
     );
     
-    renderMovies(filteredMovies);
+    renderSeries(filteredSeries);
     document.getElementById('newReleasesSection').style.display = 'none';
   });
 }
@@ -272,7 +273,7 @@ function setupSearch() {
 // ===================================================
 // VISTA DE DETALLES
 // ===================================================
-async function showDetails(movie) {
+async function showDetails(series) {
   isInDetailsView = true;
   
   // Ocultar header y main container
@@ -282,7 +283,7 @@ async function showDetails(movie) {
   // Ocultar menú inferior
   document.querySelector('.bottom-nav').style.display = 'none';
   
-  history.pushState({ detailView: true }, '', `#${movie.id}`);
+  history.pushState({ detailView: true }, '', `#${series.id}`);
   
   const detailsContainer = document.getElementById("details");
   const detailsContent = document.getElementById("details-content");
@@ -298,32 +299,35 @@ async function showDetails(movie) {
   `;
   
   detailsContainer.style.display = 'block';
-  await loadMovieDetails(movie);
+  await loadSeriesDetails(series);
 }
 
-async function loadMovieDetails(movie) {
+async function loadSeriesDetails(series) {
   try {
     const detailsContent = document.getElementById("details-content");
     
-    const [movieDetails, trailerData] = await Promise.all([
-      fetch(`https://api.themoviedb.org/3/movie/${movie.id}?api_key=${TMDB_API_KEY}&language=es-ES`).then(res => res.json()),
-      fetch(`https://api.themoviedb.org/3/movie/${movie.id}/videos?api_key=${TMDB_API_KEY}&language=es-ES`).then(res => res.json())
+    const [seriesDetails, trailerData] = await Promise.all([
+      fetch(`https://api.themoviedb.org/3/tv/${series.id}?api_key=${TMDB_API_KEY}&language=es-ES`).then(res => res.json()),
+      fetch(`https://api.themoviedb.org/3/tv/${series.id}/videos?api_key=${TMDB_API_KEY}&language=es-ES`).then(res => res.json())
     ]);
     
     const trailer = trailerData.results?.find(v => v.type === "Trailer" && v.site === "YouTube");
     
-    // Calcular duración en formato legible
-    const duration = movieDetails.runtime ? 
-      `${Math.floor(movieDetails.runtime / 60)}h ${movieDetails.runtime % 60}m` : 
-      'No disponible';
-    
     // Formatear fecha de lanzamiento
-    const releaseDate = movieDetails.release_date ?
-      new Date(movieDetails.release_date).toLocaleDateString('es-ES', {
+    const releaseDate = seriesDetails.first_air_date ?
+      new Date(seriesDetails.first_air_date).toLocaleDateString('es-ES', {
         year: 'numeric',
         month: 'long',
         day: 'numeric'
       }) : 'No disponible';
+    
+    // Obtener temporadas y episodios
+    const seasonsData = await Promise.all(
+      seriesDetails.seasons.map(season => 
+        fetch(`https://api.themoviedb.org/3/tv/${series.id}/season/${season.season_number}?api_key=${TMDB_API_KEY}&language=es-ES`)
+          .then(res => res.json())
+      )
+    );
     
     detailsContent.innerHTML = `
       <button class="back-button" onclick="showList()">←</button>
@@ -339,7 +343,7 @@ async function loadMovieDetails(movie) {
             </iframe>` :
             `<div class="trailer-placeholder">
               <div style="text-align: center;">
-                <div style="font-size: 3rem; margin-bottom: 15px;">🎬</div>
+                <div style="font-size: 3rem; margin-bottom: 15px;">📺</div>
                 <div>Tráiler no disponible</div>
               </div>
             </div>`
@@ -351,45 +355,75 @@ async function loadMovieDetails(movie) {
       
       <div class="details-content">
         <div class="details-info">
-          <h1 class="details-title">${movie.title}</h1>
+          <h1 class="details-title">${series.title}</h1>
           
           <div class="details-meta">
-            <span class="details-year">${movie.year}</span>
+            <span class="details-year">${series.year}</span>
             <div class="details-genres">
-              ${(movie.genres || []).map(genre => `<span class="details-genre">${genre}</span>`).join('')}
+              ${(series.genres || []).map(genre => `<span class="details-genre">${genre}</span>`).join('')}
             </div>
           </div>
           
-          <p class="details-overview">${movieDetails.overview || "Sin descripción disponible."}</p>
+          <p class="details-overview">${seriesDetails.overview || "Sin descripción disponible."}</p>
           
           <div class="details-actions">
-            <button class="play-btn" onclick="playMovieWithOptions(${movie.id}, '${movie.title.replace(/'/g, "\\'")}')">
-              <span style="font-size: 1.4rem;">▶</span> Reproducir
-            </button>
             <button class="secondary-btn">
               <span style="font-size: 1.2rem;">ⓘ</span> Más información
             </button>
           </div>
           
           <div class="details-extra">
-            <h3 class="extra-title">Información de la película</h3>
+            <h3 class="extra-title">Información de la serie</h3>
             <div class="extra-grid">
               <div class="extra-item">
-                <span class="extra-label">Duración</span>
-                <span class="extra-value">${duration}</span>
+                <span class="extra-label">Temporadas</span>
+                <span class="extra-value">${seriesDetails.number_of_seasons || 'No disponible'}</span>
+              </div>
+              <div class="extra-item">
+                <span class="extra-label">Episodios</span>
+                <span class="extra-value">${seriesDetails.number_of_episodes || 'No disponible'}</span>
               </div>
               <div class="extra-item">
                 <span class="extra-label">Fecha de estreno</span>
                 <span class="extra-value">${releaseDate}</span>
               </div>
               <div class="extra-item">
-                <span class="extra-label">Calificación</span>
-                <span class="extra-value">${movieDetails.vote_average ? movieDetails.vote_average.toFixed(1) + '/10' : 'No disponible'}</span>
+                <span class="extra-label">Estado</span>
+                <span class="extra-value">${seriesDetails.status || 'No disponible'}</span>
               </div>
               <div class="extra-item">
-                <span class="extra-label">Presupuesto</span>
-                <span class="extra-value">${movieDetails.budget ? '$' + (movieDetails.budget / 1000000).toFixed(1) + 'M' : 'No disponible'}</span>
+                <span class="extra-label">Calificación</span>
+                <span class="extra-value">${seriesDetails.vote_average ? seriesDetails.vote_average.toFixed(1) + '/10' : 'No disponible'}</span>
               </div>
+            </div>
+          </div>
+          
+          <!-- Temporadas y episodios -->
+          <div class="seasons-container">
+            <h3 class="seasons-title">Temporadas y Episodios</h3>
+            <div class="seasons-list">
+              ${seasonsData.map((season, index) => `
+                <div class="season-item">
+                  <div class="season-header">
+                    <h4 class="season-title">${season.name || `Temporada ${season.season_number}`}</h4>
+                    <span class="season-episodes">${season.episodes ? season.episodes.length : 0} episodios</span>
+                  </div>
+                  <div class="episodes-list">
+                    ${season.episodes ? season.episodes.map(episode => `
+                      <div class="episode-item" onclick="playEpisode(${series.id}, ${season.season_number}, ${episode.episode_number}, '${series.title.replace(/'/g, "\\'")} - ${episode.name.replace(/'/g, "\\'")}')">
+                        <div class="episode-number">${episode.episode_number}</div>
+                        <div class="episode-info">
+                          <div class="episode-title">${episode.name || 'Episodio sin título'}</div>
+                          <div class="episode-overview">${episode.overview ? episode.overview.substring(0, 100) + '...' : 'Sin descripción disponible.'}</div>
+                        </div>
+                        <button class="play-episode-btn">
+                          <span style="font-size: 1.2rem;">▶</span>
+                        </button>
+                      </div>
+                    `).join('') : '<div class="no-episodes">No hay episodios disponibles</div>'}
+                  </div>
+                </div>
+              `).join('')}
             </div>
           </div>
         </div>
@@ -434,40 +468,39 @@ function showList() {
     
     document.getElementById('search').value = '';
     currentSearchTerm = '';
-    renderMovies(allMovies);
+    renderSeries(allSeries);
   }, 400);
 }
 
 // ===================================================
 // REPRODUCCIÓN
 // ===================================================
-async function loadMoviesLinks() {
+async function loadSeriesLinks() {
   try {
-    const res = await fetch(MOVIES_LINKS_URL);
-    moviesLinksData = await res.json();
+    const res = await fetch(SERIES_LINKS_URL);
+    seriesLinksData = await res.json();
   } catch (err) {
     console.error('Error al cargar enlaces:', err);
   }
 }
 
-async function playMovieWithOptions(id, title) {
+async function playEpisode(seriesId, seasonNumber, episodeNumber, title) {
   try {
-    const movieData = moviesLinksData[id];
+    const seriesData = seriesLinksData[seriesId];
     
-    if (movieData?.sources?.length > 0) {
-      const source = movieData.sources.find(s => s.url) || movieData.sources[0];
+    if (seriesData?.seasons?.[seasonNumber]?.episodes?.[episodeNumber]?.url) {
+      const episodeUrl = seriesData.seasons[seasonNumber].episodes[episodeNumber].url;
       
-      if (source?.url) {
-        if (window.AppCreator24?.playVideo) {
-          window.AppCreator24.playVideo(source.url, title);
-        } else if (window.android?.playVideo) {
-          window.android.playVideo(source.url, title);
-        } else {
-          window.open(source.url, '_blank');
-        }
-        return;
+      if (window.AppCreator24?.playVideo) {
+        window.AppCreator24.playVideo(episodeUrl, title);
+      } else if (window.android?.playVideo) {
+        window.android.playVideo(episodeUrl, title);
+      } else {
+        window.open(episodeUrl, '_blank');
       }
+      return;
     }
+    
     alert(`No hay enlace disponible para: ${title}`);
   } catch (err) {
     console.error('Error al reproducir:', err);
@@ -480,8 +513,8 @@ async function playMovieWithOptions(id, title) {
 // ===================================================
 document.addEventListener("DOMContentLoaded", () => {
   setupSearch();
-  loadMovies();
-  loadMoviesLinks();
+  loadSeries();
+  loadSeriesLinks();
   
   // Manejar botón atrás
   window.addEventListener('popstate', () => {
@@ -496,7 +529,130 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Agregar estilo para spinner
 const style = document.createElement('style');
-style.textContent = `@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`;
+style.textContent = `
+  @keyframes spin { 
+    0% { transform: rotate(0deg); } 
+    100% { transform: rotate(360deg); } 
+  }
+  
+  /* Estilos para temporadas y episodios */
+  .seasons-container {
+    margin-top: 40px;
+  }
+  
+  .seasons-title {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: var(--texto);
+    font-weight: 600;
+  }
+  
+  .seasons-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .season-item {
+    background: rgba(26, 26, 26, 0.7);
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .season-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+  
+  .season-title {
+    font-size: 1.2rem;
+    color: var(--texto);
+    font-weight: 600;
+  }
+  
+  .season-episodes {
+    color: var(--texto-secundario);
+    font-size: 0.9rem;
+  }
+  
+  .episodes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .episode-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .episode-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(5px);
+  }
+  
+  .episode-number {
+    background: var(--rojo);
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+  }
+  
+  .episode-info {
+    flex: 1;
+  }
+  
+  .episode-title {
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: var(--texto);
+  }
+  
+  .episode-overview {
+    font-size: 0.85rem;
+    color: var(--texto-secundario);
+    line-height: 1.4;
+  }
+  
+  .play-episode-btn {
+    background: transparent;
+    border: none;
+    color: var(--rojo);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+  }
+  
+  .play-episode-btn:hover {
+    background: rgba(229, 9, 20, 0.2);
+    transform: scale(1.1);
+  }
+  
+  .no-episodes {
+    text-align: center;
+    color: var(--texto-secundario);
+    padding: 20px;
+    font-style: italic;
+  }
+`;
 document.head.appendChild(style);
 
 // Recalcular carousels al redimensionar
