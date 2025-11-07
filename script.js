@@ -17,9 +17,6 @@ let isInDetailsView = false;
 let carousels = {};
 
 // Función para alternar la visibilidad del buscador
-// ... (código anterior se mantiene igual)
-
-// Función para alternar la visibilidad del buscador
 function toggleSearch() {
   const searchContainer = document.getElementById('searchContainer');
   const isActive = searchContainer.classList.contains('active');
@@ -71,8 +68,6 @@ document.addEventListener('keydown', (e) => {
     }
   }
 });
-
-// ... (el resto del código se mantiene igual)
 
 // ===================================================
 // CARGA DE PELÍCULAS
@@ -255,12 +250,15 @@ function calculateMaxPosition(container, itemCount) {
 
 function initializeCarouselControls() {
   // Controles para estrenos
-  document.getElementById('newReleasesPrev').addEventListener('click', () => moveCarousel('newReleases', -1));
-  document.getElementById('newReleasesNext').addEventListener('click', () => moveCarousel('newReleases', 1));
+  const newReleasesPrev = document.getElementById('newReleasesPrev');
+  const newReleasesNext = document.getElementById('newReleasesNext');
+  const recentPrev = document.getElementById('recentPrev');
+  const recentNext = document.getElementById('recentNext');
   
-  // Controles para recientes
-  document.getElementById('recentPrev').addEventListener('click', () => moveCarousel('recent', -1));
-  document.getElementById('recentNext').addEventListener('click', () => moveCarousel('recent', 1));
+  if (newReleasesPrev) newReleasesPrev.addEventListener('click', () => moveCarousel('newReleases', -1));
+  if (newReleasesNext) newReleasesNext.addEventListener('click', () => moveCarousel('newReleases', 1));
+  if (recentPrev) recentPrev.addEventListener('click', () => moveCarousel('recent', -1));
+  if (recentNext) recentNext.addEventListener('click', () => moveCarousel('recent', 1));
 }
 
 function moveCarousel(name, direction) {
@@ -281,7 +279,7 @@ function updateCarouselPosition(carousel) {
 }
 
 // ===================================================
-// SISTEMA DE BÚSQUEDA
+// SISTEMA DE BÚSQUEDA ADAPTADO A LA NUEVA ESTRUCTURA
 // ===================================================
 function setupSearch() {
   const searchInput = document.getElementById("search");
@@ -294,14 +292,41 @@ function setupSearch() {
       return;
     }
     
-    const filteredMovies = allMovies.filter(movie => 
-      movie.title.toLowerCase().includes(currentSearchTerm) ||
-      (movie.genres && movie.genres.some(genre => 
-        genre.toLowerCase().includes(currentSearchTerm)
-      ))
+    // Buscar en moviesLinksData que tiene la estructura con IDs como claves
+    const filteredMovies = [];
+    
+    // Buscar en todas las películas disponibles
+    Object.keys(moviesLinksData).forEach(movieId => {
+      const movieData = moviesLinksData[movieId];
+      if (movieData && movieData.title) {
+        const title = movieData.title.toLowerCase();
+        if (title.includes(currentSearchTerm)) {
+          // Crear objeto de película compatible con la estructura esperada
+          filteredMovies.push({
+            id: movieId,
+            title: movieData.title,
+            image: `https://via.placeholder.com/300x450/2d2d2d/ffffff?text=${encodeURIComponent(movieData.title)}`,
+            year: new Date().getFullYear(), // Año por defecto
+            isNew: false
+          });
+        }
+      }
+    });
+    
+    // También buscar en allMovies por si hay datos adicionales
+    const filteredFromAllMovies = allMovies.filter(movie => 
+      movie.title.toLowerCase().includes(currentSearchTerm)
     );
     
-    renderMovies(filteredMovies);
+    // Combinar resultados evitando duplicados
+    const combinedResults = [...filteredFromAllMovies];
+    filteredMovies.forEach(movieFromLinks => {
+      if (!combinedResults.some(movie => movie.id === movieFromLinks.id)) {
+        combinedResults.push(movieFromLinks);
+      }
+    });
+    
+    renderMovies(combinedResults);
     document.getElementById('newReleasesSection').style.display = 'none';
     document.getElementById('recentSection').style.display = 'none';
   });
@@ -335,8 +360,6 @@ async function showDetails(movie) {
   detailsContainer.style.display = 'block';
   await loadMovieDetails(movie);
 }
-
-// ... (mantener todo el código anterior hasta la función loadMovieDetails)
 
 async function loadMovieDetails(movie) {
   try {
@@ -447,8 +470,6 @@ async function loadMovieDetails(movie) {
   }
 }
 
-// ... (mantener el resto del código igual)
-
 function showList() {
   isInDetailsView = false;
   
@@ -483,6 +504,7 @@ async function loadMoviesLinks() {
   try {
     const res = await fetch(MOVIES_LINKS_URL);
     moviesLinksData = await res.json();
+    console.log('Enlaces cargados:', Object.keys(moviesLinksData).length, 'películas');
   } catch (err) {
     console.error('Error al cargar enlaces:', err);
   }
@@ -493,9 +515,9 @@ async function playMovieWithOptions(id, title) {
     const movieData = moviesLinksData[id];
     
     if (movieData?.sources?.length > 0) {
-      const source = movieData.sources.find(s => s.url) || movieData.sources[0];
+      const source = movieData.sources.find(s => s.url && s.url.trim() !== '') || movieData.sources[0];
       
-      if (source?.url) {
+      if (source?.url && source.url.trim() !== '') {
         if (window.AppCreator24?.playVideo) {
           window.AppCreator24.playVideo(source.url, title);
         } else if (window.android?.playVideo) {
