@@ -1,7 +1,12 @@
-// Acceso local dentro del mismo repositorio
-const DATA_URL = './data.json';
-const MOVIES_LINKS_URL = './movies-links.json';
+// ==============================================
+// CONFIGURACIÓN DE DATOS (sin caché, desde GitHub)
+// ==============================================
 const TMDB_API_KEY = "995449ccaf6d840acc029f95c7d210dd";
+
+// Cargar siempre la última versión desde GitHub directamente (sin CDN)
+const BASE_URL = "https://raw.githubusercontent.com/THELUX1/Flicker-Android-/main/";
+const DATA_URL = `${BASE_URL}data.json?nocache=${Date.now()}`;
+const MOVIES_LINKS_URL = `${BASE_URL}movies-links.json?nocache=${Date.now()}`;
 
 let allMovies = [];
 let currentSearchTerm = '';
