@@ -1,4 +1,13 @@
 [
+{
+    "id": 1306525,
+    "title": "El elixir de la inmortalidad",
+    "image": "https://image.tmdb.org/t/p/w200/jNBxGBNeXbG8WBKqBHtC5HjizB0.jpg",
+    "link": "detalles.html?type=movie&id=1306525",
+    "year": "2025",
+    "genres": ["Terror", "Suspenso"],
+    "isNew": true
+  },
   {
     "id": 1197137,
     "title": "Teléfono Negro",
@@ -24,6 +33,15 @@
     "link": "detalles.html?type=movie&id=1204883",
     "year": "2025",
     "genres": ["Terror", "Suspenso"],
+    "isNew": false
+  },
+  {
+    "id": 1284120,
+    "title": "La hermanastra fea",
+    "image": "https://media.themoviedb.org/t/p/w220_and_h330_face/4KjMMLHqKcAxNRTd5mhMDtNXW1P.jpg",
+    "link": "detalles.html?type=movie&id=1284120",
+    "year": "2025",
+    "genres": ["Terror", "Comedia", "Fantasía", "Drama"],
     "isNew": false
   },
   {
