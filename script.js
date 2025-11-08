@@ -270,6 +270,124 @@ function setupSearch() {
 }
 
 // ===================================================
+// SISTEMA MEJORADO DE BÚSQUEDA DE TRAILERS
+// ===================================================
+
+async function getMovieTrailer(movieId, movieTitle) {
+  try {
+    // Intentar múltiples estrategias en paralelo
+    const [tmdbVideos, tmdbAlternative, youtubeSearch] = await Promise.allSettled([
+      // 1. Búsqueda principal en TMDB (español)
+      fetch(`https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${TMDB_API_KEY}&language=es-ES`).then(res => res.json()),
+      
+      // 2. Búsqueda alternativa en TMDB (inglés)
+      fetch(`https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${TMDB_API_KEY}&language=en-US`).then(res => res.json()),
+      
+      // 3. Búsqueda en YouTube por título (fallback)
+      searchYouTubeTrailer(movieTitle + " trailer oficial")
+    ]);
+
+    // Procesar resultados de TMDB (español)
+    if (tmdbVideos.status === 'fulfilled' && tmdbVideos.value.results) {
+      const trailer = findBestTrailer(tmdbVideos.value.results);
+      if (trailer) {
+        console.log(`✅ Trailer encontrado en TMDB (ES) para: ${movieTitle}`);
+        return trailer;
+      }
+    }
+
+    // Procesar resultados de TMDB (inglés)
+    if (tmdbAlternative.status === 'fulfilled' && tmdbAlternative.value.results) {
+      const trailer = findBestTrailer(tmdbAlternative.value.results);
+      if (trailer) {
+        console.log(`✅ Trailer encontrado en TMDB (EN) para: ${movieTitle}`);
+        return trailer;
+      }
+    }
+
+    // Usar búsqueda de YouTube como último recurso
+    if (youtubeSearch.status === 'fulfilled' && youtubeSearch.value) {
+      console.log(`✅ Trailer encontrado en YouTube para: ${movieTitle}`);
+      return youtubeSearch.value;
+    }
+
+    console.log(`❌ No se encontró trailer para: ${movieTitle}`);
+    return null;
+  } catch (err) {
+    console.error('Error en búsqueda de trailer:', err);
+    return null;
+  }
+}
+
+function findBestTrailer(videos) {
+  if (!videos || !videos.length) return null;
+
+  // Orden de prioridad para tipos de video
+  const typePriority = [
+    { type: "Trailer", site: "YouTube" },
+    { type: "Teaser", site: "YouTube" },
+    { type: "Trailer", site: "Vimeo" },
+    { type: "Teaser", site: "Vimeo" },
+    { type: "Clip", site: "YouTube" },
+    { type: "Featurette", site: "YouTube" }
+  ];
+
+  for (const priority of typePriority) {
+    const trailer = videos.find(v => 
+      v.type === priority.type && 
+      v.site === priority.site &&
+      v.key
+    );
+    if (trailer) return trailer;
+  }
+
+  // Si no encuentra según prioridad, devolver el primer trailer de YouTube
+  const youTubeTrailer = videos.find(v => 
+    v.site === "YouTube" && 
+    (v.type.includes("Trailer") || v.type.includes("Teaser")) &&
+    v.key
+  );
+
+  return youTubeTrailer || null;
+}
+
+async function searchYouTubeTrailer(searchQuery) {
+  try {
+    // Nota: Esto requiere una API Key de YouTube Data API v3
+    // Puedes obtener una gratis desde Google Cloud Console
+    const YOUTUBE_API_KEY = "AIzaSyANgjmGO7XL44r2-g9kJMEW5LNAmTwCK-s"; // Reemplazar con tu API key
+    
+    // Si no hay API key configurada, retornar null
+    if (!YOUTUBE_API_KEY || YOUTUBE_API_KEY === "AIzaSyANgjmGO7XL44r2-g9kJMEW5LNAmTwCK-s") {
+      return null;
+    }
+
+    const encodedQuery = encodeURIComponent(searchQuery + " español latino");
+    const response = await fetch(
+      `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodedQuery}&type=video&videoCategoryId=1&maxResults=3&key=${YOUTUBE_API_KEY}`
+    );
+
+    if (!response.ok) return null;
+
+    const data = await response.json();
+    if (data.items && data.items.length > 0) {
+      const video = data.items[0];
+      return {
+        key: video.id.videoId,
+        site: "YouTube",
+        type: "Trailer",
+        name: video.snippet.title
+      };
+    }
+
+    return null;
+  } catch (err) {
+    console.error('Error en búsqueda de YouTube:', err);
+    return null;
+  }
+}
+
+// ===================================================
 // VISTA DE DETALLES
 // ===================================================
 async function showDetails(movie) {
@@ -305,12 +423,10 @@ async function loadMovieDetails(movie) {
   try {
     const detailsContent = document.getElementById("details-content");
     
-    const [movieDetails, trailerData] = await Promise.all([
+    const [movieDetails, trailer] = await Promise.all([
       fetch(`https://api.themoviedb.org/3/movie/${movie.id}?api_key=${TMDB_API_KEY}&language=es-ES`).then(res => res.json()),
-      fetch(`https://api.themoviedb.org/3/movie/${movie.id}/videos?api_key=${TMDB_API_KEY}&language=es-ES`).then(res => res.json())
+      getMovieTrailer(movie.id, movie.title)
     ]);
-    
-    const trailer = trailerData.results?.find(v => v.type === "Trailer" && v.site === "YouTube");
     
     // Calcular duración en formato legible
     const duration = movieDetails.runtime ? 
@@ -325,25 +441,15 @@ async function loadMovieDetails(movie) {
         day: 'numeric'
       }) : 'No disponible';
     
+    // Generar HTML del trailer
+    const trailerHTML = generateTrailerHTML(trailer, movie.title);
+    
     detailsContent.innerHTML = `
       <button class="back-button" onclick="showList()">←</button>
       
       <div class="details-hero">
         <div class="trailer-hero">
-          ${trailer ?
-            `<iframe class="trailer-frame" 
-                    src="https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=1&controls=1&showinfo=0&rel=0" 
-                    frameborder="0" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                    allowfullscreen>
-            </iframe>` :
-            `<div class="trailer-placeholder">
-              <div style="text-align: center;">
-                <div style="font-size: 3rem; margin-bottom: 15px;">🎬</div>
-                <div>Tráiler no disponible</div>
-              </div>
-            </div>`
-          }
+          ${trailerHTML}
         </div>
         <div class="hero-gradient"></div>
         <div class="hero-overlay"></div>
@@ -366,7 +472,7 @@ async function loadMovieDetails(movie) {
             <button class="play-btn" onclick="playMovieWithOptions(${movie.id}, '${movie.title.replace(/'/g, "\\'")}')">
               <span style="font-size: 1.4rem;">▶</span> Reproducir
             </button>
-            <button class="secondary-btn">
+            <button class="secondary-btn" onclick="showMoreInfo(${movie.id}, 'movie')">
               <span style="font-size: 1.2rem;">ⓘ</span> Más información
             </button>
           </div>
@@ -397,17 +503,49 @@ async function loadMovieDetails(movie) {
     `;
   } catch (err) {
     console.error('Error al cargar detalles:', err);
-    const detailsContent = document.getElementById("details-content");
-    detailsContent.innerHTML = `
-      <div style="text-align: center; padding: 80px; color: var(--texto-secundario); background: var(--negro); min-height: 100vh;">
-        <button class="back-button" onclick="showList()">←</button>
-        <p style="font-size: 1.3rem; margin-bottom: 15px;">⚠️ Error al cargar detalles</p>
-        <button onclick="showList()" style="margin-top: 20px; padding: 12px 24px; background: var(--rojo); color: white; border: none; border-radius: 25px; cursor: pointer;">
-          Volver al catálogo
-        </button>
+    showDetailsError();
+  }
+}
+
+function generateTrailerHTML(trailer, title) {
+  if (trailer) {
+    return `
+      <iframe class="trailer-frame" 
+              src="https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=1&controls=1&showinfo=0&rel=0" 
+              frameborder="0" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+              allowfullscreen
+              title="Tráiler de ${title}">
+      </iframe>
+    `;
+  } else {
+    return `
+      <div class="trailer-placeholder">
+        <div style="text-align: center; padding: 60px 20px;">
+          <div style="font-size: 4rem; margin-bottom: 20px;">🎬</div>
+          <div style="font-size: 1.3rem; margin-bottom: 15px; color: var(--texto-secundario);">
+            Tráiler no disponible
+          </div>
+          <div style="font-size: 1rem; color: var(--texto-terciario); max-width: 300px; margin: 0 auto; line-height: 1.5;">
+            No hemos encontrado un tráiler para esta película
+          </div>
+        </div>
       </div>
     `;
   }
+}
+
+function showDetailsError() {
+  const detailsContent = document.getElementById("details-content");
+  detailsContent.innerHTML = `
+    <div style="text-align: center; padding: 80px; color: var(--texto-secundario); background: var(--negro); min-height: 100vh;">
+      <button class="back-button" onclick="showList()">←</button>
+      <p style="font-size: 1.3rem; margin-bottom: 15px;">⚠️ Error al cargar detalles</p>
+      <button onclick="showList()" style="margin-top: 20px; padding: 12px 24px; background: var(--rojo); color: white; border: none; border-radius: 25px; cursor: pointer;">
+        Volver al catálogo
+      </button>
+    </div>
+  `;
 }
 
 function showList() {
@@ -473,6 +611,11 @@ async function playMovieWithOptions(id, title) {
     console.error('Error al reproducir:', err);
     alert(`Error al reproducir: ${title}`);
   }
+}
+
+// Función placeholder para más información
+function showMoreInfo(id, type) {
+  alert('Función de más información en desarrollo');
 }
 
 // ===================================================
