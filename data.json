@@ -1,12 +1,21 @@
 [
 {
+    "id": 10195,
+    "title": "Thor",
+    "image": "https://media.themoviedb.org/t/p/w220_and_h330_face/qFAVW4XJaxhj7PcpiUI5hhO9bOX.jpg",
+    "link": "detalles.html?type=movie&id=10195",
+    "year": "N/N",
+    "genres": ["N/N", "N/N"],
+    "isNew": true
+  },
+{
     "id": 1306525,
     "title": "El elixir de la inmortalidad",
     "image": "https://image.tmdb.org/t/p/w200/jNBxGBNeXbG8WBKqBHtC5HjizB0.jpg",
     "link": "detalles.html?type=movie&id=1306525",
     "year": "2025",
     "genres": ["Terror", "Suspenso"],
-    "isNew": true
+    "isNew": false
   },
   {
     "id": 1197137,
@@ -15,7 +24,7 @@
     "link": "detalles.html?type=movie&id=1197137",
     "year": "2025",
     "genres": ["Terror", "Suspenso", "Acción"],
-    "isNew": true
+    "isNew": false
   },
   {
     "id": 604079,
