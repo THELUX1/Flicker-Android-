@@ -9,6 +9,15 @@
     "isNew": true
   },
   {
+    "id": 1368337,
+    "title": "La Odisea",
+    "image": "https://media.themoviedb.org/t/p/w220_and_h330_face/eoNiukYRWJRxMlVnTOye0kkUB5k.jpg",
+    "link": "detalles.html?type=movie&id=1368337",
+    "year": "N/N",
+    "genres": ["2026", "N/N"],
+    "isNew": true
+  },
+  {
     "id": 969681,
     "title": "Spider-Man: Brand New Day",
     "image": "https://media.themoviedb.org/t/p/w220_and_h330_face/9g0sEFhmvmK4nGhXj8DHuv2noYI.jpg",
@@ -22,7 +31,7 @@
     "title": "Ant-Man",
     "image": "https://media.themoviedb.org/t/p/w220_and_h330_face/zwuE28gSXlLFLgueqMe9b7xKy1f.jpg",
     "link": "detalles.html?type=movie&id=102899",
-    "year": "N/N",
+    "year": "2015",
     "genres": ["N/N", "N/N"],
     "isNew": false
   },
