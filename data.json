@@ -1,7 +1,7 @@
 [
 {
     "id": 1101383,
-    "title": "El Final De Oak Stree",
+    "title": "El Final De Oak Street",
     "image": "https://media.themoviedb.org/t/p/w220_and_h330_face/g9DUGw8ufetrwhCIrwq3h1NlpWO.jpg",
     "link": "detalles.html?type=movie&id=1101383",
     "year": "2026",
@@ -24,7 +24,7 @@
     "link": "detalles.html?type=movie&id=102899",
     "year": "N/N",
     "genres": ["N/N", "N/N"],
-    "isNew": true
+    "isNew": false
   },
 {
     "id": 1306525,
