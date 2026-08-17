@@ -1,10 +1,19 @@
 [
 {
-    "id": 10195,
-    "title": "Thor",
-    "image": "https://media.themoviedb.org/t/p/w220_and_h330_face/qFAVW4XJaxhj7PcpiUI5hhO9bOX.jpg",
-    "link": "detalles.html?type=movie&id=10195",
-    "year": "N/N",
+    "id": 1101383,
+    "title": "El Final De Oak Stree",
+    "image": "https://media.themoviedb.org/t/p/w220_and_h330_face/g9DUGw8ufetrwhCIrwq3h1NlpWO.jpg",
+    "link": "detalles.html?type=movie&id=1101383",
+    "year": "2026",
+    "genres": ["N/N", "N/N"],
+    "isNew": true
+  },
+  {
+    "id": 969681,
+    "title": "Spider-Man: Brand New Day",
+    "image": "https://media.themoviedb.org/t/p/w220_and_h330_face/9g0sEFhmvmK4nGhXj8DHuv2noYI.jpg",
+    "link": "detalles.html?type=movie&id=969681",
+    "year": "2026",
     "genres": ["N/N", "N/N"],
     "isNew": true
   },
