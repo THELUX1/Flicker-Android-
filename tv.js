@@ -134,7 +134,7 @@ function mostrarPregunta(sala) {
   const preg = sala.preguntas[sala.orden[sala.preguntaActual]];
   if (!preg) return;
   $("#tv-texto-pregunta").textContent = preg.pregunta;
-  $("#tv-ticker-texto").textContent = `📢 Pregunta ${sala.preguntaActual + 1} de ${sala.orden.length} · Nivel ${preg.nivel.toUpperCase()}`;
+  $("#tv-ticker-texto").textContent = `📢 Pregunta ${sala.preguntaActual + 1} de ${sala.orden.length}`;
 }
 
 // ===== TIMER VISUAL =====
@@ -255,7 +255,7 @@ async function mostrarFinalTV(sala) {
     else if (memoria >= 60) { emoji = "🎯"; frase = "Amigo de confianza";        color = "amarillo"; sonido = "correcto"; }
     else if (memoria >= 40) { emoji = "🥲"; frase = "'Pensé que me conocías'";   color = "amarillo"; sonido = "tension"; }
     else if (memoria >= 20) { emoji = "🎲"; frase = "Le pegaste de casualidad";  color = "rojo";     sonido = "risa"; }
-    else                    { emoji = "💀"; frase = "¿Es enserio?"; color = "rojo";  sonido = "risa"; }
+    else                    { emoji = "💀"; frase = "¿Vos sos realmente su amigo?"; color = "rojo";  sonido = "risa"; }
 
     play(sonido);
     await mostrarCartel(emoji, j.nombre, `${j.puntos} pts · ${memoria}% de memoria · "${frase}"`, color, 3200);

@@ -3,7 +3,6 @@ import {
   ref, set, get, update, onValue, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import {
-  NIVEL_MULTIPLICADOR,
   TIEMPO_APUESTA,
   TIEMPO_RESPUESTA
 } from "./preguntas.js";
@@ -18,7 +17,7 @@ const state = {
   rondaEscuchada: -1,
   timerInterval: null,
   yaRevelado: false,
-  fase: "apuesta" // "apuesta" | "pregunta" | "revelado"
+  fase: "apuesta"
 };
 
 const $ = (s) => document.querySelector(s);
@@ -102,13 +101,11 @@ async function entrarARonda(sala) {
     apuesta: null, respuesta: null, respondio: false
   });
 
-  // FASE APUESTA
   $("#fase-apuesta").style.display = "block";
   $("#fase-pregunta").style.display = "none";
   $("#fase-resultado").style.display = "none";
   $$(".apuesta").forEach(b => b.classList.remove("elegida"));
 
-  // Render pregunta (oculta hasta que apuesten)
   $("#texto-pregunta").textContent = preg.pregunta;
   const cont = $("#opciones");
   cont.innerHTML = "";
@@ -120,7 +117,6 @@ async function entrarARonda(sala) {
     cont.appendChild(btn);
   });
 
-  // Timer de apuesta
   iniciarTimer(TIEMPO_APUESTA, () => {
     if (state.apuestaActual === null) {
       elegirApuesta(10);
@@ -141,10 +137,9 @@ async function elegirApuesta(monto) {
   $("#fase-pregunta").style.display = "block";
   state.fase = "pregunta";
 
-  // Timer de respuesta
   iniciarTimer(TIEMPO_RESPUESTA, () => {
     if (state.respuestaActual === null) {
-      responder(-1); // no respondió
+      responder(-1);
     }
   });
 }
@@ -204,8 +199,7 @@ async function revelarResultado() {
   Object.entries(sala.jugadores).forEach(([id, j]) => {
     const acierto = j.respuesta === correcta;
     const apuesta = j.apuesta || 0;
-    const mult = NIVEL_MULTIPLICADOR[preg.nivel] || 1;
-    const delta = acierto ? Math.round(apuesta * mult) : -apuesta;
+    const delta = acierto ? apuesta : -apuesta;
 
     const nuevosPuntos = Math.max(0, (j.puntos || 0) + delta);
     const nuevaRacha = acierto ? (j.racha || 0) + 1 : 0;

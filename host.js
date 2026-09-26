@@ -89,7 +89,6 @@ $("#btn-cargar-ejemplos").onclick = async () => {
 $("#form-pregunta").onsubmit = async (e) => {
   e.preventDefault();
 
-  const nivel = $("#fp-nivel").value;
   const pregunta = $("#fp-pregunta").value.trim();
   const explicacion = $("#fp-explicacion").value.trim();
   const opciones = Array.from($$(".fp-opcion-texto")).map(i => i.value.trim());
@@ -101,7 +100,7 @@ $("#form-pregunta").onsubmit = async (e) => {
   if (correcta < 0) return alert("Marcá la opción correcta");
 
   const nuevaRef = push(ref(db, `salas/${state.salaId}/preguntas`));
-  await set(nuevaRef, { nivel, pregunta, opciones, correcta, explicacion });
+  await set(nuevaRef, { pregunta, opciones, correcta, explicacion });
 
   $("#fp-pregunta").value = "";
   $("#fp-explicacion").value = "";
@@ -190,11 +189,12 @@ function renderJugadores(jugadores, estado) {
   }
 
   const btn = $("#btn-empezar");
-  const puede = lista.filter(([id, j]) => !j.esHost).length >= 1 && estado === "lobby" && state.preguntas.length >= 1;
+  const jugadoresReales = lista.filter(([id, j]) => !j.esHost);
+  const puede = jugadoresReales.length >= 1 && estado === "lobby" && state.preguntas.length >= 1;
   btn.disabled = !puede;
   if (state.preguntas.length === 0) {
     btn.textContent = "Cargá al menos 1 pregunta";
-  } else if (lista.filter(([id, j]) => !j.esHost).length < 1) {
+  } else if (jugadoresReales.length < 1) {
     btn.textContent = "Necesitás al menos 1 jugador";
   } else {
     btn.textContent = "▶️ Empezar partida";
@@ -205,15 +205,14 @@ function renderJugadores(jugadores, estado) {
 function renderPreguntas(preguntas) {
   const ol = $("#host-lista-preguntas");
   if (preguntas.length === 0) {
-    ol.innerHTML = `<li style="border-left-color:transparent;opacity:.5">Todavía no cargaste preguntas.</li>`;
+    ol.innerHTML = `<li style="opacity:.5">Todavía no cargaste preguntas.</li>`;
     return;
   }
   ol.innerHTML = preguntas.map((p) =>
-    `<li class="nivel-${p.nivel}">
+    `<li>
       <button class="p-remove" data-id="${p.id}">🗑️</button>
       <strong>${p.pregunta}</strong><br>
       <span class="p-correcta">✔ ${p.opciones[p.correcta]}</span>
-      <span style="opacity:.6"> · Nivel ${p.nivel}</span>
     </li>`
   ).join("");
 

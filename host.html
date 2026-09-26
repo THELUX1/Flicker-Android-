@@ -9,7 +9,6 @@
 <body>
   <div id="host-app">
 
-    <!-- PANTALLA 1: CREAR SALA -->
     <section id="host-inicio" class="host-pantalla activa">
       <h1>🎛️ Panel del Anfitrión</h1>
       <input id="host-nombre" placeholder="Tu nombre (anfitrión)" maxlength="15" />
@@ -17,7 +16,6 @@
       <p class="hint">Después vas a poder cargar preguntas y arrancar la partida</p>
     </section>
 
-    <!-- PANTALLA 2: PANEL -->
     <section id="host-panel" class="host-pantalla">
 
       <div class="host-header">
@@ -31,7 +29,6 @@
         <button class="tab" data-tab="control">🎮 Control</button>
       </div>
 
-      <!-- TAB JUGADORES -->
       <div id="tab-jugadores" class="tab-panel activo">
         <h2>Jugadores conectados</h2>
         <ul id="host-lista-jugadores"></ul>
@@ -41,7 +38,6 @@
         </div>
       </div>
 
-      <!-- TAB PREGUNTAS -->
       <div id="tab-preguntas" class="tab-panel">
         <h2>Preguntas de la partida</h2>
         <p class="hint">Cargá las preguntas que van a jugar. Podés hacerlo antes o durante la partida.</p>
@@ -49,14 +45,6 @@
         <button id="btn-cargar-ejemplos" class="btn-secundario">⚡ Cargar preguntas de ejemplo</button>
 
         <form id="form-pregunta" class="form-pregunta">
-          <label>Nivel</label>
-          <select id="fp-nivel">
-            <option value="facil">🟢 Fácil</option>
-            <option value="medio">🟡 Medio</option>
-            <option value="dificil">🔴 Difícil</option>
-            <option value="brutal">💀 Brutal</option>
-          </select>
-
           <label>Pregunta</label>
           <input id="fp-pregunta" placeholder="¿Qué haría con $1.000.000?" maxlength="120" />
 
@@ -90,11 +78,9 @@
         <ol id="host-lista-preguntas"></ol>
       </div>
 
-      <!-- TAB CONTROL -->
       <div id="tab-control" class="tab-panel">
         <h2>Control de la partida</h2>
-        <p class="hint">Manejá el ritmo desde acá. Solo se muestran los botones útiles según el estado.</p>
-
+        <p class="hint">Manejá el ritmo desde acá.</p>
         <div id="control-contenido"></div>
       </div>
 

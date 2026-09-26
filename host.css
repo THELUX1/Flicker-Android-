@@ -125,10 +125,6 @@ button:disabled { opacity: .5; cursor: not-allowed; }
   font-size: .9rem;
   border-left: 4px solid #e94560;
 }
-#host-lista-preguntas .nivel-facil   { border-left-color: #16a34a; }
-#host-lista-preguntas .nivel-medio   { border-left-color: #ca8a04; }
-#host-lista-preguntas .nivel-dificil { border-left-color: #dc2626; }
-#host-lista-preguntas .nivel-brutal  { border-left-color: #7c3aed; }
 
 #host-lista-preguntas .p-correcta { color: #4ade80; font-weight: 700; }
 #host-lista-preguntas .p-remove {
