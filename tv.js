@@ -71,23 +71,34 @@ async function precargarSonidos() {
 }
 
 // Reproducir un sonido desde el buffer (sin límite de simultáneos)
+// ============================================================
+// 🔊 EFECTOS CON WEB AUDIO API (2 segundos máximo)
+// ============================================================
+const DURACION_MAX_SONIDO = 2; // segundos
+
 function play(nombre) {
   const buffer = buffersSonidos[nombre];
   if (!buffer) {
     console.warn(`🔇 Sonido no disponible: ${nombre}`);
     return;
   }
-  // Desbloquear el audioCtx si hace falta (por política de autoplay)
+
   if (audioCtx.state === "suspended") {
     audioCtx.resume().catch(() => {});
   }
+
   const source = audioCtx.createBufferSource();
   source.buffer = buffer;
+
   const gain = audioCtx.createGain();
   gain.gain.value = 0.6;
   source.connect(gain);
   gain.connect(audioCtx.destination);
-  source.start(0);
+
+  const ahora = audioCtx.currentTime;
+  source.start(ahora);
+  // Cortar el sonido a los 2s máximo (o antes si el archivo es más corto)
+  source.stop(ahora + DURACION_MAX_SONIDO);
 }
 
 // ===== INDICADOR DE VOLUMEN =====
