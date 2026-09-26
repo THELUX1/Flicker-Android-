@@ -277,7 +277,7 @@ function detectarRespuestas(sala) {
     const key = `${id}-${sala.preguntaActual}`;
     if (j.respondio === true && !state.respuestasVistas.has(key)) {
       state.respuestasVistas.add(key);
-      $("#tv-ticker-texto").textContent = `✍️ ${j.nombre} ya respondió…`;
+      $("#tv-ticker-texto").textContent = `✍️ ${j.nombre} QUE VELOCIDAD!…`;
 
       const ids = Object.keys(sala.jugadores).filter(i => !sala.jugadores[i].esHost);
       const respondidos = ids.filter(i => sala.jugadores[i].respondio === true).length;
@@ -329,8 +329,8 @@ async function revelarEnTV(sala) {
     play("risa");
 
     const texto = fallos.length === 1
-      ? `¡${fallos[0].nombre} la erró!`
-      : `¡${fallos.length} la erraron!`;
+      ? `¡${fallos[0].nombre} Falló!`
+      : `¡${fallos.length} Fallaron!`;
 
     const nombres = fallos.map(j => j.nombre).join(" · ");
     await mostrarCartel("😂", texto, nombres, "rojo", 4000);
@@ -398,6 +398,7 @@ async function mostrarCartel(emoji, texto, sub, color, dur) {
 }
 
 // ===== FINAL =====
+// ===== FINAL =====
 async function mostrarFinalTV(sala) {
   clearInterval(tvTimerInterval);
   play("fanfarria");
@@ -405,9 +406,15 @@ async function mostrarFinalTV(sala) {
   const ganador = jugadores[0];
   if (!ganador) return;
 
-  await mostrarCartel("🏆", `${ganador.nombre} GANA`, `${ganador.puntos} puntos`, "amarillo", 4000);
+  // 1) Cartel del ganador — bien épico
+  await mostrarCartel("🏆", `${ganador.nombre} GANA`, `${ganador.puntos} puntos`, "amarillo", 6000);
 
-  for (const j of jugadores) {
+  // 2) Pausa dramática antes de recorrer a todos
+  await pausa(1200);
+
+  // 3) Recorrer a cada jugador con su título
+  for (let i = 0; i < jugadores.length; i++) {
+    const j = jugadores[i];
     const memoria = j.total ? Math.round((j.aciertos / j.total) * 100) : 0;
     let emoji, frase, color, sonido;
 
@@ -416,11 +423,26 @@ async function mostrarFinalTV(sala) {
     else if (memoria >= 60) { emoji = "🎯"; frase = "Amigo de confianza";        color = "amarillo"; sonido = "correcto"; }
     else if (memoria >= 40) { emoji = "🥲"; frase = "'Pensé que me conocías'";   color = "amarillo"; sonido = "tension"; }
     else if (memoria >= 20) { emoji = "🎲"; frase = "Le pegaste de casualidad";  color = "rojo";     sonido = "risa"; }
-    else                    { emoji = "💀"; frase = "¿Vos sos realmente su amigo?"; color = "rojo";  sonido = "risa"; }
+    else                    { emoji = "💀"; frase = "¿Es enserio?"; color = "rojo";  sonido = "risa"; }
 
     play(sonido);
-    await mostrarCartel(emoji, j.nombre, `${j.puntos} pts · ${memoria}% de memoria · "${frase}"`, color, 3200);
+
+    // Cartel con info del jugador — ahora dura 6 segundos
+    await mostrarCartel(
+      emoji,
+      j.nombre,
+      `${j.puntos} pts · ${memoria}% de memoria · "${frase}"`,
+      color,
+      6000
+    );
+
+    // Pausa entre jugadores (excepto después del último)
+    if (i < jugadores.length - 1) {
+      await pausa(1000);
+    }
   }
 
-  await mostrarCartel("🎉", "¡GRACIAS POR JUGAR!", "Revuelvan las respuestas 😏", "amarillo", 5000);
+  // 4) Cierre final
+  await pausa(1200);
+  await mostrarCartel("🎉", "¡BIEN JUGADO!", "Lastima para los que fallaron", "amarillo", 7000);
 }
