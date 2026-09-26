@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>📺 Pantalla Grande</title>
+  <link rel="stylesheet" href="tv.css" />
+</head>
+<body class="tv-body">
+
+  <div id="tv-ingreso" class="tv-ingreso">
+    <h1>📺 Pantalla Grande</h1>
+    <p>Ingresá el código de sala</p>
+    <input id="tv-sala" placeholder="Ej: ABCD12" maxlength="10" />
+    <button id="tv-entrar">Conectar</button>
+  </div>
+
+  <div id="tv-main" style="display:none">
+
+    <header class="tv-header">
+      <div class="tv-sala">SALA <span id="tv-sala-nombre"></span></div>
+      <div class="tv-estado" id="tv-estado">Esperando…</div>
+      <div class="tv-timer" id="tv-timer">--</div>
+    </header>
+
+    <main class="tv-contenido">
+      <section class="tv-pregunta">
+        <h2 id="tv-texto-pregunta">Esperando que empiece la partida…</h2>
+      </section>
+
+      <section class="tv-ranking">
+        <h3>🏆 Ranking en vivo</h3>
+        <ul id="tv-lista-ranking"></ul>
+      </section>
+    </main>
+
+    <div id="tv-cartel" class="tv-cartel">
+      <div class="tv-cartel-emoji" id="tv-cartel-emoji"></div>
+      <div class="tv-cartel-texto" id="tv-cartel-texto"></div>
+      <div class="tv-cartel-sub"   id="tv-cartel-sub"></div>
+    </div>
+
+    <div class="tv-ticker">
+      <div id="tv-ticker-texto">👀 Esperando movimientos…</div>
+    </div>
+
+  </div>
+
+  <script type="module" src="tv.js"></script>
+</body>
+</html>

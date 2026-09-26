@@ -1,0 +1,265 @@
+import { db } from "./firebase-config.js";
+import {
+  ref, set, get, update, onValue, push, remove, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { PREGUNTAS_EJEMPLO } from "./preguntas.js";
+
+const state = {
+  miId: crypto.randomUUID(),
+  salaId: null,
+  nombre: null,
+  preguntas: [] // espejo local
+};
+
+const $ = (s) => document.querySelector(s);
+const $$ = (s) => document.querySelectorAll(s);
+
+function mostrarPantalla(id) {
+  $$(".host-pantalla").forEach(p => p.classList.remove("activa"));
+  $(`#${id}`).classList.add("activa");
+}
+
+// ===== CREAR SALA =====
+$("#host-crear").onclick = async () => {
+  const nombre = $("#host-nombre").value.trim();
+  if (!nombre) return alert("Poné tu nombre");
+
+  const codigo = generarCodigo();
+  state.salaId = codigo;
+  state.nombre = nombre;
+
+  await set(ref(db, `salas/${codigo}`), {
+    creada: serverTimestamp(),
+    estado: "lobby",
+    preguntaActual: -1,
+    orden: [],
+    preguntas: {},
+    jugadores: {
+      [state.miId]: {
+        nombre: `${nombre} (host)`,
+        puntos: 0, aciertos: 0, total: 0, racha: 0, rachaMax: 0,
+        apuesta: null, respuesta: null, esHost: true
+      }
+    }
+  });
+
+  mostrarPantalla("host-panel");
+  $("#host-codigo").textContent = codigo;
+  conectarSala();
+};
+
+function generarCodigo() {
+  const letras = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+  let c = "";
+  for (let i = 0; i < 6; i++) c += letras[Math.floor(Math.random() * letras.length)];
+  return c;
+}
+
+// ===== TABS =====
+$$(".tab").forEach(tab => {
+  tab.onclick = () => {
+    $$(".tab").forEach(t => t.classList.remove("activo"));
+    $$(".tab-panel").forEach(p => p.classList.remove("activo"));
+    tab.classList.add("activo");
+    $(`#tab-${tab.dataset.tab}`).classList.add("activo");
+  };
+});
+
+// ===== ABRIR TV =====
+$("#btn-abrir-tv").onclick = () => {
+  window.open(`tv.html?sala=${state.salaId}`, "_blank");
+};
+
+// ===== CARGAR EJEMPLOS =====
+$("#btn-cargar-ejemplos").onclick = async () => {
+  if (!confirm("Esto va a reemplazar las preguntas actuales. ¿Seguir?")) return;
+  const updates = {};
+  const obj = {};
+  PREGUNTAS_EJEMPLO.forEach(p => {
+    const id = crypto.randomUUID();
+    obj[id] = p;
+  });
+  await update(ref(db, `salas/${state.salaId}`), { preguntas: obj });
+  alert("Preguntas cargadas ✅");
+};
+
+// ===== AGREGAR PREGUNTA =====
+$("#form-pregunta").onsubmit = async (e) => {
+  e.preventDefault();
+
+  const nivel = $("#fp-nivel").value;
+  const pregunta = $("#fp-pregunta").value.trim();
+  const explicacion = $("#fp-explicacion").value.trim();
+  const opciones = Array.from($$(".fp-opcion-texto")).map(i => i.value.trim());
+  const correctaRadio = document.querySelector('input[name="fp-correcta"]:checked');
+  const correcta = correctaRadio ? parseInt(correctaRadio.value) : -1;
+
+  if (!pregunta) return alert("Falta la pregunta");
+  if (opciones.some(o => !o)) return alert("Completá todas las opciones");
+  if (correcta < 0) return alert("Marcá la opción correcta");
+
+  const nuevaRef = push(ref(db, `salas/${state.salaId}/preguntas`));
+  await set(nuevaRef, { nivel, pregunta, opciones, correcta, explicacion });
+
+  // Reset form
+  $("#fp-pregunta").value = "";
+  $("#fp-explicacion").value = "";
+  $$(".fp-opcion-texto").forEach(i => i.value = "");
+  document.querySelectorAll('input[name="fp-correcta"]').forEach(r => r.checked = false);
+  $("#fp-pregunta").focus();
+};
+
+// ===== CONEXIÓN A SALA =====
+function conectarSala() {
+  onValue(ref(db, `salas/${state.salaId}`), (snap) => {
+    const sala = snap.val();
+    if (!sala) return;
+
+    state.preguntas = Object.entries(sala.preguntas || {}).map(([id, p]) => ({ id, ...p }));
+
+    renderJugadores(sala.jugadores || {}, sala.estado);
+    renderPreguntas(state.preguntas);
+    renderControl(sala);
+    $("#host-estado").textContent = sala.estado === "jugando" ? `Pregunta ${sala.preguntaActual + 1}` : sala.estado;
+  });
+}
+
+// ===== RENDER JUGADORES =====
+function renderJugadores(jugadores, estado) {
+  const lista = Object.entries(jugadores);
+  const ul = $("#host-lista-jugadores");
+  if (lista.length === 0) {
+    ul.innerHTML = `<li class="sin-jugadores">Nadie se unió todavía…</li>`;
+  } else {
+    ul.innerHTML = lista.map(([id, j]) =>
+      `<li><span>👤 ${j.nombre}</span><span>${j.puntos || 0} pts</span></li>`
+    ).join("");
+  }
+
+  // Botón empezar
+  const btn = $("#btn-empezar");
+  const puede = lista.length >= 2 && estado === "lobby" && state.preguntas.length >= 1;
+  btn.disabled = !puede;
+  if (state.preguntas.length === 0) {
+    btn.textContent = "Cargá al menos 1 pregunta";
+  } else if (lista.length < 2) {
+    btn.textContent = "Necesitás al menos 2 jugadores";
+  } else {
+    btn.textContent = "▶️ Empezar partida";
+  }
+}
+
+// ===== RENDER PREGUNTAS =====
+function renderPreguntas(preguntas) {
+  const ol = $("#host-lista-preguntas");
+  if (preguntas.length === 0) {
+    ol.innerHTML = `<li style="border-left-color:transparent;opacity:.5">Todavía no cargaste preguntas.</li>`;
+    return;
+  }
+  ol.innerHTML = preguntas.map((p, i) =>
+    `<li class="nivel-${p.nivel}">
+      <button class="p-remove" data-id="${p.id}">🗑️</button>
+      <strong>${p.pregunta}</strong><br>
+      <span class="p-correcta">✔ ${p.opciones[p.correcta]}</span>
+      <span style="opacity:.6"> · Nivel ${p.nivel}</span>
+    </li>`
+  ).join("");
+
+  $$(".p-remove").forEach(btn => {
+    btn.onclick = async () => {
+      if (!confirm("¿Eliminar esta pregunta?")) return;
+      await remove(ref(db, `salas/${state.salaId}/preguntas/${btn.dataset.id}`));
+    };
+  });
+}
+
+// ===== EMPEZAR =====
+$("#btn-empezar").onclick = async () => {
+  const sala = (await get(ref(db, `salas/${state.salaId}`))).val();
+  const ids = Object.keys(sala.preguntas || {});
+  if (ids.length === 0) return alert("Cargá preguntas primero");
+  if (ids.length < 1) return;
+
+  const orden = ids.sort(() => Math.random() - 0.5);
+  await update(ref(db, `salas/${state.salaId}`), {
+    estado: "jugando",
+    preguntaActual: 0,
+    orden,
+    _revealTick: 0
+  });
+};
+
+// ===== CONTROL =====
+function renderControl(sala) {
+  const cont = $("#control-contenido");
+  cont.innerHTML = "";
+
+  if (sala.estado === "lobby") {
+    cont.innerHTML = `<p class="hint">La partida no empezó. Cargá preguntas y tocá "Empezar" en la pestaña Jugadores.</p>`;
+    return;
+  }
+
+  if (sala.estado === "jugando") {
+    cont.innerHTML = `
+      <button id="btn-revelar" class="btn-secundario">👁️ Revelar respuesta ya</button>
+      <button id="btn-siguiente" class="btn-primario">➡️ Siguiente pregunta</button>
+      <button id="btn-terminar" class="btn-secundario">🏁 Terminar partida</button>
+      <button id="btn-reset" class="btn-secundario" style="background:rgba(220,38,38,.25)">🔄 Reiniciar ronda</button>
+    `;
+
+    $("#btn-revelar").onclick = async () => {
+      await update(ref(db, `salas/${state.salaId}`), { _revealTick: Date.now() });
+    };
+
+    $("#btn-siguiente").onclick = async () => {
+      const s = (await get(ref(db, `salas/${state.salaId}`))).val();
+      const next = s.preguntaActual + 1;
+      if (next >= s.orden.length) {
+        await update(ref(db, `salas/${state.salaId}`), { estado: "final" });
+      } else {
+        await update(ref(db, `salas/${state.salaId}`), { preguntaActual: next });
+      }
+    };
+
+    $("#btn-terminar").onclick = async () => {
+      if (!confirm("¿Terminar la partida ya?")) return;
+      await update(ref(db, `salas/${state.salaId}`), { estado: "final" });
+    };
+
+    $("#btn-reset").onclick = async () => {
+      const s = (await get(ref(db, `salas/${state.salaId}`))).val();
+      const updates = {};
+      Object.keys(s.jugadores).forEach(id => {
+        updates[`salas/${state.salaId}/jugadores/${id}/respuesta`] = null;
+        updates[`salas/${state.salaId}/jugadores/${id}/apuesta`]   = null;
+      });
+      await update(ref(db), updates);
+      await update(ref(db, `salas/${state.salaId}`), { _revealTick: 0 });
+    };
+  }
+
+  if (sala.estado === "final") {
+    cont.innerHTML = `
+      <button id="btn-volver-lobby" class="btn-primario">🛋️ Volver al lobby (mismas preguntas)</button>
+      <button id="btn-nueva-partida" class="btn-secundario">✨ Nueva partida (resetea puntos)</button>
+    `;
+
+    $("#btn-volver-lobby").onclick = async () => {
+      await update(ref(db, `salas/${state.salaId}`), { estado: "lobby", preguntaActual: -1, _revealTick: 0 });
+    };
+    $("#btn-nueva-partida").onclick = async () => {
+      const s = (await get(ref(db, `salas/${state.salaId}`))).val();
+      const updates = { estado: "lobby", preguntaActual: -1, _revealTick: 0 };
+      Object.keys(s.jugadores).forEach(id => {
+        updates[`jugadores/${id}/puntos`]   = 0;
+        updates[`jugadores/${id}/aciertos`] = 0;
+        updates[`jugadores/${id}/total`]    = 0;
+        updates[`jugadores/${id}/racha`]    = 0;
+        updates[`jugadores/${id}/rachaMax`] = 0;
+        updates[`jugadores/${id}/respuesta`]= null;
+        updates[`jugadores/${id}/apuesta`]  = null;
+      });
+      await update(ref(db, `salas/${state.salaId}`), updates);
+    };
+  }
+}
