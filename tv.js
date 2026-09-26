@@ -16,7 +16,7 @@ const state = {
   chatsVistos: new Set()
 };
 
-// ===== SONIDOS =====
+// ===== SONIDOS PUNTUALES =====
 const sonidos = {
   risa:        new Audio("sonidos/risa.mp3"),
   aplauso:     new Audio("sonidos/aplauso.mp3"),
@@ -29,7 +29,7 @@ const sonidos = {
 };
 Object.values(sonidos).forEach(a => a.volume = 0.6);
 
-// ===== MÚSICA =====
+// ===== MÚSICA DE FONDO =====
 const MUSICA = {
   lobby: new Audio("musica/lobby.mp3"),
   juego: new Audio("musica/juego.mp3"),
@@ -45,6 +45,7 @@ let musicaActual = null;
 let musicaMuteada = false;
 let volumenBase = 0.25;
 let duckTimeout = null;
+let musicaEnDuck = false; // ⬅️ trackea si la música está en ducking
 
 function reproducirMusica(clave) {
   if (musicaActual === clave) return;
@@ -54,6 +55,11 @@ function reproducirMusica(clave) {
   }
   musicaActual = clave;
   if (!clave || !MUSICA[clave]) return;
+
+  // Si estábamos en duck, reseteamos el estado
+  musicaEnDuck = false;
+  clearTimeout(duckTimeout);
+
   const track = MUSICA[clave];
   track.volume = musicaMuteada ? 0 : volumenBase;
   track.play().catch(() => {});
@@ -63,10 +69,20 @@ function duckMusica(duracionMs = 1800) {
   if (!musicaActual || musicaMuteada) return;
   const track = MUSICA[musicaActual];
   if (!track) return;
-  track.volume = Math.max(0, volumenBase * 0.15);
+
+  // Solo bajamos el volumen si NO estábamos ya en duck
+  if (!musicaEnDuck) {
+    track.volume = Math.max(0, volumenBase * 0.15);
+    musicaEnDuck = true;
+  }
+
+  // Extender el timeout con cada nuevo sonido
   clearTimeout(duckTimeout);
   duckTimeout = setTimeout(() => {
-    track.volume = musicaMuteada ? 0 : volumenBase;
+    if (musicaActual && MUSICA[musicaActual]) {
+      MUSICA[musicaActual].volume = musicaMuteada ? 0 : volumenBase;
+    }
+    musicaEnDuck = false;
   }, duracionMs);
 }
 
@@ -74,8 +90,21 @@ function play(n) {
   const s = sonidos[n];
   if (!s) return;
   s.currentTime = 0;
-  s.play().catch(() => {});
-  duckMusica(1800);
+
+  const promesa = s.play();
+  if (promesa) {
+    promesa
+      .then(() => {
+        // Solo hacer ducking si el sonido realmente arrancó
+        duckMusica(1800);
+      })
+      .catch(() => {
+        // El sonido no existe o fue bloqueado → NO hacemos ducking
+        console.warn(`🔇 No se pudo reproducir: ${n}`);
+      });
+  } else {
+    duckMusica(1800);
+  }
 }
 
 // ===== INDICADOR DE VOLUMEN =====
@@ -106,10 +135,11 @@ function mostrarIndicadorVolumen(texto) {
   el._t = setTimeout(() => { el.style.opacity = "0"; }, 1200);
 }
 
-// ===== CONTROLES =====
+// ===== CONTROLES DE TECLADO =====
 function configurarControles() {
   window.addEventListener("keydown", (e) => {
     const k = e.key.toLowerCase();
+
     if (k === "+" || k === "=") {
       volumenBase = Math.min(1, volumenBase + 0.05);
       if (musicaActual && !musicaMuteada && MUSICA[musicaActual]) {
@@ -117,6 +147,7 @@ function configurarControles() {
       }
       mostrarIndicadorVolumen(`🔊 ${Math.round(volumenBase * 100)}%`);
     }
+
     if (k === "-" || k === "_") {
       volumenBase = Math.max(0, volumenBase - 0.05);
       if (musicaActual && !musicaMuteada && MUSICA[musicaActual]) {
@@ -124,6 +155,7 @@ function configurarControles() {
       }
       mostrarIndicadorVolumen(`🔉 ${Math.round(volumenBase * 100)}%`);
     }
+
     if (k === "m") {
       musicaMuteada = !musicaMuteada;
       if (musicaActual && MUSICA[musicaActual]) {
@@ -159,6 +191,7 @@ function mostrarFlotante(emoji, texto, sub, color = "amarillo", duracion = 4500)
   `;
   cont.appendChild(el);
 
+  // Limitar a 5 carteles a la vez
   while (cont.children.length > 5) {
     cont.removeChild(cont.firstChild);
   }
@@ -170,7 +203,7 @@ function mostrarFlotante(emoji, texto, sub, color = "amarillo", duracion = 4500)
 }
 
 // ============================================================
-// INICIALIZACIÓN (esperar DOM)
+// INICIALIZACIÓN
 // ============================================================
 function iniciar() {
   console.log("🚀 Iniciando TV...");
@@ -183,7 +216,6 @@ function iniciar() {
     const inputSala = $("#tv-sala");
     if (inputSala) inputSala.value = salaParam.toUpperCase();
 
-    // Auto-conectar después de un pequeño delay
     setTimeout(() => {
       const btn = $("#tv-entrar");
       if (btn) {
@@ -235,7 +267,7 @@ if (document.readyState === "loading") {
 function conectar() {
   console.log("🔌 Conectando a Firebase sala:", state.salaId);
 
-  // Estado principal
+  // Estado principal de la sala
   onValue(ref(db, `salas/${state.salaId}`), async (snap) => {
     const sala = snap.val();
     if (!sala) {
@@ -269,7 +301,7 @@ function conectar() {
     }
   });
 
-  // Reacciones
+  // Reacciones automáticas
   onValue(ref(db, `salas/${state.salaId}/_reacciones`), (snap) => {
     const grupos = snap.val();
     if (!grupos) return;
@@ -373,7 +405,7 @@ function manejarEstado(sala) {
     reproducirMusica("juego");
   }
   if (sala.estado === "final") {
-    $("#tv-estado").textContent = "🏁 ¡Fin!";
+    $("#tv-estado").textContent = "🏁 ¡Terminó!";
     reproducirMusica("final");
     mostrarFinalTV(sala);
   }
@@ -390,7 +422,7 @@ function mostrarPregunta(sala) {
 }
 
 // ============================================================
-// TIMER
+// TIMER VISUAL
 // ============================================================
 let tvTimerInterval = null;
 function iniciarTensionTimer(sala) {
@@ -434,7 +466,7 @@ function detectarRespuestas(sala) {
 }
 
 // ============================================================
-// REVELAR
+// REVELAR EN TV
 // ============================================================
 async function revelarEnTV(sala) {
   const preg = sala.preguntas?.[sala.orden?.[sala.preguntaActual]];
@@ -467,7 +499,7 @@ async function revelarEnTV(sala) {
   if (fallos.length > 0) {
     await pausa(800);
     play("risa");
-    const texto = fallos.length === 1 ? `¡${fallos[0].nombre} Falló!` : `¡${fallos.length} Fallaron!`;
+    const texto = fallos.length === 1 ? `¡${fallos[0].nombre} la falló!` : `¡${fallos.length} la fallaron!`;
     const nombres = fallos.map(j => j.nombre).join(" · ");
     await mostrarCartel("😂", texto, nombres, "rojo", 4000);
   }
@@ -493,7 +525,7 @@ async function revelarEnTV(sala) {
       mostrarFlotante("👀", `${mejor.nombre} viene acertando el ${mem}%`, "¿Sospechoso?", "amarillo", 4500);
     } else if (mem <= 30) {
       play("risa");
-      mostrarFlotante("💀", `${mejor.nombre} viene acertando el ${mem}%`, "¿Amigo o conocido?", "rojo", 4500);
+      mostrarFlotante("💀", `${mejor.nombre} viene acertando el ${mem}%`, "¿Amigo o Desconocido?", "rojo", 4500);
     }
   }
 }
@@ -664,5 +696,5 @@ async function mostrarFinalTV(sala) {
     await pausa(800);
   }
 
-  await mostrarCartel("🎉", "Buen juego", "Hora de repartir los premios", "amarillo", 7000);
+  await mostrarCartel("🎉", "¡BIEN JUGADO!", "Hora de dar los premios", "amarillo", 7000);
 }
