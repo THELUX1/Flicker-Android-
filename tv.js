@@ -16,21 +16,8 @@ const state = {
   chatsVistos: new Set()
 };
 
-// ===== SONIDOS PUNTUALES =====
-const sonidos = {
-  risa:        new Audio("sonidos/risa.mp3"),
-  aplauso:     new Audio("sonidos/aplauso.mp3"),
-  timbre:      new Audio("sonidos/timbre.mp3"),
-  tension:     new Audio("sonidos/tension.mp3"),
-  correcto:    new Audio("sonidos/correcto.mp3"),
-  incorrecto:  new Audio("sonidos/incorrecto.mp3"),
-  fanfarria:   new Audio("sonidos/fanfarria.mp3"),
-  abucheo:     new Audio("sonidos/abucheo.mp3")
-};
-Object.values(sonidos).forEach(a => a.volume = 0.6);
-
 // ============================================================
-// 🎵 MÚSICA DE FONDO — UNA SOLA, SIN INTERRUPCIONES
+// 🎵 MÚSICA — UN SOLO <audio> QUE NUNCA SE TOCA
 // ============================================================
 const musica = new Audio("musica/juego.mp3");
 musica.loop = true;
@@ -45,10 +32,9 @@ function iniciarMusica() {
   if (musicaIniciada) return;
   musicaIniciada = true;
   musica.play()
-    .then(() => console.log("🎵 Música de fondo iniciada"))
+    .then(() => console.log("🎵 Música iniciada"))
     .catch((err) => {
-      console.warn("⚠️ No se pudo iniciar la música:", err);
-      // Reintentar en el próximo click del usuario
+      console.warn("⚠️ Autoplay bloqueado, reintentando en próximo click");
       const reintentar = () => {
         musica.play().catch(() => {});
         document.removeEventListener("click", reintentar);
@@ -57,14 +43,51 @@ function iniciarMusica() {
     });
 }
 
-// Los sonidos puntuales NO tocan la música. Solo se reproducen encima.
-function play(n) {
-  const s = sonidos[n];
-  if (!s) return;
-  s.currentTime = 0;
-  s.play().catch(() => {
-    console.warn(`🔇 No se pudo reproducir: ${n}`);
+// ============================================================
+// 🔊 EFECTOS CON WEB AUDIO API (no compiten con la música)
+// ============================================================
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+const buffersSonidos = {};
+const nombresSonidos = [
+  "risa", "aplauso", "timbre", "tension",
+  "correcto", "incorrecto", "fanfarria", "abucheo"
+];
+
+// Precargar todos los sonidos como buffers
+async function precargarSonidos() {
+  const tareas = nombresSonidos.map(async (n) => {
+    try {
+      const resp = await fetch(`sonidos/${n}.mp3`);
+      if (!resp.ok) throw new Error("404");
+      const arrayBuffer = await resp.arrayBuffer();
+      const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+      buffersSonidos[n] = audioBuffer;
+      console.log(`✅ Sonido precargado: ${n}`);
+    } catch (e) {
+      console.warn(`⚠️ No se pudo precargar: ${n}`);
+    }
   });
+  await Promise.all(tareas);
+}
+
+// Reproducir un sonido desde el buffer (sin límite de simultáneos)
+function play(nombre) {
+  const buffer = buffersSonidos[nombre];
+  if (!buffer) {
+    console.warn(`🔇 Sonido no disponible: ${nombre}`);
+    return;
+  }
+  // Desbloquear el audioCtx si hace falta (por política de autoplay)
+  if (audioCtx.state === "suspended") {
+    audioCtx.resume().catch(() => {});
+  }
+  const source = audioCtx.createBufferSource();
+  source.buffer = buffer;
+  const gain = audioCtx.createGain();
+  gain.gain.value = 0.6;
+  source.connect(gain);
+  gain.connect(audioCtx.destination);
+  source.start(0);
 }
 
 // ===== INDICADOR DE VOLUMEN =====
@@ -161,6 +184,9 @@ function mostrarFlotante(emoji, texto, sub, color = "amarillo", duracion = 4500)
 function iniciar() {
   console.log("🚀 Iniciando TV...");
 
+  // Precargar sonidos apenas se abre la TV
+  precargarSonidos();
+
   const params = new URLSearchParams(location.search);
   const salaParam = params.get("sala");
 
@@ -204,6 +230,11 @@ function iniciar() {
     iniciarMusica();
     mostrarIndicadorVolumen(`🔊 ${Math.round(volumenBase * 100)}%`);
 
+    // Desbloquear audioCtx en cuanto haya un click
+    if (audioCtx.state === "suspended") {
+      audioCtx.resume().catch(() => {});
+    }
+
     conectar();
   };
 }
@@ -220,7 +251,6 @@ if (document.readyState === "loading") {
 function conectar() {
   console.log("🔌 Conectando a Firebase sala:", state.salaId);
 
-  // Estado principal de la sala
   onValue(ref(db, `salas/${state.salaId}`), async (snap) => {
     const sala = snap.val();
     if (!sala) {
@@ -254,7 +284,6 @@ function conectar() {
     }
   });
 
-  // Reacciones automáticas
   onValue(ref(db, `salas/${state.salaId}/_reacciones`), (snap) => {
     const grupos = snap.val();
     if (!grupos) return;
@@ -274,7 +303,6 @@ function conectar() {
     });
   });
 
-  // Chat
   onValue(ref(db, `salas/${state.salaId}/_chat`), (snap) => {
     const mensajes = snap.val();
     if (!mensajes) return;
@@ -449,7 +477,7 @@ async function revelarEnTV(sala) {
   if (fallos.length > 0) {
     await pausa(800);
     play("risa");
-    const texto = fallos.length === 1 ? `¡${fallos[0].nombre} falló!` : `¡${fallos.length} fallaron!`;
+    const texto = fallos.length === 1 ? `¡${fallos[0].nombre} la erró!` : `¡${fallos.length} la erraron!`;
     const nombres = fallos.map(j => j.nombre).join(" · ");
     await mostrarCartel("😂", texto, nombres, "rojo", 4000);
   }
@@ -475,7 +503,7 @@ async function revelarEnTV(sala) {
       mostrarFlotante("👀", `${mejor.nombre} viene acertando el ${mem}%`, "¿Sospechoso?", "amarillo", 4500);
     } else if (mem <= 30) {
       play("risa");
-      mostrarFlotante("💀", `${mejor.nombre} viene acertando el ${mem}%`, "¿Amigo o Conocido?", "rojo", 4500);
+      mostrarFlotante("💀", `${mejor.nombre} viene acertando el ${mem}%`, "¿Amigo o conocido?", "rojo", 4500);
     }
   }
 }
@@ -597,7 +625,7 @@ async function mostrarFinalTV(sala) {
     else if (memoria >= 60) { emoji = "🎯"; frase = "Amigo de confianza";        color = "amarillo"; sonido = "correcto"; }
     else if (memoria >= 40) { emoji = "🥲"; frase = "'Pensé que me conocías'";   color = "amarillo"; sonido = "tension"; }
     else if (memoria >= 20) { emoji = "🎲"; frase = "Le pegaste de casualidad";  color = "rojo";     sonido = "risa"; }
-    else                    { emoji = "💀"; frase = "¿Es enserio?"; color = "rojo";  sonido = "risa"; }
+    else                    { emoji = "💀"; frase = "¿Vos sos realmente su amigo?"; color = "rojo";  sonido = "risa"; }
 
     play(sonido);
 
@@ -646,5 +674,5 @@ async function mostrarFinalTV(sala) {
     await pausa(800);
   }
 
-  await mostrarCartel("🎉", "¡BIEN JUGADO!", "Hora de dar los premios", "amarillo", 7000);
+  await mostrarCartel("🎉", "¡GRACIAS POR JUGAR!", "Revuelvan las respuestas 😏", "amarillo", 7000);
 }
