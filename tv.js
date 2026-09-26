@@ -322,7 +322,7 @@ function manejarEstado(sala) {
     reproducirMusica("juego");
   }
   if (sala.estado === "final") {
-    $("#tv-estado").textContent = "🏁 ¡Terminó!";
+    $("#tv-estado").textContent = "🏁 ¡Fin de la partida!";
     reproducirMusica("final");
     mostrarFinalTV(sala);
   }
@@ -406,8 +406,8 @@ async function revelarEnTV(sala) {
     play("aplauso");
 
     const texto = aciertos.length === 1
-      ? `¡${aciertos[0].nombre} acertó!`
-      : `¡${aciertos.length} acertaron!`;
+      ? `¡${aciertos[0].nombre} Acertó!`
+      : `¡${aciertos.length} Acertaron!`;
 
     const nombres = aciertos.map(j => j.nombre).join(" · ");
     await mostrarCartel("🎉", texto, nombres, "verde", 4000);
@@ -418,8 +418,8 @@ async function revelarEnTV(sala) {
     play("risa");
 
     const texto = fallos.length === 1
-      ? `¡${fallos[0].nombre} la erró!`
-      : `¡${fallos.length} la erraron!`;
+      ? `¡${fallos[0].nombre} La Falló!`
+      : `¡${fallos.length} La Fallaron!`;
 
     const nombres = fallos.map(j => j.nombre).join(" · ");
     await mostrarCartel("😂", texto, nombres, "rojo", 4000);
@@ -447,7 +447,7 @@ async function revelarEnTV(sala) {
       mostrarFlotante("👀", `${mejor.nombre} viene acertando el ${mem}%`, "¿Sospechoso?", "amarillo", 4500);
     } else if (mem <= 30) {
       play("risa");
-      mostrarFlotante("💀", `${mejor.nombre} viene acertando el ${mem}%`, "¿Amigo o conocido?", "rojo", 4500);
+      mostrarFlotante("💀", `${mejor.nombre} viene acertando el ${mem}%`, "¿Amigo o desconocido?", "rojo", 4500);
     }
   }
 }
@@ -616,7 +616,7 @@ async function mostrarFinalTV(sala) {
     else if (memoria >= 60) { emoji = "🎯"; frase = "Amigo de confianza";        color = "amarillo"; sonido = "correcto"; }
     else if (memoria >= 40) { emoji = "🥲"; frase = "'Pensé que me conocías'";   color = "amarillo"; sonido = "tension"; }
     else if (memoria >= 20) { emoji = "🎲"; frase = "Le pegaste de casualidad";  color = "rojo";     sonido = "risa"; }
-    else                    { emoji = "💀"; frase = "¿Vos sos realmente su amigo?"; color = "rojo";  sonido = "risa"; }
+    else                    { emoji = "💀"; frase = "¿Es enserio?"; color = "rojo";  sonido = "risa"; }
 
     play(sonido);
 
@@ -672,5 +672,5 @@ async function mostrarFinalTV(sala) {
   }
 
   // 5) Cierre
-  await mostrarCartel("🎉", "¡GRACIAS POR JUGAR!", "Revuelvan las respuestas 😏", "amarillo", 7000);
+  await mostrarCartel("🎉", "Bien jugado", "Hora de entregar el premio 🏅"", "amarillo", 7000);
 }
