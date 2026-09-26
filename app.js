@@ -3,8 +3,8 @@ import {
   ref, set, get, update, onValue, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import {
-  TIEMPO_APUESTA,
-  TIEMPO_RESPUESTA
+  TIEMPO_RESPUESTA,
+  PUNTOS_POR_ACIERTO
 } from "./preguntas.js";
 
 const state = {
@@ -12,12 +12,9 @@ const state = {
   salaId: null,
   nombre: null,
   respuestaActual: null,
-  apuestaActual: null,
   preguntaActualIdx: -1,
-  rondaEscuchada: -1,
   timerInterval: null,
-  yaRevelado: false,
-  fase: "apuesta"
+  yaRevelado: false
 };
 
 const $ = (s) => document.querySelector(s);
@@ -43,7 +40,7 @@ $("#btn-unirse").onclick = async () => {
   await update(ref(db, `salas/${codigo}/jugadores/${state.miId}`), {
     nombre, puntos: 0, aciertos: 0, total: 0,
     racha: 0, rachaMax: 0,
-    apuesta: null, respuesta: null, respondio: false
+    respuesta: null, respondio: false
   });
 
   mostrarPantalla("pantalla-lobby");
@@ -87,9 +84,7 @@ function renderLobby(jugadores) {
 async function entrarARonda(sala) {
   state.preguntaActualIdx = sala.preguntaActual;
   state.respuestaActual = null;
-  state.apuestaActual = null;
   state.yaRevelado = false;
-  state.fase = "apuesta";
 
   const preg = sala.preguntas[sala.orden[sala.preguntaActual]];
   if (!preg) return;
@@ -98,13 +93,11 @@ async function entrarARonda(sala) {
   $("#num-pregunta").textContent = `Pregunta ${sala.preguntaActual + 1}/${sala.orden.length}`;
 
   await update(ref(db, `salas/${state.salaId}/jugadores/${state.miId}`), {
-    apuesta: null, respuesta: null, respondio: false
+    respuesta: null, respondio: false
   });
 
-  $("#fase-apuesta").style.display = "block";
-  $("#fase-pregunta").style.display = "none";
+  $("#fase-pregunta").style.display = "block";
   $("#fase-resultado").style.display = "none";
-  $$(".apuesta").forEach(b => b.classList.remove("elegida"));
 
   $("#texto-pregunta").textContent = preg.pregunta;
   const cont = $("#opciones");
@@ -117,26 +110,6 @@ async function entrarARonda(sala) {
     cont.appendChild(btn);
   });
 
-  iniciarTimer(TIEMPO_APUESTA, () => {
-    if (state.apuestaActual === null) {
-      elegirApuesta(10);
-    }
-  });
-}
-
-// ===== APUESTA =====
-async function elegirApuesta(monto) {
-  state.apuestaActual = monto;
-  $$(".apuesta").forEach(b => {
-    b.classList.toggle("elegida", parseInt(b.dataset.apuesta) === monto);
-  });
-
-  await update(ref(db, `salas/${state.salaId}/jugadores/${state.miId}`), { apuesta: monto });
-
-  $("#fase-apuesta").style.display = "none";
-  $("#fase-pregunta").style.display = "block";
-  state.fase = "pregunta";
-
   iniciarTimer(TIEMPO_RESPUESTA, () => {
     if (state.respuestaActual === null) {
       responder(-1);
@@ -144,11 +117,7 @@ async function elegirApuesta(monto) {
   });
 }
 
-$$(".apuesta").forEach(btn => {
-  btn.onclick = () => elegirApuesta(parseInt(btn.dataset.apuesta));
-});
-
-// ===== TIMER GENÉRICO =====
+// ===== TIMER =====
 function iniciarTimer(seg, onEnd) {
   clearInterval(state.timerInterval);
   let restante = seg;
@@ -198,10 +167,9 @@ async function revelarResultado() {
 
   Object.entries(sala.jugadores).forEach(([id, j]) => {
     const acierto = j.respuesta === correcta;
-    const apuesta = j.apuesta || 0;
-    const delta = acierto ? apuesta : -apuesta;
+    const delta = acierto ? PUNTOS_POR_ACIERTO : 0;
 
-    const nuevosPuntos = Math.max(0, (j.puntos || 0) + delta);
+    const nuevosPuntos = (j.puntos || 0) + delta;
     const nuevaRacha = acierto ? (j.racha || 0) + 1 : 0;
 
     updates[`salas/${state.salaId}/jugadores/${id}/puntos`]   = nuevosPuntos;
@@ -216,7 +184,6 @@ async function revelarResultado() {
   await update(ref(db), updates);
 
   $("#fase-pregunta").style.display = "none";
-  $("#fase-apuesta").style.display = "none";
   $("#fase-resultado").style.display = "block";
   $("#respuesta-correcta").innerHTML = `🟢 Respuesta correcta: <strong>${preg.opciones[correcta]}</strong>`;
   $("#explicacion").textContent = preg.explicacion ? `"${preg.explicacion}"` : "";
@@ -263,5 +230,5 @@ function obtenerTitulo(memoria) {
   if (memoria >= 60) return "🎯 Amigo de confianza";
   if (memoria >= 40) return "🥲 'Pensé que me conocías'";
   if (memoria >= 20) return "🎲 Le pegaste de casualidad";
-  return "💀 ¿Vos sos realmente su amigo?";
+  return "💀 ¿Vos sos realmente amigo?";
 }

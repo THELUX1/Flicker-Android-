@@ -8,7 +8,8 @@ const state = {
   ultimoEstado: null,
   respuestasVistas: new Set(),
   puntajesPrevios: {},
-  rondaYaRevelada: false
+  rondaYaRevelada: false,
+  items: new Map() // id → <li> reutilizable
 };
 
 // ===== SONIDOS =====
@@ -64,7 +65,7 @@ function conectar() {
       state.rondaYaRevelada = false;
       mostrarPregunta(sala);
       await sleep(400);
-      mostrarCartel("🧠", `PREGUNTA ${sala.preguntaActual + 1}`, "¡Apuesten y respondan!", "amarillo", 2200);
+      mostrarCartel("🧠", `PREGUNTA ${sala.preguntaActual + 1}`, "¡Respondan!", "amarillo", 2200);
       play("timbre");
       iniciarTensionTimer(sala);
     }
@@ -78,15 +79,16 @@ function conectar() {
   });
 }
 
-// ===== RANKING =====
+// ===== RANKING (fix) =====
 function renderRanking(sala) {
   const jugadores = Object.entries(sala.jugadores || {}).map(([id, j]) => ({ id, ...j }));
   const ordenados = jugadores.sort((a, b) => (b.puntos || 0) - (a.puntos || 0));
   const max = Math.max(1, ...ordenados.map(j => j.puntos || 0));
   const ul = $("#tv-lista-ranking");
 
+  // 1) Crear/reutilizar elementos
   ordenados.forEach((j, i) => {
-    let li = ul.querySelector(`[data-id="${j.id}"]`);
+    let li = state.items.get(j.id);
     if (!li) {
       li = document.createElement("li");
       li.dataset.id = j.id;
@@ -97,20 +99,31 @@ function renderRanking(sala) {
         <span class="rank-puntos"></span>
         <div class="rank-bar"><div class="rank-bar-fill"></div></div>
       `;
-      ul.appendChild(li);
+      state.items.set(j.id, li);
     }
+
+    // 2) Detectar cambio de puntaje (glow)
     const antes = state.puntajesPrevios[j.id] ?? j.puntos;
     if (j.puntos > antes) { li.classList.add("subio"); setTimeout(() => li.classList.remove("subio"), 2000); }
     if (j.puntos < antes) { li.classList.add("bajo");  setTimeout(() => li.classList.remove("bajo"),  2000); }
     state.puntajesPrevios[j.id] = j.puntos;
 
+    // 3) Actualizar contenido SIEMPRE
     li.querySelector(".rank-pos").textContent = i + 1;
     li.querySelector(".rank-pos").className = "rank-pos " + (i === 0 ? "oro" : i === 1 ? "plata" : i === 2 ? "bronce" : "");
     li.querySelector(".rank-nombre").textContent = j.nombre;
     li.querySelector(".rank-puntos").textContent = `${j.puntos || 0} pts`;
     li.querySelector(".rank-bar-fill").style.width = `${((j.puntos || 0) / max) * 100}%`;
-    ul.appendChild(li);
   });
+
+  // 4) Reordenar el DOM según el orden correcto
+  const idsActuales = new Set(ordenados.map(j => j.id));
+  // Eliminar elementos de jugadores que ya no están
+  state.items.forEach((li, id) => {
+    if (!idsActuales.has(id)) { li.remove(); state.items.delete(id); }
+  });
+  // Reinsertar en orden
+  ordenados.forEach(j => ul.appendChild(state.items.get(j.id)));
 }
 
 // ===== ESTADOS =====

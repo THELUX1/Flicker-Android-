@@ -41,7 +41,7 @@ $("#host-crear").onclick = async () => {
       [state.miId]: {
         nombre: `${nombre} (host)`,
         puntos: 0, aciertos: 0, total: 0, racha: 0, rachaMax: 0,
-        apuesta: null, respuesta: null, respondio: false, esHost: true
+        respuesta: null, respondio: false, esHost: true
       }
     }
   });
@@ -234,7 +234,6 @@ $("#btn-empezar").onclick = async () => {
   Object.keys(sala.jugadores).forEach(id => {
     updates[`salas/${state.salaId}/jugadores/${id}/respondio`] = false;
     updates[`salas/${state.salaId}/jugadores/${id}/respuesta`] = null;
-    updates[`salas/${state.salaId}/jugadores/${id}/apuesta`]   = null;
   });
   updates[`salas/${state.salaId}/estado`]         = "jugando";
   updates[`salas/${state.salaId}/preguntaActual`] = 0;
@@ -310,7 +309,6 @@ function renderControl(sala) {
       const updates = {};
       Object.keys(s.jugadores).forEach(id => {
         updates[`salas/${state.salaId}/jugadores/${id}/respuesta`] = null;
-        updates[`salas/${state.salaId}/jugadores/${id}/apuesta`]   = null;
         updates[`salas/${state.salaId}/jugadores/${id}/respondio`] = false;
       });
       updates[`salas/${state.salaId}/_revealTick`] = 0;
@@ -337,7 +335,6 @@ function renderControl(sala) {
         updates[`jugadores/${id}/racha`]    = 0;
         updates[`jugadores/${id}/rachaMax`] = 0;
         updates[`jugadores/${id}/respuesta`]= null;
-        updates[`jugadores/${id}/apuesta`]  = null;
         updates[`jugadores/${id}/respondio`]= false;
       });
       await update(ref(db, `salas/${state.salaId}`), updates);

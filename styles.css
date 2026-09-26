@@ -102,13 +102,6 @@ code { background: rgba(255,255,255,.1); padding: 2px 6px; border-radius: 4px; f
 .opcion.correcta { background: #16a34a; }
 .opcion.incorrecta { background: #991b1b; }
 
-.apuestas { display: grid; gap: 12px; }
-.apuesta { padding: 22px; font-size: 1.1rem; border-radius: 14px; color: #fff; }
-.apuesta.verde    { background: #16a34a; }
-.apuesta.amarillo { background: #ca8a04; }
-.apuesta.rojo     { background: #dc2626; }
-.apuesta.elegida  { outline: 3px solid #fff; }
-
 .explicacion {
   background: rgba(233,69,96,.15);
   border-left: 4px solid #e94560;
