@@ -4,8 +4,11 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { PREGUNTAS_EJEMPLO, TIEMPO_REVELADO, PUNTOS_POR_ACIERTO } from "./preguntas.js";
 
+// ===== CLAVE DE PERSISTENCIA =====
+const STORAGE_KEY = "qcm_host_session";
+
 const state = {
-  miId: crypto.randomUUID(),
+  miId: null,
   salaId: null,
   nombre: null,
   preguntas: [],
@@ -21,11 +24,61 @@ function mostrarPantalla(id) {
   $(`#${id}`).classList.add("activa");
 }
 
-// ===== CREAR SALA =====
+// ============================================================
+// PERSISTENCIA
+// ============================================================
+function guardarSesion() {
+  if (!state.salaId || !state.miId) {
+    console.warn("⚠️ No se puede guardar sesión: falta salaId o miId");
+    return;
+  }
+  const data = {
+    salaId: state.salaId,
+    miId: state.miId,
+    nombre: state.nombre,
+    guardadoEn: Date.now()
+  };
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    const check = localStorage.getItem(STORAGE_KEY);
+    console.log("💾 Sesión guardada:", check ? "OK" : "FALLÓ", data);
+  } catch (e) {
+    console.error("❌ Error guardando sesión:", e);
+    alert("⚠️ No se pudo guardar la sesión. Puede que estés en modo incógnito o con bloqueo de cookies.");
+  }
+}
+
+function cargarSesion() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const data = JSON.parse(raw);
+    if (!data.salaId || !data.miId) return null;
+    // Expiración: 7 días
+    if (Date.now() - (data.guardadoEn || 0) > 7 * 24 * 60 * 60 * 1000) {
+      localStorage.removeItem(STORAGE_KEY);
+      return null;
+    }
+    return data;
+  } catch (err) {
+    console.error("❌ Error leyendo sesión:", err);
+    return null;
+  }
+}
+
+function borrarSesion() {
+  localStorage.removeItem(STORAGE_KEY);
+}
+
+// ============================================================
+// CREAR SALA
+// ============================================================
 $("#host-crear").onclick = async () => {
   const nombre = $("#host-nombre").value.trim();
   if (!nombre) return alert("Poné tu nombre");
 
+  // Generar nuevo miId solo al crear
+  state.miId = crypto.randomUUID();
   const codigo = generarCodigo();
   state.salaId = codigo;
   state.nombre = nombre;
@@ -47,11 +100,134 @@ $("#host-crear").onclick = async () => {
     }
   });
 
+  console.log("🏗️ Sala creada:", codigo, "| miId:", state.miId);
+  guardarSesion();
+  entrarAlPanel(codigo);
+};
+
+// ============================================================
+// RECONECTAR A SALA EXISTENTE
+// ============================================================
+async function reconectarSala(salaId, miId, nombre) {
+  const snap = await get(ref(db, `salas/${salaId}`));
+  if (!snap.exists()) {
+    alert("Esa sala ya no existe 😢");
+    borrarSesion();
+    return false;
+  }
+
+  const sala = snap.val();
+  state.salaId = salaId;
+  state.miId = miId;
+  state.nombre = nombre;
+
+  // Asegurar que el host figure en la sala
+  const jugadores = sala.jugadores || {};
+  if (!jugadores[miId]) {
+    await update(ref(db, `salas/${salaId}/jugadores/${miId}`), {
+      nombre: `${nombre} (host)`,
+      puntos: 0, aciertos: 0, total: 0, racha: 0, rachaMax: 0,
+      respuesta: null, respondio: false, ultimoDelta: 0, esHost: true
+    });
+  }
+
+  guardarSesion();
+  entrarAlPanel(salaId);
+  return true;
+}
+
+// ============================================================
+// UNIRSE COMO HOST A SALA EXISTENTE
+// ============================================================
+$("#host-join").onclick = async () => {
+  const nombre = $("#host-nombre").value.trim();
+  const codigo = $("#host-join-codigo").value.trim().toUpperCase();
+  if (!nombre) return alert("Poné tu nombre");
+  if (!codigo) return alert("Poné el código");
+
+  const snap = await get(ref(db, `salas/${codigo}`));
+  if (!snap.exists()) return alert("Esa sala no existe 😢");
+
+  state.miId = crypto.randomUUID();
+  await reconectarSala(codigo, state.miId, nombre);
+};
+
+// ============================================================
+// ENTRAR AL PANEL
+// ============================================================
+function entrarAlPanel(codigo) {
   mostrarPantalla("host-panel");
   $("#host-codigo").textContent = codigo;
   conectarSala();
+}
+
+// ============================================================
+// BOTONES DE RECONEXIÓN
+// ============================================================
+$("#host-reconectar").onclick = async () => {
+  const sesion = cargarSesion();
+  if (!sesion) return;
+  await reconectarSala(sesion.salaId, sesion.miId, sesion.nombre);
 };
 
+$("#host-olvidar").onclick = () => {
+  if (!confirm("¿Olvidar esta sala? Las preguntas seguirán en Firebase, pero no vas a poder reconectarte automáticamente.")) return;
+  borrarSesion();
+  $("#host-reconectar-box").style.display = "none";
+};
+
+// ============================================================
+// DETECCIÓN DE SESIÓN AL CARGAR
+// ============================================================
+async function chequearSesionPrevia() {
+  console.log("🔍 Buscando sesión previa...");
+
+  const sesion = cargarSesion();
+  if (!sesion) {
+    console.log("ℹ️ No hay sesión guardada en localStorage");
+    return;
+  }
+
+  console.log("📦 Sesión encontrada:", sesion);
+
+  try {
+    const snap = await get(ref(db, `salas/${sesion.salaId}`));
+    if (!snap.exists()) {
+      console.log("⚠️ La sala", sesion.salaId, "ya no existe en Firebase");
+      borrarSesion();
+      return;
+    }
+
+    const sala = snap.val();
+    const cantidadJugadores = Object.keys(sala.jugadores || {}).length;
+
+    console.log("✅ Sala válida:", sesion.salaId, "- Jugadores:", cantidadJugadores);
+
+    $("#host-reconectar-box").style.display = "block";
+    $("#host-reconectar-codigo").textContent = sesion.salaId;
+    $("#host-reconectar-jugadores").textContent =
+      cantidadJugadores === 1
+        ? `1 jugador · ${sala.estado}`
+        : `${cantidadJugadores} jugadores · ${sala.estado}`;
+
+    $("#host-nombre").value = sesion.nombre || "";
+
+    console.log("🎨 Cartel de reconexión mostrado");
+  } catch (err) {
+    console.error("❌ Error al chequear sesión:", err);
+  }
+}
+
+// Ejecutar después de que el DOM esté listo
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", chequearSesionPrevia);
+} else {
+  chequearSesionPrevia();
+}
+
+// ============================================================
+// GENERAR CÓDIGO
+// ============================================================
 function generarCodigo() {
   const letras = "ABCDEFGHJKLMNPQRSTUVWXYZ";
   let c = "";
@@ -59,7 +235,9 @@ function generarCodigo() {
   return c;
 }
 
-// ===== TABS =====
+// ============================================================
+// TABS
+// ============================================================
 $$(".tab").forEach(tab => {
   tab.onclick = () => {
     $$(".tab").forEach(t => t.classList.remove("activo"));
@@ -69,12 +247,16 @@ $$(".tab").forEach(tab => {
   };
 });
 
-// ===== ABRIR TV =====
+// ============================================================
+// ABRIR TV
+// ============================================================
 $("#btn-abrir-tv").onclick = () => {
   window.open(`tv.html?sala=${state.salaId}`, "_blank");
 };
 
-// ===== CARGAR EJEMPLOS =====
+// ============================================================
+// CARGAR EJEMPLOS
+// ============================================================
 $("#btn-cargar-ejemplos").onclick = async () => {
   if (!confirm("Esto va a reemplazar las preguntas actuales. ¿Seguir?")) return;
   const obj = {};
@@ -86,7 +268,9 @@ $("#btn-cargar-ejemplos").onclick = async () => {
   alert("Preguntas cargadas ✅");
 };
 
-// ===== AGREGAR PREGUNTA =====
+// ============================================================
+// AGREGAR PREGUNTA
+// ============================================================
 $("#form-pregunta").onsubmit = async (e) => {
   e.preventDefault();
 
@@ -110,7 +294,9 @@ $("#form-pregunta").onsubmit = async (e) => {
   $("#fp-pregunta").focus();
 };
 
-// ===== CONEXIÓN A SALA =====
+// ============================================================
+// CONEXIÓN A SALA
+// ============================================================
 function conectarSala() {
   onValue(ref(db, `salas/${state.salaId}`), (snap) => {
     const sala = snap.val();
@@ -128,19 +314,18 @@ function conectarSala() {
   });
 }
 
-// ===== AUTO-AVANCE Y CÁLCULO DE PUNTOS =====
+// ============================================================
+// AUTO-AVANCE Y CÁLCULO DE PUNTOS
+// ============================================================
 async function controlarAutoAvance(sala) {
   if (sala.estado !== "jugando") return;
   if (!sala._revealTick) return;
 
-  // ¿Ya calculamos los puntos de esta ronda?
   if (state.ultimaRondaRevelada === sala.preguntaActual) return;
   state.ultimaRondaRevelada = sala.preguntaActual;
 
-  // 1) Calcular puntos UNA SOLA VEZ
   await calcularPuntosRonda(sala);
 
-  // 2) Programar avance a la siguiente ronda
   clearTimeout(state.timerAvance);
   state.timerAvance = setTimeout(async () => {
     const s = (await get(ref(db, `salas/${state.salaId}`))).val();
@@ -160,9 +345,7 @@ async function controlarAutoAvance(sala) {
   }, TIEMPO_REVELADO * 1000);
 }
 
-// ===== CÁLCULO DE PUNTOS (única fuente de verdad) =====
 async function calcularPuntosRonda(sala) {
-  // Guard de idempotencia: si ya se calculó esta ronda, no hacerlo dos veces
   if (sala._rondaCalculada === true) {
     console.log("⚠️ Ronda ya calculada, saltando.");
     return;
@@ -176,7 +359,7 @@ async function calcularPuntosRonda(sala) {
   const updates = {};
 
   Object.entries(sala.jugadores).forEach(([id, j]) => {
-    if (j.esHost) return; // el host no juega
+    if (j.esHost) return;
 
     const acierto = j.respuesta === preg.correcta;
     const delta = acierto ? PUNTOS_POR_ACIERTO : 0;
@@ -194,14 +377,15 @@ async function calcularPuntosRonda(sala) {
     console.log(`  → ${j.nombre}: respuesta=${j.respuesta}, correcta=${preg.correcta}, acierto=${acierto}, delta=${delta}, total=${nuevosPuntos}`);
   });
 
-  // Marcar ronda como calculada
   updates[`salas/${state.salaId}/_rondaCalculada`] = true;
 
   await update(ref(db), updates);
   console.log("✅ Puntos guardados en Firebase");
 }
 
-// ===== DETECCIÓN "TODOS RESPONDIERON" =====
+// ============================================================
+// DETECCIÓN "TODOS RESPONDIERON"
+// ============================================================
 let unsubJugadores = null;
 function suscribirAutoRevelar() {
   if (unsubJugadores) unsubJugadores();
@@ -224,7 +408,9 @@ function suscribirAutoRevelar() {
   });
 }
 
-// ===== RENDER JUGADORES =====
+// ============================================================
+// RENDER JUGADORES
+// ============================================================
 function renderJugadores(jugadores, estado) {
   const lista = Object.entries(jugadores);
   const ul = $("#host-lista-jugadores");
@@ -249,7 +435,9 @@ function renderJugadores(jugadores, estado) {
   }
 }
 
-// ===== RENDER PREGUNTAS =====
+// ============================================================
+// RENDER PREGUNTAS
+// ============================================================
 function renderPreguntas(preguntas) {
   const ol = $("#host-lista-preguntas");
   if (preguntas.length === 0) {
@@ -272,7 +460,9 @@ function renderPreguntas(preguntas) {
   });
 }
 
-// ===== EMPEZAR =====
+// ============================================================
+// EMPEZAR
+// ============================================================
 $("#btn-empezar").onclick = async () => {
   const sala = (await get(ref(db, `salas/${state.salaId}`))).val();
   const ids = Object.keys(sala.preguntas || {});
@@ -296,7 +486,9 @@ $("#btn-empezar").onclick = async () => {
   suscribirAutoRevelar();
 };
 
-// ===== CONTROL =====
+// ============================================================
+// CONTROL
+// ============================================================
 function renderControl(sala) {
   const cont = $("#control-contenido");
   cont.innerHTML = "";
@@ -394,3 +586,14 @@ function renderControl(sala) {
     };
   }
 }
+
+// ============================================================
+// AVISO AL CERRAR CON PARTIDA ACTIVA
+// ============================================================
+window.addEventListener("beforeunload", (e) => {
+  if (state.salaId && state.preguntas.length > 0) {
+    guardarSesion();
+    e.preventDefault();
+    e.returnValue = "Si cerrás, los jugadores van a quedar esperando. ¿Seguro?";
+  }
+});
