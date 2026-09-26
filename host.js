@@ -161,6 +161,7 @@ $("#host-join").onclick = async () => {
 function entrarAlPanel(codigo) {
   mostrarPantalla("host-panel");
   $("#host-codigo").textContent = codigo;
+  state.salaId = codigo;      // ⬅️ IMPORTANTE: asegurar que state.salaId esté asignado
   conectarSala();
 }
 
@@ -253,7 +254,71 @@ $$(".tab").forEach(tab => {
 // ABRIR TV
 // ============================================================
 $("#btn-abrir-tv").onclick = () => {
-  window.open(`tv.html?sala=${state.salaId}`, "_blank");
+  // 1) Recuperar el salaId de donde sea posible
+  let salaId = state.salaId;
+
+  if (!salaId) {
+    const sesion = cargarSesion();
+    if (sesion && sesion.salaId) {
+      salaId = sesion.salaId;
+      state.salaId = salaId;
+    }
+  }
+
+  if (!salaId) {
+    const codigoHeader = $("#host-codigo")?.textContent?.trim();
+    if (codigoHeader) {
+      salaId = codigoHeader;
+      state.salaId = salaId;
+    }
+  }
+
+  if (!salaId) {
+    alert("⚠️ No hay sala activa. Creá una sala primero.");
+    return;
+  }
+
+  // 2) Construir URL absoluta correcta
+  const basePath = location.pathname.substring(0, location.pathname.lastIndexOf("/") + 1);
+  const url = `${location.origin}${basePath}tv.html?sala=${encodeURIComponent(salaId)}`;
+
+  console.log("📺 Abriendo TV:", url);
+
+  // 3) Abrir SIN await previo (evita el bloqueo del popup)
+  const win = window.open(url, "_blank");
+
+  // 4) Si el navegador lo bloqueó, mostrar fallback
+  if (!win || win.closed || typeof win.closed === "undefined") {
+    const cont = $("#control-contenido");
+    if (cont) {
+      const aviso = document.createElement("div");
+      aviso.style.cssText = `
+        background: rgba(233,69,96,.2);
+        border: 1px solid #e94560;
+        padding: 12px;
+        border-radius: 10px;
+        margin-top: 12px;
+        font-size: .9rem;
+      `;
+      aviso.innerHTML = `
+        ⚠️ El navegador bloqueó la ventana emergente.<br>
+        <a href="${url}" target="_blank" style="
+          color: #e94560;
+          font-weight: 700;
+          text-decoration: underline;
+          display: inline-block;
+          margin-top: 8px;
+        ">📺 Abrir Pantalla Grande manualmente</a>
+      `;
+      cont.querySelector(".aviso-popup")?.remove();
+      aviso.classList.add("aviso-popup");
+      cont.appendChild(aviso);
+    } else {
+      if (confirm("El navegador bloqueó la ventana. ¿Abrir la TV ahora?")) {
+        location.href = url;
+      }
+    }
+  }
 };
 
 // ============================================================
@@ -393,9 +458,8 @@ async function calcularPuntosRonda(sala) {
   const acertaron = [];
   const fallaron = [];
 
-  // Para las reacciones
-  const rachasNuevas = {};   // id → racha actualizada
-  const fallasNuevas = {};   // id → fallas seguidas actualizadas
+  const rachasNuevas = {};
+  const fallasNuevas = {};
 
   jugadoresReales.forEach(([id, j]) => {
     const acierto = j.respuesta === preg.correcta;
@@ -408,13 +472,13 @@ async function calcularPuntosRonda(sala) {
     rachasNuevas[id] = nuevaRacha;
     fallasNuevas[id] = nuevasFallas;
 
-    updates[`salas/${state.salaId}/jugadores/${id}/puntos`]        = nuevosPuntos;
-    updates[`salas/${state.salaId}/jugadores/${id}/aciertos`]      = (j.aciertos || 0) + (acierto ? 1 : 0);
-    updates[`salas/${state.salaId}/jugadores/${id}/total`]         = (j.total || 0) + 1;
-    updates[`salas/${state.salaId}/jugadores/${id}/racha`]         = nuevaRacha;
-    updates[`salas/${state.salaId}/jugadores/${id}/rachaMax`]      = Math.max(j.rachaMax || 0, nuevaRacha);
+    updates[`salas/${state.salaId}/jugadores/${id}/puntos`]         = nuevosPuntos;
+    updates[`salas/${state.salaId}/jugadores/${id}/aciertos`]       = (j.aciertos || 0) + (acierto ? 1 : 0);
+    updates[`salas/${state.salaId}/jugadores/${id}/total`]          = (j.total || 0) + 1;
+    updates[`salas/${state.salaId}/jugadores/${id}/racha`]          = nuevaRacha;
+    updates[`salas/${state.salaId}/jugadores/${id}/rachaMax`]       = Math.max(j.rachaMax || 0, nuevaRacha);
     updates[`salas/${state.salaId}/jugadores/${id}/fallasSeguidas`] = nuevasFallas;
-    updates[`salas/${state.salaId}/jugadores/${id}/ultimoDelta`]   = delta;
+    updates[`salas/${state.salaId}/jugadores/${id}/ultimoDelta`]    = delta;
 
     if (acierto) {
       aciertosRonda++;
@@ -473,7 +537,7 @@ async function calcularPuntosRonda(sala) {
     }
   }
 
-  // 2) 🔥 Rachas de 3 y 5 seguidas
+  // 2) 🔥 Rachas de 3 y 5
   jugadoresReales.forEach(([id, j]) => {
     const racha = rachasNuevas[id];
     if (racha === 3) {
@@ -523,7 +587,6 @@ async function calcularPuntosRonda(sala) {
     }
   });
 
-  // Guardar reacciones como un grupo único
   if (reacciones.length > 0) {
     const reaccionesRef = push(ref(db, `salas/${state.salaId}/_reacciones`));
     await set(reaccionesRef, reacciones);
@@ -624,12 +687,12 @@ $("#btn-empezar").onclick = async () => {
 
   const updates = {};
   Object.keys(sala.jugadores).forEach(id => {
-    updates[`salas/${state.salaId}/jugadores/${id}/respondio`]      = false;
-    updates[`salas/${state.salaId}/jugadores/${id}/respuesta`]      = null;
-    updates[`salas/${state.salaId}/jugadores/${id}/ultimoDelta`]    = 0;
-    updates[`salas/${state.salaId}/jugadores/${id}/tiempoRespuesta`]= null;
-    updates[`salas/${state.salaId}/jugadores/${id}/fallasSeguidas`] = 0;
-    updates[`salas/${state.salaId}/jugadores/${id}/racha`]          = 0;
+    updates[`salas/${state.salaId}/jugadores/${id}/respondio`]       = false;
+    updates[`salas/${state.salaId}/jugadores/${id}/respuesta`]       = null;
+    updates[`salas/${state.salaId}/jugadores/${id}/ultimoDelta`]     = 0;
+    updates[`salas/${state.salaId}/jugadores/${id}/tiempoRespuesta`] = null;
+    updates[`salas/${state.salaId}/jugadores/${id}/fallasSeguidas`]  = 0;
+    updates[`salas/${state.salaId}/jugadores/${id}/racha`]           = 0;
   });
   updates[`salas/${state.salaId}/estado`]          = "jugando";
   updates[`salas/${state.salaId}/preguntaActual`]  = 0;
