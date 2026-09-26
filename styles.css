@@ -1,0 +1,135 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  color: #fff;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+#app { width: 100%; max-width: 480px; }
+
+.pantalla { display: none; animation: fade .3s ease; }
+.pantalla.activa { display: block; }
+
+@keyframes fade {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+h1 { font-size: 1.6rem; margin-bottom: 20px; text-align: center; }
+h2 { font-size: 1.2rem; margin: 16px 0; }
+h3 { font-size: 1.15rem; margin-bottom: 16px; line-height: 1.4; }
+
+input {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: 2px solid rgba(255,255,255,.15);
+  background: rgba(255,255,255,.05);
+  color: #fff;
+  font-size: 1rem;
+  margin-bottom: 12px;
+}
+input:focus { outline: none; border-color: #e94560; }
+
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 14px 20px;
+  transition: transform .15s, filter .15s;
+  color: #fff;
+}
+button:active { transform: scale(.97); }
+button:disabled { opacity: .5; cursor: not-allowed; }
+
+.btn-primario { background: #e94560; width: 100%; }
+.btn-secundario { background: rgba(255,255,255,.12); }
+.btn-primario:hover:not(:disabled) { filter: brightness(1.15); }
+
+.row { display: flex; gap: 10px; }
+.row button { flex: 1; }
+
+.hint { text-align: center; opacity: .6; font-size: .85rem; margin-top: 12px; }
+code { background: rgba(255,255,255,.1); padding: 2px 6px; border-radius: 4px; font-size: .85em; }
+
+.sala-codigo {
+  text-align: center;
+  font-size: 1.1rem;
+  letter-spacing: 2px;
+  background: rgba(233,69,96,.15);
+  border: 1px dashed #e94560;
+  padding: 12px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+#lista-jugadores { list-style: none; background: rgba(255,255,255,.05); border-radius: 12px; padding: 8px; margin-bottom: 16px; }
+#lista-jugadores li { padding: 12px; border-bottom: 1px solid rgba(255,255,255,.08); display: flex; justify-content: space-between; }
+#lista-jugadores li:last-child { border-bottom: none; }
+.listo { color: #4ade80; }
+
+.header-juego {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 20px; font-weight: 600;
+}
+#timer {
+  background: #e94560;
+  width: 44px; height: 44px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem;
+}
+
+.opciones { display: grid; gap: 10px; }
+.opcion {
+  background: rgba(255,255,255,.08);
+  border: 2px solid transparent;
+  padding: 16px;
+  border-radius: 12px;
+  text-align: left;
+  font-size: 1rem;
+  color: #fff;
+}
+.opcion:hover:not(:disabled) { background: rgba(255,255,255,.15); }
+.opcion.elegida { background: #e94560; }
+.opcion.correcta { background: #16a34a; }
+.opcion.incorrecta { background: #991b1b; }
+
+.apuestas { display: grid; gap: 12px; }
+.apuesta { padding: 22px; font-size: 1.1rem; border-radius: 14px; color: #fff; }
+.apuesta.verde    { background: #16a34a; }
+.apuesta.amarillo { background: #ca8a04; }
+.apuesta.rojo     { background: #dc2626; }
+.apuesta.elegida  { outline: 3px solid #fff; }
+
+.explicacion {
+  background: rgba(233,69,96,.15);
+  border-left: 4px solid #e94560;
+  padding: 12px;
+  border-radius: 8px;
+  margin: 16px 0;
+  font-style: italic;
+}
+
+#resultados-jugadores { list-style: none; margin-top: 12px; }
+#resultados-jugadores li {
+  padding: 10px; border-radius: 8px; margin-bottom: 6px;
+  display: flex; justify-content: space-between;
+  background: rgba(255,255,255,.06);
+}
+.acierto { border-left: 4px solid #16a34a; }
+.fallo   { border-left: 4px solid #dc2626; }
+
+#podio { display: grid; gap: 12px; }
+.podio-item { background: rgba(255,255,255,.07); padding: 16px; border-radius: 12px; }
+.podio-item.primero { background: linear-gradient(135deg, #e94560, #f59e0b); transform: scale(1.02); }
+.podio-item h4 { font-size: 1.2rem; margin-bottom: 6px; }
+.podio-item .stats { font-size: .9rem; opacity: .9; }
+.podio-item .titulo { margin-top: 8px; font-weight: 600; font-style: italic; }
