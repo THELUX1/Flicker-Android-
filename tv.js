@@ -488,7 +488,7 @@ async function revelarEnTV(sala) {
   if (fallos.length > 0) {
     await pausa(800);
     play("risa");
-    const texto = fallos.length === 1 ? `¡${fallos[0].nombre} la erró!` : `¡${fallos.length} la erraron!`;
+    const texto = fallos.length === 1 ? `¡${fallos[0].nombre} falló!` : `¡${fallos.length} fallaron!`;
     const nombres = fallos.map(j => j.nombre).join(" · ");
     await mostrarCartel("😂", texto, nombres, "rojo", 4000);
   }
@@ -636,7 +636,7 @@ async function mostrarFinalTV(sala) {
     else if (memoria >= 60) { emoji = "🎯"; frase = "Amigo de confianza";        color = "amarillo"; sonido = "correcto"; }
     else if (memoria >= 40) { emoji = "🥲"; frase = "'Pensé que me conocías'";   color = "amarillo"; sonido = "tension"; }
     else if (memoria >= 20) { emoji = "🎲"; frase = "Le pegaste de casualidad";  color = "rojo";     sonido = "risa"; }
-    else                    { emoji = "💀"; frase = "¿Vos sos realmente su amigo?"; color = "rojo";  sonido = "risa"; }
+    else                    { emoji = "💀"; frase = "¿Es enserio?"; color = "rojo";  sonido = "risa"; }
 
     play(sonido);
 
@@ -685,5 +685,5 @@ async function mostrarFinalTV(sala) {
     await pausa(800);
   }
 
-  await mostrarCartel("🎉", "¡GRACIAS POR JUGAR!", "Revuelvan las respuestas 😏", "amarillo", 7000);
+  await mostrarCartel("🎉", "¡BUEN JUEGO!", "Hora de dar los premios", "amarillo", 7000);
 }
