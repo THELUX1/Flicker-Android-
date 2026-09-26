@@ -530,7 +530,7 @@ async function calcularPuntosRonda(sala) {
         tipo: "rapido",
         emoji: "⚡",
         texto: `${j.nombre} respondió en ${seg}s`,
-        sub: "¡Ese dedo vuela!",
+        sub: "¡Que velocidad!",
         color: "amarillo",
         sonido: "aplauso"
       });
@@ -545,7 +545,7 @@ async function calcularPuntosRonda(sala) {
         tipo: "racha3",
         emoji: "🔥",
         texto: `¡${j.nombre} lleva 3 seguidas!`,
-        sub: "Está on fire",
+        sub: "¿Que?",
         color: "verde",
         sonido: "aplauso"
       });
