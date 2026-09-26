@@ -400,5 +400,5 @@ function obtenerTitulo(memoria) {
   if (memoria >= 60) return "🎯 Amigo de confianza";
   if (memoria >= 40) return "🥲 'Pensé que me conocías'";
   if (memoria >= 20) return "🎲 Le pegaste de casualidad";
-  return "💀 ¿Vos sos realmente amigo?";
+  return "💀 ¿Es enserio?";
 }
