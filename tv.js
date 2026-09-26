@@ -9,7 +9,10 @@ const state = {
   respuestasVistas: new Set(),
   puntajesPrevios: {},
   rondaYaRevelada: false,
-  items: new Map()
+  items: new Map(),
+  // Nuevos: evitar repetir reacciones y chats
+  reaccionesVistas: new Set(),
+  chatsVistos: new Set()
 };
 
 // ===== SONIDOS PUNTUALES =====
@@ -20,7 +23,8 @@ const sonidos = {
   tension:     new Audio("sonidos/tension.mp3"),
   correcto:    new Audio("sonidos/correcto.mp3"),
   incorrecto:  new Audio("sonidos/incorrecto.mp3"),
-  fanfarria:   new Audio("sonidos/fanfarria.mp3")
+  fanfarria:   new Audio("sonidos/fanfarria.mp3"),
+  abucheo:     new Audio("sonidos/abucheo.mp3")
 };
 Object.values(sonidos).forEach(a => a.volume = 0.6);
 
@@ -126,6 +130,35 @@ const $ = (s) => document.querySelector(s);
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 const pausa = (ms) => new Promise(r => setTimeout(r, ms));
 
+// ============================================================
+// CARTELES FLOTANTES (reemplazan al ticker)
+// ============================================================
+function mostrarFlotante(emoji, texto, sub, color = "amarillo", duracion = 4500) {
+  const cont = document.getElementById("tv-flotantes");
+  if (!cont) return;
+
+  const el = document.createElement("div");
+  el.className = `cartel-flotante ${color}`;
+  el.innerHTML = `
+    <div class="flotante-emoji">${emoji}</div>
+    <div>
+      <div class="flotante-texto">${texto}</div>
+      ${sub ? `<div class="flotante-sub">${sub}</div>` : ""}
+    </div>
+  `;
+  cont.appendChild(el);
+
+  // Limitar a 5 carteles a la vez
+  while (cont.children.length > 5) {
+    cont.removeChild(cont.firstChild);
+  }
+
+  setTimeout(() => {
+    el.classList.add("saliendo");
+    setTimeout(() => el.remove(), 400);
+  }, duracion);
+}
+
 // ===== INGRESO =====
 const params = new URLSearchParams(location.search);
 const salaParam = params.get("sala");
@@ -150,8 +183,11 @@ $("#tv-entrar").onclick = () => {
   conectar();
 };
 
-// ===== CONEXIÓN =====
+// ============================================================
+// CONEXIÓN A SALA
+// ============================================================
 function conectar() {
+  // Estado principal de la sala
   onValue(ref(db, `salas/${state.salaId}`), async (snap) => {
     const sala = snap.val();
     if (!sala) return;
@@ -181,9 +217,45 @@ function conectar() {
       revelarEnTV(sala);
     }
   });
+
+  // ===== REACCIONES AUTOMÁTICAS =====
+  onValue(ref(db, `salas/${state.salaId}/_reacciones`), (snap) => {
+    const grupos = snap.val();
+    if (!grupos) return;
+
+    Object.entries(grupos).forEach(([key, reacciones]) => {
+      if (state.reaccionesVistas.has(key)) return;
+      state.reaccionesVistas.add(key);
+
+      const lista = Array.isArray(reacciones) ? reacciones : Object.values(reacciones);
+
+      lista.forEach((r, i) => {
+        setTimeout(() => {
+          mostrarFlotante(r.emoji, r.texto, r.sub, r.color, 4500);
+          if (r.sonido) play(r.sonido);
+        }, i * 1200);
+      });
+    });
+  });
+
+  // ===== CHAT =====
+  onValue(ref(db, `salas/${state.salaId}/_chat`), (snap) => {
+    const mensajes = snap.val();
+    if (!mensajes) return;
+
+    Object.entries(mensajes).forEach(([key, msg]) => {
+      if (state.chatsVistos.has(key)) return;
+      state.chatsVistos.add(key);
+
+      mostrarFlotante("💬", `${msg.nombre}: ${msg.texto}`, "", "chat", 5000);
+      play("timbre");
+    });
+  });
 }
 
-// ===== RANKING =====
+// ============================================================
+// RANKING EN VIVO
+// ============================================================
 function renderRanking(sala) {
   const jugadores = Object.entries(sala.jugadores || {}).map(([id, j]) => ({ id, ...j }));
   const ordenados = jugadores.sort((a, b) => (b.puntos || 0) - (a.puntos || 0));
@@ -198,6 +270,7 @@ function renderRanking(sala) {
       li.className = "rank-item";
       li.innerHTML = `
         <span class="rank-pos"></span>
+        <span class="rank-avatar"></span>
         <span class="rank-nombre"></span>
         <span class="rank-puntos"></span>
         <div class="rank-bar"><div class="rank-bar-fill"></div></div>
@@ -215,6 +288,16 @@ function renderRanking(sala) {
     li.querySelector(".rank-nombre").textContent = j.nombre;
     li.querySelector(".rank-puntos").textContent = `${j.puntos || 0} pts`;
     li.querySelector(".rank-bar-fill").style.width = `${((j.puntos || 0) / max) * 100}%`;
+
+    // Avatar (si tiene fotoUrl, sino emoji)
+    const avatarEl = li.querySelector(".rank-avatar");
+    const urlFoto = j.fotoUrl || "";
+    if (avatarEl.dataset.url !== urlFoto) {
+      avatarEl.dataset.url = urlFoto;
+      avatarEl.innerHTML = urlFoto
+        ? `<img src="${urlFoto}" alt="${j.nombre}" />`
+        : `<span>👤</span>`;
+    }
   });
 
   const idsActuales = new Set(ordenados.map(j => j.id));
@@ -224,7 +307,9 @@ function renderRanking(sala) {
   ordenados.forEach(j => ul.appendChild(state.items.get(j.id)));
 }
 
-// ===== ESTADOS =====
+// ============================================================
+// ESTADOS
+// ============================================================
 function manejarEstado(sala) {
   if (sala.estado === "lobby") {
     $("#tv-estado").textContent = "🛋️ En el lobby";
@@ -243,15 +328,19 @@ function manejarEstado(sala) {
   }
 }
 
-// ===== PREGUNTA =====
+// ============================================================
+// PREGUNTA ACTUAL
+// ============================================================
 function mostrarPregunta(sala) {
   const preg = sala.preguntas[sala.orden[sala.preguntaActual]];
   if (!preg) return;
   $("#tv-texto-pregunta").textContent = preg.pregunta;
-  $("#tv-ticker-texto").textContent = `📢 Pregunta ${sala.preguntaActual + 1} de ${sala.orden.length}`;
+  mostrarFlotante("📢", `Pregunta ${sala.preguntaActual + 1}/${sala.orden.length}`, "", "amarillo", 3500);
 }
 
-// ===== TIMER VISUAL =====
+// ============================================================
+// TIMER VISUAL
+// ============================================================
 let tvTimerInterval = null;
 function iniciarTensionTimer(sala) {
   clearInterval(tvTimerInterval);
@@ -270,25 +359,29 @@ function iniciarTensionTimer(sala) {
   }, 1000);
 }
 
-// ===== DETECTAR RESPUESTAS =====
+// ============================================================
+// DETECTAR RESPUESTAS
+// ============================================================
 function detectarRespuestas(sala) {
   Object.entries(sala.jugadores || {}).forEach(([id, j]) => {
     if (j.esHost) return;
     const key = `${id}-${sala.preguntaActual}`;
     if (j.respondio === true && !state.respuestasVistas.has(key)) {
       state.respuestasVistas.add(key);
-      $("#tv-ticker-texto").textContent = `✍️ ${j.nombre} ya respondió…`;
+      mostrarFlotante("✍️", `${j.nombre} ya respondió`, "", "amarillo", 2500);
 
       const ids = Object.keys(sala.jugadores).filter(i => !sala.jugadores[i].esHost);
       const respondidos = ids.filter(i => sala.jugadores[i].respondio === true).length;
       if (respondidos === ids.length && ids.length > 0) {
-        $("#tv-ticker-texto").textContent = `🔥 ¡TODOS RESPONDIERON! Revelando…`;
+        mostrarFlotante("🔥", "¡TODOS RESPONDIERON!", "Revelando...", "verde", 3000);
       }
     }
   });
 }
 
-// ===== REVELAR EN TV =====
+// ============================================================
+// REVELAR EN TV
+// ============================================================
 async function revelarEnTV(sala) {
   const preg = sala.preguntas[sala.orden[sala.preguntaActual]];
   if (!preg) return;
@@ -335,6 +428,7 @@ async function revelarEnTV(sala) {
   await pausa(800);
   await sleep(400);
 
+  // Frase final con el que va mejor (usando flotante en vez de ticker)
   const salaActualizada = await new Promise((resolve) => {
     const unsub = onValue(ref(db, `salas/${state.salaId}`), (s) => {
       resolve(s.val());
@@ -350,15 +444,17 @@ async function revelarEnTV(sala) {
     const mem = Math.round((mejor.aciertos / mejor.total) * 100);
     if (mem >= 70) {
       play("aplauso");
-      $("#tv-ticker-texto").textContent = `👀 ${mejor.nombre} viene acertando el ${mem}%... ¿sospechoso?`;
+      mostrarFlotante("👀", `${mejor.nombre} viene acertando el ${mem}%`, "¿Sospechoso?", "amarillo", 4500);
     } else if (mem <= 30) {
       play("risa");
-      $("#tv-ticker-texto").textContent = `💀 ${mejor.nombre} viene acertando el ${mem}%... ¿amigo o conocido?`;
+      mostrarFlotante("💀", `${mejor.nombre} viene acertando el ${mem}%`, "¿Amigo o conocido?", "rojo", 4500);
     }
   }
 }
 
-// ===== CARTEL GIGANTE =====
+// ============================================================
+// CARTEL GIGANTE
+// ============================================================
 function ajustarTextoCartel(texto) {
   const el = document.getElementById("tv-cartel-texto");
   if (!el) return;
@@ -372,7 +468,7 @@ function ajustarTextoCartel(texto) {
 async function mostrarCartel(emoji, texto, sub, color, dur) {
   const cartel = $("#tv-cartel");
 
-  // Asegurar que la estructura esté intacta
+  // Reparar estructura si fue modificada
   if (!document.getElementById("tv-cartel-emoji")) {
     cartel.innerHTML = `
       <div class="tv-cartel-emoji" id="tv-cartel-emoji"></div>
@@ -400,7 +496,9 @@ async function mostrarCartel(emoji, texto, sub, color, dur) {
   await sleep(300);
 }
 
-// ===== ESTADÍSTICAS FINALES =====
+// ============================================================
+// ESTADÍSTICAS FINALES
+// ============================================================
 async function mostrarEstadisticasTV(sala) {
   const stats = sala._estadisticas || {};
   const lista = Object.values(stats).filter(Boolean);
@@ -493,47 +591,9 @@ async function mostrarEstadisticasTV(sala) {
   );
 }
 
-// ===== FOTO GRUPAL CON QR =====
-async function mostrarFotoQR(sala) {
-  const urlFoto = sala.ajustes?.urlFoto;
-  if (!urlFoto) return;
-
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=600x600&margin=10&data=${encodeURIComponent(urlFoto)}`;
-
-  const cartel = $("#tv-cartel");
-
-  cartel.innerHTML = `
-    <div style="font-size: clamp(3rem, 8vmin, 7rem); line-height: 1; margin-bottom: 20px;">📸</div>
-    <div style="font-size: clamp(1.8rem, 4vmin, 3.5rem); font-weight: 900; margin-bottom: 20px;">
-      ¡SÁQUENSE UNA FOTO!
-    </div>
-    <img src="${qrUrl}" alt="QR Foto" style="
-      width: clamp(240px, 40vmin, 500px);
-      height: clamp(240px, 40vmin, 500px);
-      background: #fff;
-      padding: 16px;
-      border-radius: 20px;
-      box-shadow: 0 20px 60px rgba(0,0,0,.5);
-    " />
-    <div style="font-size: clamp(.9rem, 1.8vmin, 1.4rem); opacity: .7; margin-top: 24px; max-width: 90vw; word-break: break-all;">
-      ${urlFoto}
-    </div>
-  `;
-
-  cartel.classList.add("visible");
-  play("aplauso");
-  await sleep(12000);
-  cartel.classList.remove("visible");
-
-  // Restaurar estructura original
-  cartel.innerHTML = `
-    <div class="tv-cartel-emoji" id="tv-cartel-emoji"></div>
-    <div class="tv-cartel-texto" id="tv-cartel-texto"></div>
-    <div class="tv-cartel-sub" id="tv-cartel-sub"></div>
-  `;
-}
-
-// ===== FINAL =====
+// ============================================================
+// FINAL
+// ============================================================
 async function mostrarFinalTV(sala) {
   clearInterval(tvTimerInterval);
   play("fanfarria");
@@ -541,11 +601,11 @@ async function mostrarFinalTV(sala) {
   const ganador = jugadores[0];
   if (!ganador) return;
 
-  // 1) Ganador
+  // 1) Cartel del ganador
   await mostrarCartel("🏆", `${ganador.nombre} GANA`, `${ganador.puntos} puntos`, "amarillo", 6000);
   await pausa(1200);
 
-  // 2) Cada jugador con su título
+  // 2) Recorrer a cada jugador con su título (con foto si tiene)
   for (let i = 0; i < jugadores.length; i++) {
     const j = jugadores[i];
     const memoria = j.total ? Math.round((j.aciertos / j.total) * 100) : 0;
@@ -559,7 +619,41 @@ async function mostrarFinalTV(sala) {
     else                    { emoji = "💀"; frase = "¿Vos sos realmente su amigo?"; color = "rojo";  sonido = "risa"; }
 
     play(sonido);
-    await mostrarCartel(emoji, j.nombre, `${j.puntos} pts · ${memoria}% de memoria · "${frase}"`, color, 6000);
+
+    // Si tiene foto, mostrar cartel con foto grande
+    if (j.fotoUrl) {
+      const cartel = $("#tv-cartel");
+      const colorBorde = color === "verde" ? "#16a34a" : color === "rojo" ? "#dc2626" : "#facc15";
+
+      cartel.innerHTML = `
+        <img src="${j.fotoUrl}" style="
+          width: clamp(120px, 18vmin, 200px);
+          height: clamp(120px, 18vmin, 200px);
+          border-radius: 50%;
+          object-fit: cover;
+          border: 5px solid ${colorBorde};
+          box-shadow: 0 15px 50px rgba(0,0,0,.6);
+          margin-bottom: 24px;
+        " />
+        <div class="tv-cartel-texto ${color}">${j.nombre}</div>
+        <div class="tv-cartel-sub">${j.puntos} pts · ${memoria}% de memoria</div>
+        <div class="tv-cartel-sub" style="margin-top: 8px; font-style: italic;">"${frase}"</div>
+      `;
+      cartel.classList.add("visible");
+      await sleep(6000);
+      cartel.classList.remove("visible");
+      await sleep(300);
+
+      // Restaurar estructura
+      cartel.innerHTML = `
+        <div class="tv-cartel-emoji" id="tv-cartel-emoji"></div>
+        <div class="tv-cartel-texto" id="tv-cartel-texto"></div>
+        <div class="tv-cartel-sub" id="tv-cartel-sub"></div>
+      `;
+    } else {
+      // Sin foto → cartel normal con emoji
+      await mostrarCartel(emoji, j.nombre, `${j.puntos} pts · ${memoria}% de memoria · "${frase}"`, color, 6000);
+    }
 
     if (i < jugadores.length - 1) await pausa(1000);
   }
@@ -570,19 +664,13 @@ async function mostrarFinalTV(sala) {
   await mostrarEstadisticasTV(sala);
   await pausa(1200);
 
-  // 4) Mensaje personalizado
+  // 4) Mensaje personalizado (si existe)
   if (sala.ajustes?.mensaje) {
     play("aplauso");
     await mostrarCartel("💬", "Un mensaje...", `"${sala.ajustes.mensaje}"`, "amarillo", 6000);
     await pausa(800);
   }
 
-  // 5) Foto grupal con QR
-  if (sala.ajustes?.urlFoto) {
-    await mostrarFotoQR(sala);
-    await pausa(800);
-  }
-
-  // 6) Cierre
-  await mostrarCartel("🎉", "Bien jugado", "amarillo", 7000);
+  // 5) Cierre
+  await mostrarCartel("🎉", "¡GRACIAS POR JUGAR!", "Revuelvan las respuestas 😏", "amarillo", 7000);
 }

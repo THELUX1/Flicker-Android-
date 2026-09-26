@@ -173,3 +173,52 @@ code { background: rgba(255,255,255,.1); padding: 2px 6px; border-radius: 4px; f
 .btn-salir-sala:hover {
   background: rgba(220,38,38,.3);
 }
+/* ===== CHAT ===== */
+.chat-jugador {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 10px 12px;
+  background: rgba(0,0,0,.7);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255,255,255,.1);
+  display: flex;
+  gap: 8px;
+  z-index: 50;
+}
+
+#chat-input {
+  flex: 1;
+  padding: 12px 14px;
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,.15);
+  background: rgba(255,255,255,.08);
+  color: #fff;
+  font-size: .95rem;
+  margin-bottom: 0;
+  outline: none;
+}
+#chat-input:focus { border-color: #e94560; }
+
+.chat-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #e94560;
+  color: #fff;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.chat-btn:active { transform: scale(.95); }
+
+/* Agregar padding-bottom a las pantallas para que no tape el chat */
+#pantalla-juego {
+  padding-bottom: 76px;
+}

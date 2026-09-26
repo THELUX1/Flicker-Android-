@@ -355,25 +355,77 @@ body.tv-body {
 /* ============================================================
    TICKER INFERIOR
    ============================================================ */
-.tv-ticker {
-  background: rgba(233,69,96,.15);
-  border-top: 2px solid var(--acento);
-  padding: var(--sp-sm) var(--sp-lg);
-  font-size: var(--fs-sm);
-  font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+/* ===== CARTELES FLOTANTES ===== */
+.tv-flotantes {
+  position: fixed;
+  top: 20%;
+  left: 20px;
+  width: min(420px, 40vw);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 80;
+  pointer-events: none;
+}
+
+.cartel-flotante {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(0,0,0,.85);
+  backdrop-filter: blur(12px);
+  padding: 14px 18px;
+  border-radius: 16px;
+  border-left: 5px solid #e94560;
+  box-shadow: 0 10px 40px rgba(0,0,0,.5);
+  animation: entrarFlotante .4s ease forwards;
+  font-family: inherit;
+}
+
+.cartel-flotante.saliendo {
+  animation: salirFlotante .4s ease forwards;
+}
+
+@keyframes entrarFlotante {
+  from { transform: translateX(-120%); opacity: 0; }
+  to   { transform: translateX(0);      opacity: 1; }
+}
+
+@keyframes salirFlotante {
+  from { transform: translateX(0);      opacity: 1; }
+  to   { transform: translateX(-120%); opacity: 0; }
+}
+
+.cartel-flotante.verde    { border-left-color: #16a34a; }
+.cartel-flotante.rojo     { border-left-color: #dc2626; }
+.cartel-flotante.amarillo { border-left-color: #facc15; }
+.cartel-flotante.chat     { border-left-color: #3b82f6; background: rgba(30,58,138,.85); }
+
+.flotante-emoji {
+  font-size: clamp(1.6rem, 3vmin, 2.4rem);
+  line-height: 1;
   flex-shrink: 0;
 }
-#tv-ticker-texto {
-  display: inline-block;
-  animation: deslizar 14s linear infinite;
-  will-change: transform;
+
+.flotante-texto {
+  font-size: clamp(1rem, 1.8vmin, 1.4rem);
+  font-weight: 700;
+  line-height: 1.2;
 }
-@keyframes deslizar {
-  0%   { transform: translateX(100%); }
-  100% { transform: translateX(-100%); }
+
+.flotante-sub {
+  font-size: clamp(.75rem, 1.3vmin, 1rem);
+  opacity: .7;
+  margin-top: 2px;
+}
+
+/* En pantallas pequeñas, reducir ancho */
+@media (max-width: 720px) {
+  .tv-flotantes {
+    width: calc(100vw - 40px);
+    left: 20px;
+    top: 15%;
+  }
 }
 
 /* ============================================================

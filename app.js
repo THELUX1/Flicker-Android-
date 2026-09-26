@@ -1,6 +1,6 @@
 import { db } from "./firebase-config.js";
 import {
-  ref, set, get, update, onValue, serverTimestamp
+  ref, set, get, update, onValue, push, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { TIEMPO_RESPUESTA } from "./preguntas.js";
 
@@ -259,6 +259,7 @@ async function entrarARonda(sala) {
   state.preguntaActualIdx = sala.preguntaActual;
   state.respuestaActual = null;
   state.yaRevelado = false;
+  state.tiempoInicioRonda = Date.now(); // ⬅️ NUEVO
 
   const preg = sala.preguntas[sala.orden[sala.preguntaActual]];
   if (!preg) return;
@@ -285,9 +286,7 @@ async function entrarARonda(sala) {
   });
 
   iniciarTimer(TIEMPO_RESPUESTA, () => {
-    if (state.respuestaActual === null) {
-      responder(-1);
-    }
+    if (state.respuestaActual === null) responder(-1);
   });
 }
 
@@ -316,6 +315,8 @@ async function responder(indice) {
   if (state.respuestaActual !== null) return;
   state.respuestaActual = indice;
 
+  const tiempoRespuesta = Date.now() - (state.tiempoInicioRonda || Date.now());
+
   $$(".opcion").forEach((b, i) => {
     b.disabled = true;
     if (i === indice) b.classList.add("elegida");
@@ -323,7 +324,8 @@ async function responder(indice) {
 
   await update(ref(db, `salas/${state.salaId}/jugadores/${state.miId}`), {
     respuesta: indice === -1 ? null : indice,
-    respondio: true
+    respondio: true,
+    tiempoRespuesta: indice === -1 ? null : tiempoRespuesta // ⬅️ NUEVO
   });
 
   $("#timer").textContent = "✓";
@@ -402,3 +404,27 @@ function obtenerTitulo(memoria) {
   if (memoria >= 20) return "🎲 Le pegaste de casualidad";
   return "💀 ¿Es enserio?";
 }
+// ============================================================
+// CHAT
+// ============================================================
+async function enviarMensaje() {
+  const input = $("#chat-input");
+  const texto = input.value.trim();
+  if (!texto) return;
+
+  await push(ref(db, `salas/${state.salaId}/_chat`), {
+    nombre: state.nombre,
+    texto,
+    ts: Date.now()
+  });
+
+  input.value = "";
+}
+
+$("#chat-enviar").onclick = enviarMensaje;
+$("#chat-input").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    enviarMensaje();
+  }
+});

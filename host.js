@@ -87,14 +87,17 @@ $("#host-crear").onclick = async () => {
     preguntaActual: -1,
     orden: [],
     preguntas: {},
-    ajustes: { urlFoto: "", mensaje: "" },
+    ajustes: { nombreCumple: "", cloudinaryFolder: "" },
     _revealTick: 0,
     _rondaCalculada: false,
     _estadisticas: null,
+    _chat: null,
+    _reacciones: null,
     jugadores: {
       [state.miId]: {
         nombre: `${nombre} (host)`,
         puntos: 0, aciertos: 0, total: 0, racha: 0, rachaMax: 0,
+        fallasSeguidas: 0,
         respuesta: null, respondio: false, ultimoDelta: 0, esHost: true
       }
     }
@@ -126,6 +129,7 @@ async function reconectarSala(salaId, miId, nombre) {
     await update(ref(db, `salas/${salaId}/jugadores/${miId}`), {
       nombre: `${nombre} (host)`,
       puntos: 0, aciertos: 0, total: 0, racha: 0, rachaMax: 0,
+      fallasSeguidas: 0,
       respuesta: null, respondio: false, ultimoDelta: 0, esHost: true
     });
   }
@@ -293,30 +297,30 @@ $("#form-pregunta").onsubmit = async (e) => {
 };
 
 // ============================================================
-// AJUSTES (foto grupal, mensaje)
+// AJUSTES
 // ============================================================
 function cargarAjustesEnFormulario(sala) {
   const ajustes = sala.ajustes || {};
-  const inputFoto = $("#ajuste-url-foto");
-  const inputMsg = $("#ajuste-mensaje");
-  if (inputFoto && document.activeElement !== inputFoto) {
-    inputFoto.value = ajustes.urlFoto || "";
+  const inputNombre = $("#ajuste-nombre-cumple");
+  const inputFolder = $("#ajuste-cloudinary-folder");
+  if (inputNombre && document.activeElement !== inputNombre) {
+    inputNombre.value = ajustes.nombreCumple || "";
   }
-  if (inputMsg && document.activeElement !== inputMsg) {
-    inputMsg.value = ajustes.mensaje || "";
+  if (inputFolder && document.activeElement !== inputFolder) {
+    inputFolder.value = ajustes.cloudinaryFolder || "";
   }
 }
 
-$("#btn-guardar-ajustes").onclick = async () => {
-  const urlFoto = $("#ajuste-url-foto").value.trim();
-  const mensaje = $("#ajuste-mensaje").value.trim();
+$("#btn-guardar-ajustes") && ($("#btn-guardar-ajustes").onclick = async () => {
+  const nombreCumple = $("#ajuste-nombre-cumple")?.value.trim() || "";
+  const folder = $("#ajuste-cloudinary-folder")?.value.trim() || "";
 
   await update(ref(db, `salas/${state.salaId}`), {
-    ajustes: { urlFoto, mensaje }
+    ajustes: { nombreCumple, cloudinaryFolder: folder }
   });
 
   alert("Ajustes guardados ✅");
-};
+});
 
 // ============================================================
 // CONEXIÓN A SALA
@@ -389,19 +393,28 @@ async function calcularPuntosRonda(sala) {
   const acertaron = [];
   const fallaron = [];
 
+  // Para las reacciones
+  const rachasNuevas = {};   // id → racha actualizada
+  const fallasNuevas = {};   // id → fallas seguidas actualizadas
+
   jugadoresReales.forEach(([id, j]) => {
     const acierto = j.respuesta === preg.correcta;
     const delta = acierto ? PUNTOS_POR_ACIERTO : 0;
 
     const nuevosPuntos = (j.puntos || 0) + delta;
     const nuevaRacha = acierto ? (j.racha || 0) + 1 : 0;
+    const nuevasFallas = acierto ? 0 : (j.fallasSeguidas || 0) + 1;
 
-    updates[`salas/${state.salaId}/jugadores/${id}/puntos`]      = nuevosPuntos;
-    updates[`salas/${state.salaId}/jugadores/${id}/aciertos`]    = (j.aciertos || 0) + (acierto ? 1 : 0);
-    updates[`salas/${state.salaId}/jugadores/${id}/total`]       = (j.total || 0) + 1;
-    updates[`salas/${state.salaId}/jugadores/${id}/racha`]       = nuevaRacha;
-    updates[`salas/${state.salaId}/jugadores/${id}/rachaMax`]    = Math.max(j.rachaMax || 0, nuevaRacha);
-    updates[`salas/${state.salaId}/jugadores/${id}/ultimoDelta`] = delta;
+    rachasNuevas[id] = nuevaRacha;
+    fallasNuevas[id] = nuevasFallas;
+
+    updates[`salas/${state.salaId}/jugadores/${id}/puntos`]        = nuevosPuntos;
+    updates[`salas/${state.salaId}/jugadores/${id}/aciertos`]      = (j.aciertos || 0) + (acierto ? 1 : 0);
+    updates[`salas/${state.salaId}/jugadores/${id}/total`]         = (j.total || 0) + 1;
+    updates[`salas/${state.salaId}/jugadores/${id}/racha`]         = nuevaRacha;
+    updates[`salas/${state.salaId}/jugadores/${id}/rachaMax`]      = Math.max(j.rachaMax || 0, nuevaRacha);
+    updates[`salas/${state.salaId}/jugadores/${id}/fallasSeguidas`] = nuevasFallas;
+    updates[`salas/${state.salaId}/jugadores/${id}/ultimoDelta`]   = delta;
 
     if (acierto) {
       aciertosRonda++;
@@ -412,7 +425,7 @@ async function calcularPuntosRonda(sala) {
     }
   });
 
-  // ===== GUARDAR ESTADÍSTICAS DE LA RONDA =====
+  // ===== ESTADÍSTICAS DE LA RONDA =====
   const totalJugadores = jugadoresReales.length;
   const porcentajeAciertos = totalJugadores > 0
     ? Math.round((aciertosRonda / totalJugadores) * 100)
@@ -434,10 +447,94 @@ async function calcularPuntosRonda(sala) {
   };
 
   updates[`salas/${state.salaId}/_estadisticas/${sala.preguntaActual}`] = estadisticaRonda;
+
+  // ============================================================
+  // 🎯 REACCIONES AUTOMÁTICAS
+  // ============================================================
+  const reacciones = [];
+
+  // 1) ⚡ El más rápido
+  const respondidos = jugadoresReales
+    .filter(([_, j]) => j.respondio && j.tiempoRespuesta)
+    .sort((a, b) => a[1].tiempoRespuesta - b[1].tiempoRespuesta);
+
+  if (respondidos.length > 0) {
+    const [_, j] = respondidos[0];
+    const seg = Math.round(j.tiempoRespuesta / 1000);
+    if (seg <= 6) {
+      reacciones.push({
+        tipo: "rapido",
+        emoji: "⚡",
+        texto: `${j.nombre} respondió en ${seg}s`,
+        sub: "¡Ese dedo vuela!",
+        color: "amarillo",
+        sonido: "aplauso"
+      });
+    }
+  }
+
+  // 2) 🔥 Rachas de 3 y 5 seguidas
+  jugadoresReales.forEach(([id, j]) => {
+    const racha = rachasNuevas[id];
+    if (racha === 3) {
+      reacciones.push({
+        tipo: "racha3",
+        emoji: "🔥",
+        texto: `¡${j.nombre} lleva 3 seguidas!`,
+        sub: "Está on fire",
+        color: "verde",
+        sonido: "aplauso"
+      });
+    }
+    if (racha === 5) {
+      reacciones.push({
+        tipo: "racha5",
+        emoji: "🚀",
+        texto: `¡${j.nombre} lleva 5 SEGUIDAS!`,
+        sub: "¿Está haciendo trampa?",
+        color: "verde",
+        sonido: "fanfarria"
+      });
+    }
+  });
+
+  // 3) 💀 Fallas seguidas → abucheo
+  jugadoresReales.forEach(([id, j]) => {
+    const fallas = fallasNuevas[id];
+    if (fallas === 2) {
+      reacciones.push({
+        tipo: "falla2",
+        emoji: "😬",
+        texto: `${j.nombre} lleva 2 falladas...`,
+        sub: "¡Uh, se está complicando!",
+        color: "rojo",
+        sonido: "abucheo"
+      });
+    }
+    if (fallas === 3) {
+      reacciones.push({
+        tipo: "falla3",
+        emoji: "💀",
+        texto: `¡${j.nombre} lleva 3 falladas!`,
+        sub: "Se está yendo al descenso",
+        color: "rojo",
+        sonido: "abucheo"
+      });
+    }
+  });
+
+  // Guardar reacciones como un grupo único
+  if (reacciones.length > 0) {
+    const reaccionesRef = push(ref(db, `salas/${state.salaId}/_reacciones`));
+    await set(reaccionesRef, reacciones);
+    console.log("🎬 Reacciones generadas:", reacciones.length);
+  }
+
+  // ===== GUARDAR =====
   updates[`salas/${state.salaId}/_rondaCalculada`] = true;
 
   await update(ref(db), updates);
-  console.log("✅ Puntos y estadísticas guardados");
+  console.log("✅ Puntos, estadísticas y reacciones guardados");
 }
 
 // ============================================================
@@ -527,9 +624,12 @@ $("#btn-empezar").onclick = async () => {
 
   const updates = {};
   Object.keys(sala.jugadores).forEach(id => {
-    updates[`salas/${state.salaId}/jugadores/${id}/respondio`]   = false;
-    updates[`salas/${state.salaId}/jugadores/${id}/respuesta`]   = null;
-    updates[`salas/${state.salaId}/jugadores/${id}/ultimoDelta`] = 0;
+    updates[`salas/${state.salaId}/jugadores/${id}/respondio`]      = false;
+    updates[`salas/${state.salaId}/jugadores/${id}/respuesta`]      = null;
+    updates[`salas/${state.salaId}/jugadores/${id}/ultimoDelta`]    = 0;
+    updates[`salas/${state.salaId}/jugadores/${id}/tiempoRespuesta`]= null;
+    updates[`salas/${state.salaId}/jugadores/${id}/fallasSeguidas`] = 0;
+    updates[`salas/${state.salaId}/jugadores/${id}/racha`]          = 0;
   });
   updates[`salas/${state.salaId}/estado`]          = "jugando";
   updates[`salas/${state.salaId}/preguntaActual`]  = 0;
@@ -537,6 +637,8 @@ $("#btn-empezar").onclick = async () => {
   updates[`salas/${state.salaId}/_revealTick`]     = 0;
   updates[`salas/${state.salaId}/_rondaCalculada`] = false;
   updates[`salas/${state.salaId}/_estadisticas`]   = null;
+  updates[`salas/${state.salaId}/_chat`]           = null;
+  updates[`salas/${state.salaId}/_reacciones`]     = null;
 
   state.ultimaRondaRevelada = -1;
   await update(ref(db), updates);
@@ -639,17 +741,20 @@ function renderControl(sala) {
         preguntaActual: -1,
         _revealTick: 0,
         _rondaCalculada: false,
-        _estadisticas: null
+        _estadisticas: null,
+        _chat: null,
+        _reacciones: null
       };
       Object.keys(s.jugadores).forEach(id => {
-        updates[`jugadores/${id}/puntos`]      = 0;
-        updates[`jugadores/${id}/aciertos`]    = 0;
-        updates[`jugadores/${id}/total`]       = 0;
-        updates[`jugadores/${id}/racha`]       = 0;
-        updates[`jugadores/${id}/rachaMax`]    = 0;
-        updates[`jugadores/${id}/respuesta`]   = null;
-        updates[`jugadores/${id}/respondio`]   = false;
-        updates[`jugadores/${id}/ultimoDelta`] = 0;
+        updates[`jugadores/${id}/puntos`]         = 0;
+        updates[`jugadores/${id}/aciertos`]       = 0;
+        updates[`jugadores/${id}/total`]          = 0;
+        updates[`jugadores/${id}/racha`]          = 0;
+        updates[`jugadores/${id}/rachaMax`]       = 0;
+        updates[`jugadores/${id}/fallasSeguidas`] = 0;
+        updates[`jugadores/${id}/respuesta`]      = null;
+        updates[`jugadores/${id}/respondio`]      = false;
+        updates[`jugadores/${id}/ultimoDelta`]    = 0;
       });
       await update(ref(db, `salas/${state.salaId}`), updates);
     };
@@ -657,7 +762,7 @@ function renderControl(sala) {
 }
 
 // ============================================================
-// AVISO AL CERRAR CON PARTIDA ACTIVA
+// AVISO AL CERRAR
 // ============================================================
 window.addEventListener("beforeunload", (e) => {
   if (state.salaId && state.preguntas.length > 0) {

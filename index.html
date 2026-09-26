@@ -42,23 +42,29 @@
 </section>
 
     <section id="pantalla-juego" class="pantalla">
-      <div class="header-juego">
-        <span id="num-pregunta">Pregunta 1</span>
-        <span id="timer">60</span>
-      </div>
+  <div class="header-juego">
+    <span id="num-pregunta">Pregunta 1</span>
+    <span id="timer">60</span>
+  </div>
 
-      <div id="fase-pregunta" class="fase">
-        <h3 id="texto-pregunta"></h3>
-        <div id="opciones" class="opciones"></div>
-      </div>
+  <div id="fase-pregunta" class="fase">
+    <h3 id="texto-pregunta"></h3>
+    <div id="opciones" class="opciones"></div>
+  </div>
 
-      <div id="fase-resultado" class="fase" style="display:none">
-        <h3>⏱️ ¡Se acabó el tiempo!</h3>
-        <p id="respuesta-correcta"></p>
-        <p id="explicacion" class="explicacion"></p>
-        <ul id="resultados-jugadores"></ul>
-      </div>
-    </section>
+  <div id="fase-resultado" class="fase" style="display:none">
+    <h3>⏱️ ¡Se acabó el tiempo!</h3>
+    <p id="respuesta-correcta"></p>
+    <p id="explicacion" class="explicacion"></p>
+    <ul id="resultados-jugadores"></ul>
+  </div>
+
+  <!-- CHAT -->
+  <div class="chat-jugador">
+    <input id="chat-input" placeholder="Decile algo a la TV…" maxlength="60" autocomplete="off" />
+    <button id="chat-enviar" class="chat-btn">➤</button>
+  </div>
+</section>
 
     <section id="pantalla-final" class="pantalla">
       <h1>🏆 Ranking final</h1>
