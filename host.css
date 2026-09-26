@@ -203,3 +203,7 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 }
 .host-join-existing summary:hover { opacity: 1; }
 .host-join-existing input { margin-top: 12px; }
+#ajuste-url-foto,
+#ajuste-mensaje {
+  font-family: inherit;
+}

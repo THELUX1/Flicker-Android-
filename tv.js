@@ -277,7 +277,7 @@ function detectarRespuestas(sala) {
     const key = `${id}-${sala.preguntaActual}`;
     if (j.respondio === true && !state.respuestasVistas.has(key)) {
       state.respuestasVistas.add(key);
-      $("#tv-ticker-texto").textContent = `✍️ ${j.nombre} QUE VELOCIDAD!…`;
+      $("#tv-ticker-texto").textContent = `✍️ ${j.nombre} ya respondió…`;
 
       const ids = Object.keys(sala.jugadores).filter(i => !sala.jugadores[i].esHost);
       const respondidos = ids.filter(i => sala.jugadores[i].respondio === true).length;
@@ -300,17 +300,14 @@ async function revelarEnTV(sala) {
   const aciertos = jugadores.filter(j => j.respuesta === preg.correcta);
   const fallos   = jugadores.filter(j => j.respuesta !== preg.correcta);
 
-  // 1) Respuesta correcta
   play("correcto");
   await mostrarCartel("🟢", preg.opciones[preg.correcta], "La respuesta correcta era…", "verde", 3500);
 
-  // 2) Explicación (si existe)
   if (preg.explicacion) {
     await pausa(600);
     await mostrarCartel("💬", "…", `"${preg.explicacion}"`, "amarillo", 4000);
   }
 
-  // 3) Felicitación a los que acertaron
   if (aciertos.length > 0) {
     await pausa(800);
     play("aplauso");
@@ -323,20 +320,18 @@ async function revelarEnTV(sala) {
     await mostrarCartel("🎉", texto, nombres, "verde", 4000);
   }
 
-  // 4) Reacción a los que fallaron
   if (fallos.length > 0) {
     await pausa(800);
     play("risa");
 
     const texto = fallos.length === 1
-      ? `¡${fallos[0].nombre} Falló!`
-      : `¡${fallos.length} Fallaron!`;
+      ? `¡${fallos[0].nombre} la erró!`
+      : `¡${fallos.length} la erraron!`;
 
     const nombres = fallos.map(j => j.nombre).join(" · ");
     await mostrarCartel("😂", texto, nombres, "rojo", 4000);
   }
 
-  // 5) Frase final con el que va mejor
   await pausa(800);
   await sleep(400);
 
@@ -366,6 +361,7 @@ async function revelarEnTV(sala) {
 // ===== CARTEL GIGANTE =====
 function ajustarTextoCartel(texto) {
   const el = document.getElementById("tv-cartel-texto");
+  if (!el) return;
   el.classList.remove("grande", "medio", "chico");
   const len = texto.length;
   if (len <= 8)       el.classList.add("grande");
@@ -376,28 +372,167 @@ function ajustarTextoCartel(texto) {
 async function mostrarCartel(emoji, texto, sub, color, dur) {
   const cartel = $("#tv-cartel");
 
-  // Ocultar el anterior si estaba visible, con un mini fade-out
+  // Asegurar que la estructura esté intacta
+  if (!document.getElementById("tv-cartel-emoji")) {
+    cartel.innerHTML = `
+      <div class="tv-cartel-emoji" id="tv-cartel-emoji"></div>
+      <div class="tv-cartel-texto" id="tv-cartel-texto"></div>
+      <div class="tv-cartel-sub" id="tv-cartel-sub"></div>
+    `;
+  }
+
   if (cartel.classList.contains("visible")) {
     cartel.classList.remove("visible");
     await sleep(300);
   }
 
-  $("#tv-cartel-emoji").textContent = emoji;
-  const txt = $("#tv-cartel-texto");
+  document.getElementById("tv-cartel-emoji").textContent = emoji;
+  const txt = document.getElementById("tv-cartel-texto");
   txt.textContent = texto;
   txt.className = "tv-cartel-texto " + (color || "");
   ajustarTextoCartel(texto);
-  $("#tv-cartel-sub").textContent = sub || "";
+  document.getElementById("tv-cartel-sub").textContent = sub || "";
 
   cartel.classList.add("visible");
   await sleep(dur);
 
   cartel.classList.remove("visible");
-  // Esperar a que termine la transición de salida antes de retornar
   await sleep(300);
 }
 
-// ===== FINAL =====
+// ===== ESTADÍSTICAS FINALES =====
+async function mostrarEstadisticasTV(sala) {
+  const stats = sala._estadisticas || {};
+  const lista = Object.values(stats).filter(Boolean);
+  if (lista.length === 0) return;
+
+  await mostrarCartel("📊", "ESTADÍSTICAS", "Veamos qué pasó...", "amarillo", 2500);
+
+  // 🟢 Pregunta más fácil
+  const masFacil = [...lista].sort((a, b) => b.porcentajeAciertos - a.porcentajeAciertos)[0];
+  if (masFacil) {
+    play("aplauso");
+    await mostrarCartel(
+      "🟢",
+      `${masFacil.porcentajeAciertos}% acertaron`,
+      `LA MÁS FÁCIL: "${masFacil.pregunta}"`,
+      "verde",
+      5000
+    );
+  }
+
+  // 🔴 Pregunta más difícil
+  const masDificil = [...lista].sort((a, b) => a.porcentajeAciertos - b.porcentajeAciertos)[0];
+  if (masDificil && masDificil.porcentajeAciertos < masFacil.porcentajeAciertos) {
+    play("risa");
+    await mostrarCartel(
+      "🔴",
+      `${masDificil.porcentajeAciertos}% acertaron`,
+      `LA MÁS DIFÍCIL: "${masDificil.pregunta}"`,
+      "rojo",
+      5000
+    );
+  }
+
+  // 🏆 Únicos aciertos
+  const unicos = lista.filter(s => s.unicoAcierto);
+  if (unicos.length > 0) {
+    for (const s of unicos.slice(0, 3)) {
+      play("aplauso");
+      await mostrarCartel(
+        "🏆",
+        `¡Solo ${s.unicoAcierto} acertó!`,
+        `"${s.pregunta}"`,
+        "amarillo",
+        4500
+      );
+    }
+  }
+
+  // 💀 Preguntas donde nadie acertó
+  const todosFallaron = lista.filter(s => s.todosFallaron);
+  if (todosFallaron.length > 0) {
+    play("risa");
+    const s = todosFallaron[0];
+    const extra = todosFallaron.length > 1 ? ` (y ${todosFallaron.length - 1} más)` : "";
+    await mostrarCartel(
+      "💀",
+      "¡Nadie la sabía!",
+      `"${s.pregunta}"${extra}`,
+      "rojo",
+      5000
+    );
+  }
+
+  // 🔥 Pregunta donde todos acertaron
+  const todosAcertaron = lista.filter(s => s.todosAcertaron);
+  if (todosAcertaron.length > 0) {
+    play("aplauso");
+    const s = todosAcertaron[0];
+    const extra = todosAcertaron.length > 1 ? ` (y ${todosAcertaron.length - 1} más)` : "";
+    await mostrarCartel(
+      "🔥",
+      "¡Todos la sabían!",
+      `"${s.pregunta}"${extra}`,
+      "verde",
+      5000
+    );
+  }
+
+  // 📊 Promedio general
+  const promedio = Math.round(
+    lista.reduce((acc, s) => acc + s.porcentajeAciertos, 0) / lista.length
+  );
+  await pausa(500);
+  await mostrarCartel(
+    "📊",
+    `${promedio}% promedio`,
+    `El grupo acertó en promedio ${promedio} de cada 100`,
+    "amarillo",
+    4500
+  );
+}
+
+// ===== FOTO GRUPAL CON QR =====
+async function mostrarFotoQR(sala) {
+  const urlFoto = sala.ajustes?.urlFoto;
+  if (!urlFoto) return;
+
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=600x600&margin=10&data=${encodeURIComponent(urlFoto)}`;
+
+  const cartel = $("#tv-cartel");
+
+  cartel.innerHTML = `
+    <div style="font-size: clamp(3rem, 8vmin, 7rem); line-height: 1; margin-bottom: 20px;">📸</div>
+    <div style="font-size: clamp(1.8rem, 4vmin, 3.5rem); font-weight: 900; margin-bottom: 20px;">
+      ¡SÁQUENSE UNA FOTO!
+    </div>
+    <img src="${qrUrl}" alt="QR Foto" style="
+      width: clamp(240px, 40vmin, 500px);
+      height: clamp(240px, 40vmin, 500px);
+      background: #fff;
+      padding: 16px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.5);
+    " />
+    <div style="font-size: clamp(.9rem, 1.8vmin, 1.4rem); opacity: .7; margin-top: 24px; max-width: 90vw; word-break: break-all;">
+      ${urlFoto}
+    </div>
+  `;
+
+  cartel.classList.add("visible");
+  play("aplauso");
+  await sleep(12000);
+  cartel.classList.remove("visible");
+
+  // Restaurar estructura original
+  cartel.innerHTML = `
+    <div class="tv-cartel-emoji" id="tv-cartel-emoji"></div>
+    <div class="tv-cartel-texto" id="tv-cartel-texto"></div>
+    <div class="tv-cartel-sub" id="tv-cartel-sub"></div>
+  `;
+}
+
 // ===== FINAL =====
 async function mostrarFinalTV(sala) {
   clearInterval(tvTimerInterval);
@@ -406,13 +541,11 @@ async function mostrarFinalTV(sala) {
   const ganador = jugadores[0];
   if (!ganador) return;
 
-  // 1) Cartel del ganador — bien épico
+  // 1) Ganador
   await mostrarCartel("🏆", `${ganador.nombre} GANA`, `${ganador.puntos} puntos`, "amarillo", 6000);
-
-  // 2) Pausa dramática antes de recorrer a todos
   await pausa(1200);
 
-  // 3) Recorrer a cada jugador con su título
+  // 2) Cada jugador con su título
   for (let i = 0; i < jugadores.length; i++) {
     const j = jugadores[i];
     const memoria = j.total ? Math.round((j.aciertos / j.total) * 100) : 0;
@@ -423,26 +556,33 @@ async function mostrarFinalTV(sala) {
     else if (memoria >= 60) { emoji = "🎯"; frase = "Amigo de confianza";        color = "amarillo"; sonido = "correcto"; }
     else if (memoria >= 40) { emoji = "🥲"; frase = "'Pensé que me conocías'";   color = "amarillo"; sonido = "tension"; }
     else if (memoria >= 20) { emoji = "🎲"; frase = "Le pegaste de casualidad";  color = "rojo";     sonido = "risa"; }
-    else                    { emoji = "💀"; frase = "¿Es enserio?"; color = "rojo";  sonido = "risa"; }
+    else                    { emoji = "💀"; frase = "¿Vos sos realmente su amigo?"; color = "rojo";  sonido = "risa"; }
 
     play(sonido);
+    await mostrarCartel(emoji, j.nombre, `${j.puntos} pts · ${memoria}% de memoria · "${frase}"`, color, 6000);
 
-    // Cartel con info del jugador — ahora dura 6 segundos
-    await mostrarCartel(
-      emoji,
-      j.nombre,
-      `${j.puntos} pts · ${memoria}% de memoria · "${frase}"`,
-      color,
-      6000
-    );
-
-    // Pausa entre jugadores (excepto después del último)
-    if (i < jugadores.length - 1) {
-      await pausa(1000);
-    }
+    if (i < jugadores.length - 1) await pausa(1000);
   }
 
-  // 4) Cierre final
   await pausa(1200);
-  await mostrarCartel("🎉", "¡BIEN JUGADO!", "Lastima para los que fallaron", "amarillo", 7000);
+
+  // 3) Estadísticas finales
+  await mostrarEstadisticasTV(sala);
+  await pausa(1200);
+
+  // 4) Mensaje personalizado
+  if (sala.ajustes?.mensaje) {
+    play("aplauso");
+    await mostrarCartel("💬", "Un mensaje...", `"${sala.ajustes.mensaje}"`, "amarillo", 6000);
+    await pausa(800);
+  }
+
+  // 5) Foto grupal con QR
+  if (sala.ajustes?.urlFoto) {
+    await mostrarFotoQR(sala);
+    await pausa(800);
+  }
+
+  // 6) Cierre
+  await mostrarCartel("🎉", "Bien jugado", "amarillo", 7000);
 }

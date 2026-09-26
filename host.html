@@ -10,33 +10,33 @@
   <div id="host-app">
 
     <section id="host-inicio" class="host-pantalla activa">
-  <h1>🎛️ Panel del Anfitrión</h1>
+      <h1>🎛️ Panel del Anfitrión</h1>
 
-  <div id="host-reconectar-box" style="display:none" class="host-reconectar-box">
-    <p>📌 Detectamos una sala anterior:</p>
-    <div class="host-reconectar-info">
-      <strong id="host-reconectar-codigo"></strong>
-      <span id="host-reconectar-jugadores"></span>
-    </div>
-    <div class="row-host">
-      <button id="host-reconectar" class="btn-primario">🔁 Reconectar</button>
-      <button id="host-olvidar" class="btn-secundario">🗑️ Olvidar</button>
-    </div>
-    <hr class="host-sep" />
-    <p class="hint">O creá una nueva sala:</p>
-  </div>
+      <div id="host-reconectar-box" style="display:none" class="host-reconectar-box">
+        <p>📌 Detectamos una sala anterior:</p>
+        <div class="host-reconectar-info">
+          <strong id="host-reconectar-codigo"></strong>
+          <span id="host-reconectar-jugadores"></span>
+        </div>
+        <div class="row-host">
+          <button id="host-reconectar" class="btn-primario">🔁 Reconectar</button>
+          <button id="host-olvidar" class="btn-secundario">🗑️ Olvidar</button>
+        </div>
+        <hr class="host-sep" />
+        <p class="hint">O creá una nueva sala:</p>
+      </div>
 
-  <input id="host-nombre" placeholder="Tu nombre (anfitrión)" maxlength="15" />
-  <button id="host-crear" class="btn-primario">➕ Crear sala nueva</button>
+      <input id="host-nombre" placeholder="Tu nombre (anfitrión)" maxlength="15" />
+      <button id="host-crear" class="btn-primario">➕ Crear sala nueva</button>
 
-  <details class="host-join-existing">
-    <summary>🔗 Unirme a una sala existente como host</summary>
-    <input id="host-join-codigo" placeholder="Código de sala (ej: ABCD12)" maxlength="10" />
-    <button id="host-join" class="btn-secundario">Unirme como host</button>
-  </details>
+      <details class="host-join-existing">
+        <summary>🔗 Unirme a una sala existente como host</summary>
+        <input id="host-join-codigo" placeholder="Código de sala (ej: ABCD12)" maxlength="10" />
+        <button id="host-join" class="btn-secundario">Unirme como host</button>
+      </details>
 
-  <p class="hint">Las preguntas se guardan automáticamente en la nube ✅</p>
-</section>
+      <p class="hint">Las preguntas se guardan automáticamente en la nube ✅</p>
+    </section>
 
     <section id="host-panel" class="host-pantalla">
 
@@ -49,6 +49,7 @@
         <button class="tab activo" data-tab="jugadores">👥 Jugadores</button>
         <button class="tab" data-tab="preguntas">📝 Preguntas</button>
         <button class="tab" data-tab="control">🎮 Control</button>
+        <button class="tab" data-tab="ajustes">⚙️ Ajustes</button>
       </div>
 
       <div id="tab-jugadores" class="tab-panel activo">
@@ -104,6 +105,19 @@
         <h2>Control de la partida</h2>
         <p class="hint">Manejá el ritmo desde acá.</p>
         <div id="control-contenido"></div>
+      </div>
+
+      <div id="tab-ajustes" class="tab-panel">
+        <h2>⚙️ Ajustes de la partida</h2>
+        <p class="hint">Configurá detalles que van a aparecer al final del juego.</p>
+
+        <div class="form-pregunta">
+          <label>📸 URL de la foto grupal (opcional)</label>
+          <input id="ajuste-url-foto" placeholder="https://drive.google.com/..." maxlength="300" />    
+          <button id="btn-guardar-ajustes" class="btn-primario">💾 Guardar ajustes</button>
+        </div>
+
+        <p class="hint">La foto aparecerá como QR gigante al final de la partida.</p>
       </div>
 
     </section>

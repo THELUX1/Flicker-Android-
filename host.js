@@ -54,7 +54,6 @@ function cargarSesion() {
     if (!raw) return null;
     const data = JSON.parse(raw);
     if (!data.salaId || !data.miId) return null;
-    // Expiración: 7 días
     if (Date.now() - (data.guardadoEn || 0) > 7 * 24 * 60 * 60 * 1000) {
       localStorage.removeItem(STORAGE_KEY);
       return null;
@@ -77,7 +76,6 @@ $("#host-crear").onclick = async () => {
   const nombre = $("#host-nombre").value.trim();
   if (!nombre) return alert("Poné tu nombre");
 
-  // Generar nuevo miId solo al crear
   state.miId = crypto.randomUUID();
   const codigo = generarCodigo();
   state.salaId = codigo;
@@ -89,8 +87,10 @@ $("#host-crear").onclick = async () => {
     preguntaActual: -1,
     orden: [],
     preguntas: {},
+    ajustes: { urlFoto: "", mensaje: "" },
     _revealTick: 0,
     _rondaCalculada: false,
+    _estadisticas: null,
     jugadores: {
       [state.miId]: {
         nombre: `${nombre} (host)`,
@@ -121,7 +121,6 @@ async function reconectarSala(salaId, miId, nombre) {
   state.miId = miId;
   state.nombre = nombre;
 
-  // Asegurar que el host figure en la sala
   const jugadores = sala.jugadores || {};
   if (!jugadores[miId]) {
     await update(ref(db, `salas/${salaId}/jugadores/${miId}`), {
@@ -218,7 +217,6 @@ async function chequearSesionPrevia() {
   }
 }
 
-// Ejecutar después de que el DOM esté listo
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", chequearSesionPrevia);
 } else {
@@ -295,6 +293,32 @@ $("#form-pregunta").onsubmit = async (e) => {
 };
 
 // ============================================================
+// AJUSTES (foto grupal, mensaje)
+// ============================================================
+function cargarAjustesEnFormulario(sala) {
+  const ajustes = sala.ajustes || {};
+  const inputFoto = $("#ajuste-url-foto");
+  const inputMsg = $("#ajuste-mensaje");
+  if (inputFoto && document.activeElement !== inputFoto) {
+    inputFoto.value = ajustes.urlFoto || "";
+  }
+  if (inputMsg && document.activeElement !== inputMsg) {
+    inputMsg.value = ajustes.mensaje || "";
+  }
+}
+
+$("#btn-guardar-ajustes").onclick = async () => {
+  const urlFoto = $("#ajuste-url-foto").value.trim();
+  const mensaje = $("#ajuste-mensaje").value.trim();
+
+  await update(ref(db, `salas/${state.salaId}`), {
+    ajustes: { urlFoto, mensaje }
+  });
+
+  alert("Ajustes guardados ✅");
+};
+
+// ============================================================
 // CONEXIÓN A SALA
 // ============================================================
 function conectarSala() {
@@ -307,6 +331,7 @@ function conectarSala() {
     renderJugadores(sala.jugadores || {}, sala.estado);
     renderPreguntas(state.preguntas);
     renderControl(sala);
+    cargarAjustesEnFormulario(sala);
     $("#host-estado").textContent =
       sala.estado === "jugando" ? `Pregunta ${sala.preguntaActual + 1}` : sala.estado;
 
@@ -357,10 +382,14 @@ async function calcularPuntosRonda(sala) {
   console.log("🧮 Calculando puntos ronda", sala.preguntaActual, "correcta:", preg.correcta);
 
   const updates = {};
+  const jugadoresReales = Object.entries(sala.jugadores).filter(([id, j]) => !j.esHost);
 
-  Object.entries(sala.jugadores).forEach(([id, j]) => {
-    if (j.esHost) return;
+  let aciertosRonda = 0;
+  let fallosRonda = 0;
+  const acertaron = [];
+  const fallaron = [];
 
+  jugadoresReales.forEach(([id, j]) => {
     const acierto = j.respuesta === preg.correcta;
     const delta = acierto ? PUNTOS_POR_ACIERTO : 0;
 
@@ -374,13 +403,41 @@ async function calcularPuntosRonda(sala) {
     updates[`salas/${state.salaId}/jugadores/${id}/rachaMax`]    = Math.max(j.rachaMax || 0, nuevaRacha);
     updates[`salas/${state.salaId}/jugadores/${id}/ultimoDelta`] = delta;
 
-    console.log(`  → ${j.nombre}: respuesta=${j.respuesta}, correcta=${preg.correcta}, acierto=${acierto}, delta=${delta}, total=${nuevosPuntos}`);
+    if (acierto) {
+      aciertosRonda++;
+      acertaron.push({ id, nombre: j.nombre });
+    } else {
+      fallosRonda++;
+      fallaron.push({ id, nombre: j.nombre });
+    }
   });
 
+  // ===== GUARDAR ESTADÍSTICAS DE LA RONDA =====
+  const totalJugadores = jugadoresReales.length;
+  const porcentajeAciertos = totalJugadores > 0
+    ? Math.round((aciertosRonda / totalJugadores) * 100)
+    : 0;
+
+  const estadisticaRonda = {
+    numeroPregunta: sala.preguntaActual + 1,
+    pregunta: preg.pregunta,
+    opcionCorrecta: preg.opciones[preg.correcta],
+    totalJugadores,
+    aciertos: aciertosRonda,
+    fallos: fallosRonda,
+    porcentajeAciertos,
+    acertaron: acertaron.map(a => a.nombre),
+    fallaron: fallaron.map(a => a.nombre),
+    unicoAcierto: acertaron.length === 1 ? acertaron[0].nombre : null,
+    todosFallaron: aciertosRonda === 0 && fallosRonda > 0,
+    todosAcertaron: fallosRonda === 0 && aciertosRonda > 0
+  };
+
+  updates[`salas/${state.salaId}/_estadisticas/${sala.preguntaActual}`] = estadisticaRonda;
   updates[`salas/${state.salaId}/_rondaCalculada`] = true;
 
   await update(ref(db), updates);
-  console.log("✅ Puntos guardados en Firebase");
+  console.log("✅ Puntos y estadísticas guardados");
 }
 
 // ============================================================
@@ -479,6 +536,7 @@ $("#btn-empezar").onclick = async () => {
   updates[`salas/${state.salaId}/orden`]           = ids.sort(() => Math.random() - 0.5);
   updates[`salas/${state.salaId}/_revealTick`]     = 0;
   updates[`salas/${state.salaId}/_rondaCalculada`] = false;
+  updates[`salas/${state.salaId}/_estadisticas`]   = null;
 
   state.ultimaRondaRevelada = -1;
   await update(ref(db), updates);
@@ -567,11 +625,22 @@ function renderControl(sala) {
     `;
 
     $("#btn-volver-lobby").onclick = async () => {
-      await update(ref(db, `salas/${state.salaId}`), { estado: "lobby", preguntaActual: -1, _revealTick: 0, _rondaCalculada: false });
+      await update(ref(db, `salas/${state.salaId}`), {
+        estado: "lobby",
+        preguntaActual: -1,
+        _revealTick: 0,
+        _rondaCalculada: false
+      });
     };
     $("#btn-nueva-partida").onclick = async () => {
       const s = (await get(ref(db, `salas/${state.salaId}`))).val();
-      const updates = { estado: "lobby", preguntaActual: -1, _revealTick: 0, _rondaCalculada: false };
+      const updates = {
+        estado: "lobby",
+        preguntaActual: -1,
+        _revealTick: 0,
+        _rondaCalculada: false,
+        _estadisticas: null
+      };
       Object.keys(s.jugadores).forEach(id => {
         updates[`jugadores/${id}/puntos`]      = 0;
         updates[`jugadores/${id}/aciertos`]    = 0;
