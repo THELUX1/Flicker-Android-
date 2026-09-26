@@ -29,82 +29,42 @@ const sonidos = {
 };
 Object.values(sonidos).forEach(a => a.volume = 0.6);
 
-// ===== MÚSICA DE FONDO =====
-const MUSICA = {
-  lobby: new Audio("musica/lobby.mp3"),
-  juego: new Audio("musica/juego.mp3"),
-  final: new Audio("musica/final.mp3")
-};
-Object.values(MUSICA).forEach(m => {
-  m.loop = true;
-  m.volume = 0.25;
-  m.preload = "auto";
-});
+// ============================================================
+// 🎵 MÚSICA DE FONDO — UNA SOLA, SIN INTERRUPCIONES
+// ============================================================
+const musica = new Audio("musica/juego.mp3");
+musica.loop = true;
+musica.volume = 0.25;
+musica.preload = "auto";
 
-let musicaActual = null;
 let musicaMuteada = false;
 let volumenBase = 0.25;
-let duckTimeout = null;
-let musicaEnDuck = false; // ⬅️ trackea si la música está en ducking
+let musicaIniciada = false;
 
-function reproducirMusica(clave) {
-  if (musicaActual === clave) return;
-  if (musicaActual && MUSICA[musicaActual]) {
-    MUSICA[musicaActual].pause();
-    MUSICA[musicaActual].currentTime = 0;
-  }
-  musicaActual = clave;
-  if (!clave || !MUSICA[clave]) return;
-
-  // Si estábamos en duck, reseteamos el estado
-  musicaEnDuck = false;
-  clearTimeout(duckTimeout);
-
-  const track = MUSICA[clave];
-  track.volume = musicaMuteada ? 0 : volumenBase;
-  track.play().catch(() => {});
+function iniciarMusica() {
+  if (musicaIniciada) return;
+  musicaIniciada = true;
+  musica.play()
+    .then(() => console.log("🎵 Música de fondo iniciada"))
+    .catch((err) => {
+      console.warn("⚠️ No se pudo iniciar la música:", err);
+      // Reintentar en el próximo click del usuario
+      const reintentar = () => {
+        musica.play().catch(() => {});
+        document.removeEventListener("click", reintentar);
+      };
+      document.addEventListener("click", reintentar, { once: true });
+    });
 }
 
-function duckMusica(duracionMs = 1800) {
-  if (!musicaActual || musicaMuteada) return;
-  const track = MUSICA[musicaActual];
-  if (!track) return;
-
-  // Solo bajamos el volumen si NO estábamos ya en duck
-  if (!musicaEnDuck) {
-    track.volume = Math.max(0, volumenBase * 0.15);
-    musicaEnDuck = true;
-  }
-
-  // Extender el timeout con cada nuevo sonido
-  clearTimeout(duckTimeout);
-  duckTimeout = setTimeout(() => {
-    if (musicaActual && MUSICA[musicaActual]) {
-      MUSICA[musicaActual].volume = musicaMuteada ? 0 : volumenBase;
-    }
-    musicaEnDuck = false;
-  }, duracionMs);
-}
-
+// Los sonidos puntuales NO tocan la música. Solo se reproducen encima.
 function play(n) {
   const s = sonidos[n];
   if (!s) return;
   s.currentTime = 0;
-
-  const promesa = s.play();
-  if (promesa) {
-    promesa
-      .then(() => {
-        // Solo hacer ducking si el sonido realmente arrancó
-        duckMusica(1800);
-      })
-      .catch(() => {
-        // El sonido no existe o fue bloqueado → NO hacemos ducking
-        console.warn(`🔇 No se pudo reproducir: ${n}`);
-      });
-  } else {
-    duckMusica(1800);
-  }
+  s.play().catch(() => {
+    console.warn(`🔇 No se pudo reproducir: ${n}`);
+  });
 }
 
 // ===== INDICADOR DE VOLUMEN =====
@@ -142,25 +102,19 @@ function configurarControles() {
 
     if (k === "+" || k === "=") {
       volumenBase = Math.min(1, volumenBase + 0.05);
-      if (musicaActual && !musicaMuteada && MUSICA[musicaActual]) {
-        MUSICA[musicaActual].volume = volumenBase;
-      }
+      musica.volume = musicaMuteada ? 0 : volumenBase;
       mostrarIndicadorVolumen(`🔊 ${Math.round(volumenBase * 100)}%`);
     }
 
     if (k === "-" || k === "_") {
       volumenBase = Math.max(0, volumenBase - 0.05);
-      if (musicaActual && !musicaMuteada && MUSICA[musicaActual]) {
-        MUSICA[musicaActual].volume = volumenBase;
-      }
+      musica.volume = musicaMuteada ? 0 : volumenBase;
       mostrarIndicadorVolumen(`🔉 ${Math.round(volumenBase * 100)}%`);
     }
 
     if (k === "m") {
       musicaMuteada = !musicaMuteada;
-      if (musicaActual && MUSICA[musicaActual]) {
-        MUSICA[musicaActual].volume = musicaMuteada ? 0 : volumenBase;
-      }
+      musica.volume = musicaMuteada ? 0 : volumenBase;
       mostrarIndicadorVolumen(musicaMuteada ? "🔇 Mute" : `🔊 ${Math.round(volumenBase * 100)}%`);
     }
   });
@@ -191,7 +145,6 @@ function mostrarFlotante(emoji, texto, sub, color = "amarillo", duracion = 4500)
   `;
   cont.appendChild(el);
 
-  // Limitar a 5 carteles a la vez
   while (cont.children.length > 5) {
     cont.removeChild(cont.firstChild);
   }
@@ -248,7 +201,7 @@ function iniciar() {
 
     inyectarIndicador();
     configurarControles();
-    reproducirMusica("lobby");
+    iniciarMusica();
     mostrarIndicadorVolumen(`🔊 ${Math.round(volumenBase * 100)}%`);
 
     conectar();
@@ -398,15 +351,12 @@ function manejarEstado(sala) {
     $("#tv-estado").textContent = "🛋️ En el lobby";
     $("#tv-texto-pregunta").textContent = "Esperando que empiece la partida…";
     $("#tv-timer").textContent = "--";
-    reproducirMusica("lobby");
   }
   if (sala.estado === "jugando") {
     $("#tv-estado").textContent = "🎮 ¡Jugando!";
-    reproducirMusica("juego");
   }
   if (sala.estado === "final") {
     $("#tv-estado").textContent = "🏁 ¡Terminó!";
-    reproducirMusica("final");
     mostrarFinalTV(sala);
   }
 }
@@ -499,7 +449,7 @@ async function revelarEnTV(sala) {
   if (fallos.length > 0) {
     await pausa(800);
     play("risa");
-    const texto = fallos.length === 1 ? `¡${fallos[0].nombre} la falló!` : `¡${fallos.length} la fallaron!`;
+    const texto = fallos.length === 1 ? `¡${fallos[0].nombre} falló!` : `¡${fallos.length} fallaron!`;
     const nombres = fallos.map(j => j.nombre).join(" · ");
     await mostrarCartel("😂", texto, nombres, "rojo", 4000);
   }
@@ -525,7 +475,7 @@ async function revelarEnTV(sala) {
       mostrarFlotante("👀", `${mejor.nombre} viene acertando el ${mem}%`, "¿Sospechoso?", "amarillo", 4500);
     } else if (mem <= 30) {
       play("risa");
-      mostrarFlotante("💀", `${mejor.nombre} viene acertando el ${mem}%`, "¿Amigo o Desconocido?", "rojo", 4500);
+      mostrarFlotante("💀", `${mejor.nombre} viene acertando el ${mem}%`, "¿Amigo o Conocido?", "rojo", 4500);
     }
   }
 }
