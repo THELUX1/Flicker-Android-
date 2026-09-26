@@ -467,7 +467,7 @@ async function revelarEnTV(sala) {
   if (fallos.length > 0) {
     await pausa(800);
     play("risa");
-    const texto = fallos.length === 1 ? `¡${fallos[0].nombre} la erró!` : `¡${fallos.length} la erraron!`;
+    const texto = fallos.length === 1 ? `¡${fallos[0].nombre} Falló!` : `¡${fallos.length} Fallaron!`;
     const nombres = fallos.map(j => j.nombre).join(" · ");
     await mostrarCartel("😂", texto, nombres, "rojo", 4000);
   }
