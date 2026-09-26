@@ -140,4 +140,17 @@ button:disabled { opacity: .5; cursor: not-allowed; }
   border-radius: 8px;
 }
 
+.host-fase {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(233,69,96,.15);
+  border: 1px solid rgba(233,69,96,.4);
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  font-size: .95rem;
+}
+.host-fase span { opacity: .8; }
+
 #control-contenido button { width: 100%; }

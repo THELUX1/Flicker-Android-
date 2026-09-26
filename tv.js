@@ -1,5 +1,6 @@
 import { db } from "./firebase-config.js";
 import { ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { TIEMPO_RESPUESTA } from "./preguntas.js";
 
 const state = {
   salaId: null,
@@ -52,13 +53,11 @@ function conectar() {
 
     renderRanking(sala);
 
-    // Cambio de estado
     if (sala.estado !== state.ultimoEstado) {
       manejarEstado(sala);
       state.ultimoEstado = sala.estado;
     }
 
-    // Nueva ronda
     if (sala.estado === "jugando" && sala.preguntaActual !== state.ultimaRonda) {
       state.ultimaRonda = sala.preguntaActual;
       state.respuestasVistas.clear();
@@ -70,10 +69,8 @@ function conectar() {
       iniciarTensionTimer(sala);
     }
 
-    // Detectar respuestas
     detectarRespuestas(sala);
 
-    // Detectar revelación
     if (sala._revealTick && !state.rondaYaRevelada && sala.estado === "jugando") {
       state.rondaYaRevelada = true;
       revelarEnTV(sala);
@@ -140,35 +137,36 @@ function mostrarPregunta(sala) {
   $("#tv-ticker-texto").textContent = `📢 Pregunta ${sala.preguntaActual + 1} de ${sala.orden.length} · Nivel ${preg.nivel.toUpperCase()}`;
 }
 
-// ===== TIMER VISUAL EN TV =====
+// ===== TIMER VISUAL =====
 let tvTimerInterval = null;
 function iniciarTensionTimer(sala) {
   clearInterval(tvTimerInterval);
-  let restante = 20;
+  let restante = TIEMPO_RESPUESTA;
   $("#tv-timer").textContent = restante;
   $("#tv-timer").classList.remove("urgente");
 
   tvTimerInterval = setInterval(() => {
     restante--;
     $("#tv-timer").textContent = Math.max(0, restante);
-    if (restante <= 5) $("#tv-timer").classList.add("urgente");
-    if (restante <= 0) {
-      clearInterval(tvTimerInterval);
-      if (!state.rondaYaRevelada) {
-        // fallback: mostramos las opciones correctas en TV
-        // (los celulares se revelan solos por su timer local)
-      }
-    }
+    if (restante <= 10) $("#tv-timer").classList.add("urgente");
+    if (restante <= 0) clearInterval(tvTimerInterval);
   }, 1000);
 }
 
 // ===== DETECTAR RESPUESTAS =====
 function detectarRespuestas(sala) {
   Object.entries(sala.jugadores || {}).forEach(([id, j]) => {
+    if (j.esHost) return;
     const key = `${id}-${sala.preguntaActual}`;
-    if (j.respuesta !== null && j.respuesta !== undefined && !state.respuestasVistas.has(key)) {
+    if (j.respondio === true && !state.respuestasVistas.has(key)) {
       state.respuestasVistas.add(key);
       $("#tv-ticker-texto").textContent = `✍️ ${j.nombre} ya respondió…`;
+
+      const ids = Object.keys(sala.jugadores).filter(i => !sala.jugadores[i].esHost);
+      const respondidos = ids.filter(i => sala.jugadores[i].respondio === true).length;
+      if (respondidos === ids.length && ids.length > 0) {
+        $("#tv-ticker-texto").textContent = `🔥 ¡TODOS RESPONDIERON! Revelando…`;
+      }
     }
   });
 }
@@ -178,19 +176,19 @@ async function revelarEnTV(sala) {
   const preg = sala.preguntas[sala.orden[sala.preguntaActual]];
   if (!preg) return;
 
-  // Cartel grande con la respuesta correcta
+  clearInterval(tvTimerInterval);
+  $("#tv-timer").textContent = "🎯";
+
   play("correcto");
   await mostrarCartel("🟢", preg.opciones[preg.correcta], `La respuesta correcta era…`, "verde", 2500);
 
-  // Explicación
   if (preg.explicacion) {
     await mostrarCartel("💬", "…", `"${preg.explicacion}"`, "amarillo", 3000);
   }
 
-  // Reacciones por jugador según si acertó o no
-  const jugadores = Object.entries(sala.jugadores).map(([id, j]) => ({ id, ...j }));
+  const jugadores = Object.entries(sala.jugadores).map(([id, j]) => ({ id, ...j })).filter(j => !j.esHost);
   const aciertos = jugadores.filter(j => j.respuesta === preg.correcta);
-  const fallos   = jugadores.filter(j => j.respuesta !== preg.correcta && j.respuesta !== null && j.respuesta !== undefined);
+  const fallos   = jugadores.filter(j => j.respuesta !== preg.correcta);
 
   if (aciertos.length > 0) {
     play("aplauso");
@@ -199,10 +197,9 @@ async function revelarEnTV(sala) {
 
   if (fallos.length > 0) {
     play("risa");
-    await mostrarCartel("😂", `¡${fallos.length} la erraton!`, fallos.map(j => j.nombre).join(" · "), "rojo", 2500);
+    await mostrarCartel("😂", `¡${fallos.length} la erraron!`, fallos.map(j => j.nombre).join(" · "), "rojo", 2500);
   }
 
-  // Frase dinámica con el que va mejor
   const mejor = jugadores.sort((a, b) => (b.puntos || 0) - (a.puntos || 0))[0];
   if (mejor && mejor.total > 0) {
     const mem = Math.round((mejor.aciertos / mejor.total) * 100);
@@ -217,12 +214,22 @@ async function revelarEnTV(sala) {
 }
 
 // ===== CARTEL GIGANTE =====
+function ajustarTextoCartel(texto) {
+  const el = document.getElementById("tv-cartel-texto");
+  el.classList.remove("grande", "medio", "chico");
+  const len = texto.length;
+  if (len <= 8)       el.classList.add("grande");
+  else if (len <= 20) el.classList.add("medio");
+  else                el.classList.add("chico");
+}
+
 async function mostrarCartel(emoji, texto, sub, color, dur) {
   const cartel = $("#tv-cartel");
   $("#tv-cartel-emoji").textContent = emoji;
   const txt = $("#tv-cartel-texto");
   txt.textContent = texto;
   txt.className = "tv-cartel-texto " + (color || "");
+  ajustarTextoCartel(texto);
   $("#tv-cartel-sub").textContent = sub || "";
   cartel.classList.add("visible");
   await sleep(dur);
@@ -233,7 +240,7 @@ async function mostrarCartel(emoji, texto, sub, color, dur) {
 async function mostrarFinalTV(sala) {
   clearInterval(tvTimerInterval);
   play("fanfarria");
-  const jugadores = Object.values(sala.jugadores).sort((a, b) => b.puntos - a.puntos);
+  const jugadores = Object.values(sala.jugadores).filter(j => !j.esHost).sort((a, b) => b.puntos - a.puntos);
   const ganador = jugadores[0];
   if (!ganador) return;
 
@@ -248,7 +255,7 @@ async function mostrarFinalTV(sala) {
     else if (memoria >= 60) { emoji = "🎯"; frase = "Amigo de confianza";        color = "amarillo"; sonido = "correcto"; }
     else if (memoria >= 40) { emoji = "🥲"; frase = "'Pensé que me conocías'";   color = "amarillo"; sonido = "tension"; }
     else if (memoria >= 20) { emoji = "🎲"; frase = "Le pegaste de casualidad";  color = "rojo";     sonido = "risa"; }
-    else                    { emoji = "💀"; frase = "¿Vos sos realmente su amigo?"; color = "rojo";  sonido = "risa"; }
+    else                    { emoji = "💀"; frase = "¿Es enserio?"; color = "rojo";  sonido = "risa"; }
 
     play(sonido);
     await mostrarCartel(emoji, j.nombre, `${j.puntos} pts · ${memoria}% de memoria · "${frase}"`, color, 3200);

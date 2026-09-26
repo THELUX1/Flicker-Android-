@@ -2,7 +2,11 @@ import { db } from "./firebase-config.js";
 import {
   ref, set, get, update, onValue, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-import { NIVEL_MULTIPLICADOR } from "./preguntas.js";
+import {
+  NIVEL_MULTIPLICADOR,
+  TIEMPO_APUESTA,
+  TIEMPO_RESPUESTA
+} from "./preguntas.js";
 
 const state = {
   miId: crypto.randomUUID(),
@@ -13,7 +17,8 @@ const state = {
   preguntaActualIdx: -1,
   rondaEscuchada: -1,
   timerInterval: null,
-  yaRevelado: false
+  yaRevelado: false,
+  fase: "apuesta" // "apuesta" | "pregunta" | "revelado"
 };
 
 const $ = (s) => document.querySelector(s);
@@ -38,7 +43,8 @@ $("#btn-unirse").onclick = async () => {
 
   await update(ref(db, `salas/${codigo}/jugadores/${state.miId}`), {
     nombre, puntos: 0, aciertos: 0, total: 0,
-    racha: 0, rachaMax: 0, apuesta: null, respuesta: null
+    racha: 0, rachaMax: 0,
+    apuesta: null, respuesta: null, respondio: false
   });
 
   mostrarPantalla("pantalla-lobby");
@@ -56,10 +62,8 @@ function conectarSala() {
     const sala = snap.val();
     if (!sala) return;
 
-    // Lista de jugadores en lobby
     renderLobby(sala.jugadores || {});
 
-    // Estado
     if (sala.estado === "jugando") {
       if (state.preguntaActualIdx !== sala.preguntaActual) {
         entrarARonda(sala);
@@ -86,28 +90,25 @@ async function entrarARonda(sala) {
   state.respuestaActual = null;
   state.apuestaActual = null;
   state.yaRevelado = false;
+  state.fase = "apuesta";
 
   const preg = sala.preguntas[sala.orden[sala.preguntaActual]];
-  if (!preg) {
-    // Todavía no hay preguntas cargadas
-    return;
-  }
+  if (!preg) return;
 
   mostrarPantalla("pantalla-juego");
   $("#num-pregunta").textContent = `Pregunta ${sala.preguntaActual + 1}/${sala.orden.length}`;
 
-  // Reset apuesta en este jugador
   await update(ref(db, `salas/${state.salaId}/jugadores/${state.miId}`), {
-    apuesta: null, respuesta: null
+    apuesta: null, respuesta: null, respondio: false
   });
 
-  // Fase apuesta
+  // FASE APUESTA
   $("#fase-apuesta").style.display = "block";
   $("#fase-pregunta").style.display = "none";
   $("#fase-resultado").style.display = "none";
   $$(".apuesta").forEach(b => b.classList.remove("elegida"));
 
-  // Render pregunta (todavía oculta)
+  // Render pregunta (oculta hasta que apuesten)
   $("#texto-pregunta").textContent = preg.pregunta;
   const cont = $("#opciones");
   cont.innerHTML = "";
@@ -119,35 +120,52 @@ async function entrarARonda(sala) {
     cont.appendChild(btn);
   });
 
-  // Reset timer
-  clearInterval(state.timerInterval);
-  $("#timer").textContent = 20;
+  // Timer de apuesta
+  iniciarTimer(TIEMPO_APUESTA, () => {
+    if (state.apuestaActual === null) {
+      elegirApuesta(10);
+    }
+  });
 }
 
 // ===== APUESTA =====
+async function elegirApuesta(monto) {
+  state.apuestaActual = monto;
+  $$(".apuesta").forEach(b => {
+    b.classList.toggle("elegida", parseInt(b.dataset.apuesta) === monto);
+  });
+
+  await update(ref(db, `salas/${state.salaId}/jugadores/${state.miId}`), { apuesta: monto });
+
+  $("#fase-apuesta").style.display = "none";
+  $("#fase-pregunta").style.display = "block";
+  state.fase = "pregunta";
+
+  // Timer de respuesta
+  iniciarTimer(TIEMPO_RESPUESTA, () => {
+    if (state.respuestaActual === null) {
+      responder(-1); // no respondió
+    }
+  });
+}
+
 $$(".apuesta").forEach(btn => {
-  btn.onclick = async () => {
-    const monto = parseInt(btn.dataset.apuesta);
-    state.apuestaActual = monto;
-    $$(".apuesta").forEach(b => b.classList.remove("elegida"));
-    btn.classList.add("elegida");
-
-    await update(ref(db, `salas/${state.salaId}/jugadores/${state.miId}`), { apuesta: monto });
-
-    $("#fase-apuesta").style.display = "none";
-    $("#fase-pregunta").style.display = "block";
-    iniciarTimer(20);
-  };
+  btn.onclick = () => elegirApuesta(parseInt(btn.dataset.apuesta));
 });
 
-function iniciarTimer(seg) {
+// ===== TIMER GENÉRICO =====
+function iniciarTimer(seg, onEnd) {
   clearInterval(state.timerInterval);
   let restante = seg;
   $("#timer").textContent = restante;
+
   state.timerInterval = setInterval(() => {
     restante--;
-    $("#timer").textContent = restante;
-    if (restante <= 0) clearInterval(state.timerInterval);
+    $("#timer").textContent = Math.max(0, restante);
+    if (restante <= 0) {
+      clearInterval(state.timerInterval);
+      if (onEnd) onEnd();
+    }
   }, 1000);
 }
 
@@ -161,13 +179,19 @@ async function responder(indice) {
     if (i === indice) b.classList.add("elegida");
   });
 
-  await update(ref(db, `salas/${state.salaId}/jugadores/${state.miId}`), { respuesta: indice });
+  await update(ref(db, `salas/${state.salaId}/jugadores/${state.miId}`), {
+    respuesta: indice === -1 ? null : indice,
+    respondio: true
+  });
+
+  $("#timer").textContent = "✓";
 }
 
 // ===== REVELAR RESULTADO =====
 async function revelarResultado() {
   if (state.yaRevelado) return;
   state.yaRevelado = true;
+  clearInterval(state.timerInterval);
 
   const sala = (await get(ref(db, `salas/${state.salaId}`))).val();
   const preg = sala.preguntas[sala.orden[sala.preguntaActual]];
@@ -210,12 +234,16 @@ async function revelarResultado() {
       <span>${r.delta > 0 ? "+" : ""}${r.delta}</span>
     </li>`).join("");
 
-  // El host avanza solo si nadie lo hace (fallback de seguridad)
-  // En este flujo, el host tiene control total.
+  $("#timer").textContent = "🎯";
 }
 
-// Escuchar si el host fuerza revelar
-onValue(ref(db, `salas/${state.salaId || "x"}/revelar`), () => {});
+// Escuchar señal de revelado desde el host
+onValue(ref(db, `salas/${state.salaId || "_none"}/_revealTick`), (snap) => {
+  if (!snap.exists()) return;
+  if (state.yaRevelado) return;
+  if (state.preguntaActualIdx < 0) return;
+  revelarResultado();
+});
 
 // ===== FINAL =====
 function mostrarFinal(sala) {
@@ -243,20 +271,3 @@ function obtenerTitulo(memoria) {
   if (memoria >= 20) return "🎲 Le pegaste de casualidad";
   return "💀 ¿Vos sos realmente su amigo?";
 }
-
-// ===== EXPONER FUNCIÓN PARA EL HOST =====
-// El host llama a revelar() por Firebase; acá solo escuchamos la señal
-onValue(ref(db, `salas/${state.salaId || "x"}/_revealTick`), (snap) => {
-  if (!snap.exists()) return;
-  if (state.yaRevelado) return;
-  if (state.preguntaActualIdx < 0) return;
-  revelarResultado();
-});
-
-// También revelar cuando se acaba el tiempo local
-setInterval(() => {
-  const t = parseInt($("#timer").textContent);
-  if (!isNaN(t) && t <= 0 && !state.yaRevelado && state.preguntaActualIdx >= 0 && $("#pantalla-juego").classList.contains("activa")) {
-    revelarResultado();
-  }
-}, 500);

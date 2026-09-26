@@ -2,13 +2,15 @@ import { db } from "./firebase-config.js";
 import {
   ref, set, get, update, onValue, push, remove, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-import { PREGUNTAS_EJEMPLO } from "./preguntas.js";
+import { PREGUNTAS_EJEMPLO, TIEMPO_REVELADO } from "./preguntas.js";
 
 const state = {
   miId: crypto.randomUUID(),
   salaId: null,
   nombre: null,
-  preguntas: [] // espejo local
+  preguntas: [],
+  timerAvance: null,
+  ultimaRondaRevelada: -1
 };
 
 const $ = (s) => document.querySelector(s);
@@ -34,11 +36,12 @@ $("#host-crear").onclick = async () => {
     preguntaActual: -1,
     orden: [],
     preguntas: {},
+    _revealTick: 0,
     jugadores: {
       [state.miId]: {
         nombre: `${nombre} (host)`,
         puntos: 0, aciertos: 0, total: 0, racha: 0, rachaMax: 0,
-        apuesta: null, respuesta: null, esHost: true
+        apuesta: null, respuesta: null, respondio: false, esHost: true
       }
     }
   });
@@ -73,7 +76,6 @@ $("#btn-abrir-tv").onclick = () => {
 // ===== CARGAR EJEMPLOS =====
 $("#btn-cargar-ejemplos").onclick = async () => {
   if (!confirm("Esto va a reemplazar las preguntas actuales. ¿Seguir?")) return;
-  const updates = {};
   const obj = {};
   PREGUNTAS_EJEMPLO.forEach(p => {
     const id = crypto.randomUUID();
@@ -101,7 +103,6 @@ $("#form-pregunta").onsubmit = async (e) => {
   const nuevaRef = push(ref(db, `salas/${state.salaId}/preguntas`));
   await set(nuevaRef, { nivel, pregunta, opciones, correcta, explicacion });
 
-  // Reset form
   $("#fp-pregunta").value = "";
   $("#fp-explicacion").value = "";
   $$(".fp-opcion-texto").forEach(i => i.value = "");
@@ -120,7 +121,59 @@ function conectarSala() {
     renderJugadores(sala.jugadores || {}, sala.estado);
     renderPreguntas(state.preguntas);
     renderControl(sala);
-    $("#host-estado").textContent = sala.estado === "jugando" ? `Pregunta ${sala.preguntaActual + 1}` : sala.estado;
+    $("#host-estado").textContent =
+      sala.estado === "jugando" ? `Pregunta ${sala.preguntaActual + 1}` : sala.estado;
+
+    controlarAutoAvance(sala);
+  });
+}
+
+// ===== AUTO-AVANCE =====
+function controlarAutoAvance(sala) {
+  if (sala.estado !== "jugando") return;
+  if (!sala._revealTick) return;
+
+  if (state.ultimaRondaRevelada === sala.preguntaActual) return;
+  state.ultimaRondaRevelada = sala.preguntaActual;
+
+  clearTimeout(state.timerAvance);
+  state.timerAvance = setTimeout(async () => {
+    const s = (await get(ref(db, `salas/${state.salaId}`))).val();
+    if (!s || s.estado !== "jugando") return;
+    if (s.preguntaActual !== sala.preguntaActual) return;
+
+    const next = s.preguntaActual + 1;
+    if (next >= s.orden.length) {
+      await update(ref(db, `salas/${state.salaId}`), { estado: "final" });
+    } else {
+      await update(ref(db, `salas/${state.salaId}`), {
+        preguntaActual: next,
+        _revealTick: 0
+      });
+    }
+  }, TIEMPO_REVELADO * 1000);
+}
+
+// ===== DETECCIÓN "TODOS RESPONDIERON" =====
+let unsubJugadores = null;
+function suscribirAutoRevelar() {
+  if (unsubJugadores) unsubJugadores();
+
+  unsubJugadores = onValue(ref(db, `salas/${state.salaId}/jugadores`), async (snap) => {
+    const jugadores = snap.val() || {};
+    const salaSnap = await get(ref(db, `salas/${state.salaId}`));
+    const sala = salaSnap.val();
+    if (!sala || sala.estado !== "jugando") return;
+
+    if (sala._revealTick) return;
+
+    const ids = Object.keys(jugadores).filter(id => !jugadores[id].esHost);
+    if (ids.length === 0) return;
+
+    const todos = ids.every(id => jugadores[id].respondio === true);
+    if (todos) {
+      await update(ref(db, `salas/${state.salaId}`), { _revealTick: Date.now() });
+    }
   });
 }
 
@@ -136,14 +189,13 @@ function renderJugadores(jugadores, estado) {
     ).join("");
   }
 
-  // Botón empezar
   const btn = $("#btn-empezar");
-  const puede = lista.length >= 2 && estado === "lobby" && state.preguntas.length >= 1;
+  const puede = lista.filter(([id, j]) => !j.esHost).length >= 1 && estado === "lobby" && state.preguntas.length >= 1;
   btn.disabled = !puede;
   if (state.preguntas.length === 0) {
     btn.textContent = "Cargá al menos 1 pregunta";
-  } else if (lista.length < 2) {
-    btn.textContent = "Necesitás al menos 2 jugadores";
+  } else if (lista.filter(([id, j]) => !j.esHost).length < 1) {
+    btn.textContent = "Necesitás al menos 1 jugador";
   } else {
     btn.textContent = "▶️ Empezar partida";
   }
@@ -156,7 +208,7 @@ function renderPreguntas(preguntas) {
     ol.innerHTML = `<li style="border-left-color:transparent;opacity:.5">Todavía no cargaste preguntas.</li>`;
     return;
   }
-  ol.innerHTML = preguntas.map((p, i) =>
+  ol.innerHTML = preguntas.map((p) =>
     `<li class="nivel-${p.nivel}">
       <button class="p-remove" data-id="${p.id}">🗑️</button>
       <strong>${p.pregunta}</strong><br>
@@ -178,15 +230,22 @@ $("#btn-empezar").onclick = async () => {
   const sala = (await get(ref(db, `salas/${state.salaId}`))).val();
   const ids = Object.keys(sala.preguntas || {});
   if (ids.length === 0) return alert("Cargá preguntas primero");
-  if (ids.length < 1) return;
 
-  const orden = ids.sort(() => Math.random() - 0.5);
-  await update(ref(db, `salas/${state.salaId}`), {
-    estado: "jugando",
-    preguntaActual: 0,
-    orden,
-    _revealTick: 0
+  const updates = {};
+  Object.keys(sala.jugadores).forEach(id => {
+    updates[`salas/${state.salaId}/jugadores/${id}/respondio`] = false;
+    updates[`salas/${state.salaId}/jugadores/${id}/respuesta`] = null;
+    updates[`salas/${state.salaId}/jugadores/${id}/apuesta`]   = null;
   });
+  updates[`salas/${state.salaId}/estado`]         = "jugando";
+  updates[`salas/${state.salaId}/preguntaActual`] = 0;
+  updates[`salas/${state.salaId}/orden`]          = ids.sort(() => Math.random() - 0.5);
+  updates[`salas/${state.salaId}/_revealTick`]    = 0;
+
+  state.ultimaRondaRevelada = -1;
+  await update(ref(db), updates);
+
+  suscribirAutoRevelar();
 };
 
 // ===== CONTROL =====
@@ -200,9 +259,26 @@ function renderControl(sala) {
   }
 
   if (sala.estado === "jugando") {
+    const jugadores = Object.entries(sala.jugadores).filter(([id, j]) => !j.esHost);
+    const respondieron = jugadores.filter(([id, j]) => j.respondio === true).length;
+    const total = jugadores.length;
+    const revelado = !!sala._revealTick;
+
+    const fase = revelado ? "🎯 Revelado" :
+                 respondieron === total && total > 0 ? "✅ Todos respondieron" :
+                 "⏳ Esperando respuestas";
+
     cont.innerHTML = `
-      <button id="btn-revelar" class="btn-secundario">👁️ Revelar respuesta ya</button>
-      <button id="btn-siguiente" class="btn-primario">➡️ Siguiente pregunta</button>
+      <div class="host-fase">
+        <strong>${fase}</strong>
+        <span>${respondieron}/${total} respondieron</span>
+      </div>
+      <button id="btn-revelar" class="btn-secundario" ${revelado ? "disabled" : ""}>
+        👁️ Revelar respuesta ya
+      </button>
+      <button id="btn-siguiente" class="btn-primario">
+        ➡️ Siguiente pregunta
+      </button>
       <button id="btn-terminar" class="btn-secundario">🏁 Terminar partida</button>
       <button id="btn-reset" class="btn-secundario" style="background:rgba(220,38,38,.25)">🔄 Reiniciar ronda</button>
     `;
@@ -212,12 +288,16 @@ function renderControl(sala) {
     };
 
     $("#btn-siguiente").onclick = async () => {
+      clearTimeout(state.timerAvance);
       const s = (await get(ref(db, `salas/${state.salaId}`))).val();
       const next = s.preguntaActual + 1;
       if (next >= s.orden.length) {
         await update(ref(db, `salas/${state.salaId}`), { estado: "final" });
       } else {
-        await update(ref(db, `salas/${state.salaId}`), { preguntaActual: next });
+        await update(ref(db, `salas/${state.salaId}`), {
+          preguntaActual: next,
+          _revealTick: 0
+        });
       }
     };
 
@@ -232,9 +312,10 @@ function renderControl(sala) {
       Object.keys(s.jugadores).forEach(id => {
         updates[`salas/${state.salaId}/jugadores/${id}/respuesta`] = null;
         updates[`salas/${state.salaId}/jugadores/${id}/apuesta`]   = null;
+        updates[`salas/${state.salaId}/jugadores/${id}/respondio`] = false;
       });
+      updates[`salas/${state.salaId}/_revealTick`] = 0;
       await update(ref(db), updates);
-      await update(ref(db, `salas/${state.salaId}`), { _revealTick: 0 });
     };
   }
 
@@ -258,6 +339,7 @@ function renderControl(sala) {
         updates[`jugadores/${id}/rachaMax`] = 0;
         updates[`jugadores/${id}/respuesta`]= null;
         updates[`jugadores/${id}/apuesta`]  = null;
+        updates[`jugadores/${id}/respondio`]= false;
       });
       await update(ref(db, `salas/${state.salaId}`), updates);
     };
