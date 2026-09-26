@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>¿Quién conoce mejor a...?</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+
+    <section id="pantalla-inicio" class="pantalla activa">
+  <h1>🧠 ¿Quién conoce mejor a...?</h1>
+
+  <div id="jugador-reconectar-box" class="jugador-reconectar-box" style="display:none">
+    <p>📌 Seguís conectado a:</p>
+    <div class="jugador-reconectar-info">
+      <strong id="jugador-reconectar-sala"></strong>
+      <span id="jugador-reconectar-estado"></span>
+    </div>
+    <div class="row">
+      <button id="jugador-reconectar" class="btn-primario">🔁 Volver a entrar</button>
+      <button id="jugador-olvidar" class="btn-secundario">🚪 Salir</button>
+    </div>
+    <p class="hint">O unite a otra sala:</p>
+  </div>
+
+  <input id="input-nombre" placeholder="Tu nombre" maxlength="15" autocomplete="off" />
+  <input id="input-sala" placeholder="Código de sala" maxlength="10" autocomplete="off" />
+  <div class="row">
+    <button id="btn-unirse" class="btn-primario">Entrar</button>
+  </div>
+  <p class="hint">El anfitrión crea la sala desde <code>host.html</code></p>
+</section>
+
+    <section id="pantalla-lobby" class="pantalla">
+  <div class="sala-codigo">SALA: <span id="sala-codigo"></span></div>
+  <h2>Jugadores <span id="contador-jugadores"></span></h2>
+  <ul id="lista-jugadores"></ul>
+  <p id="esperando-host" class="hint">Esperando al anfitrión…</p>
+  <button id="btn-salir-sala" class="btn-salir-sala">🚪 Salir de la sala</button>
+</section>
+
+    <section id="pantalla-juego" class="pantalla">
+      <div class="header-juego">
+        <span id="num-pregunta">Pregunta 1</span>
+        <span id="timer">60</span>
+      </div>
+
+      <div id="fase-pregunta" class="fase">
+        <h3 id="texto-pregunta"></h3>
+        <div id="opciones" class="opciones"></div>
+      </div>
+
+      <div id="fase-resultado" class="fase" style="display:none">
+        <h3>⏱️ ¡Se acabó el tiempo!</h3>
+        <p id="respuesta-correcta"></p>
+        <p id="explicacion" class="explicacion"></p>
+        <ul id="resultados-jugadores"></ul>
+      </div>
+    </section>
+
+    <section id="pantalla-final" class="pantalla">
+      <h1>🏆 Ranking final</h1>
+      <div id="podio"></div>
+    </section>
+
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
