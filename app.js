@@ -4,8 +4,11 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { TIEMPO_RESPUESTA } from "./preguntas.js";
 
+// ===== CLAVE DE PERSISTENCIA =====
+const STORAGE_KEY = "qcm_jugador_session";
+
 const state = {
-  miId: crypto.randomUUID(),
+  miId: null,
   salaId: null,
   nombre: null,
   respuestaActual: null,
@@ -22,7 +25,50 @@ function mostrarPantalla(id) {
   $(`#${id}`).classList.add("activa");
 }
 
-// ===== INGRESO =====
+// ============================================================
+// PERSISTENCIA
+// ============================================================
+function guardarSesion() {
+  if (!state.salaId || !state.miId) return;
+  const data = {
+    salaId: state.salaId,
+    miId: state.miId,
+    nombre: state.nombre,
+    guardadoEn: Date.now()
+  };
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    console.log("💾 Sesión jugador guardada:", data);
+  } catch (e) {
+    console.error("❌ Error guardando sesión jugador:", e);
+  }
+}
+
+function cargarSesion() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const data = JSON.parse(raw);
+    if (!data.salaId || !data.miId) return null;
+    // Expiración: 7 días
+    if (Date.now() - (data.guardadoEn || 0) > 7 * 24 * 60 * 60 * 1000) {
+      localStorage.removeItem(STORAGE_KEY);
+      return null;
+    }
+    return data;
+  } catch (err) {
+    console.error("❌ Error leyendo sesión jugador:", err);
+    return null;
+  }
+}
+
+function borrarSesion() {
+  localStorage.removeItem(STORAGE_KEY);
+}
+
+// ============================================================
+// INGRESO A SALA
+// ============================================================
 $("#btn-unirse").onclick = async () => {
   const nombre = $("#input-nombre").value.trim();
   const codigo = $("#input-sala").value.trim().toUpperCase();
@@ -31,6 +77,8 @@ $("#btn-unirse").onclick = async () => {
   const snap = await get(ref(db, `salas/${codigo}`));
   if (!snap.exists()) return alert("Esa sala no existe 😢");
 
+  // Nuevo miId solo al unirse por primera vez
+  state.miId = crypto.randomUUID();
   state.salaId = codigo;
   state.nombre = nombre;
 
@@ -40,12 +88,139 @@ $("#btn-unirse").onclick = async () => {
     respuesta: null, respondio: false, ultimoDelta: 0
   });
 
+  guardarSesion();
+  entrarALobby(codigo);
+};
+
+// ============================================================
+// ENTRAR AL LOBBY
+// ============================================================
+function entrarALobby(codigo) {
   mostrarPantalla("pantalla-lobby");
   $("#sala-codigo").textContent = codigo;
   conectarSala();
+}
+
+// ============================================================
+// RECONEXIÓN AUTOMÁTICA
+// ============================================================
+async function reconectarSala(salaId, miId, nombre) {
+  const snap = await get(ref(db, `salas/${salaId}`));
+  if (!snap.exists()) {
+    console.log("⚠️ La sala ya no existe");
+    borrarSesion();
+    return false;
+  }
+
+  const sala = snap.val();
+
+  // Si ya terminó la partida, no reconectamos
+  if (sala.estado === "final") {
+    console.log("ℹ️ La sala ya terminó");
+    borrarSesion();
+    return false;
+  }
+
+  state.salaId = salaId;
+  state.miId = miId;
+  state.nombre = nombre;
+
+  // Verificar que el jugador siga en la sala
+  const jugadores = sala.jugadores || {};
+  if (!jugadores[miId]) {
+    // Ya no está (la sala se recreó o se limpió). Recrear entrada.
+    await update(ref(db, `salas/${salaId}/jugadores/${miId}`), {
+      nombre, puntos: 0, aciertos: 0, total: 0,
+      racha: 0, rachaMax: 0,
+      respuesta: null, respondio: false, ultimoDelta: 0
+    });
+  }
+
+  guardarSesion();
+  entrarALobby(salaId);
+  console.log("✅ Reconectado a la sala", salaId);
+  return true;
+}
+
+// ============================================================
+// BOTONES DE RECONEXIÓN
+// ============================================================
+$("#jugador-reconectar").onclick = async () => {
+  const sesion = cargarSesion();
+  if (!sesion) return;
+  await reconectarSala(sesion.salaId, sesion.miId, sesion.nombre);
 };
 
-// ===== ESCUCHA DE SALA =====
+$("#jugador-olvidar").onclick = () => {
+  if (!confirm("¿Salir de la sala? Podés volver a entrar con el código.")) return;
+  borrarSesion();
+  $("#jugador-reconectar-box").style.display = "none";
+};
+
+$("#btn-salir-sala").onclick = async () => {
+  if (!confirm("¿Salir de la sala? Perdés tu progreso en esta partida.")) return;
+  try {
+    await update(ref(db, `salas/${state.salaId}/jugadores/${state.miId}`), {
+      salio: true
+    });
+  } catch (e) {}
+  borrarSesion();
+  location.reload();
+};
+
+// ============================================================
+// DETECCIÓN DE SESIÓN AL CARGAR
+// ============================================================
+async function chequearSesionPrevia() {
+  console.log("🔍 Buscando sesión de jugador...");
+
+  const sesion = cargarSesion();
+  if (!sesion) {
+    console.log("ℹ️ No hay sesión guardada");
+    return;
+  }
+
+  console.log("📦 Sesión encontrada:", sesion);
+
+  try {
+    const snap = await get(ref(db, `salas/${sesion.salaId}`));
+    if (!snap.exists()) {
+      console.log("⚠️ La sala no existe");
+      borrarSesion();
+      return;
+    }
+
+    const sala = snap.val();
+    if (sala.estado === "final") {
+      console.log("ℹ️ La sala ya terminó");
+      borrarSesion();
+      return;
+    }
+
+    // Mostrar el cartel de reconexión
+    $("#jugador-reconectar-box").style.display = "block";
+    $("#jugador-reconectar-sala").textContent = sesion.salaId;
+    $("#jugador-reconectar-estado").textContent = sala.estado;
+
+    // Rellenar el nombre por si quiere unirse a otra
+    $("#input-nombre").value = sesion.nombre || "";
+
+    console.log("🎨 Cartel de reconexión mostrado");
+  } catch (err) {
+    console.error("❌ Error al chequear sesión:", err);
+  }
+}
+
+// Ejecutar después de que el DOM esté listo
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", chequearSesionPrevia);
+} else {
+  chequearSesionPrevia();
+}
+
+// ============================================================
+// ESCUCHA DE SALA
+// ============================================================
 let unsubSala = null;
 
 function conectarSala() {
@@ -77,7 +252,9 @@ function renderLobby(jugadores) {
     .join("");
 }
 
-// ===== RONDA =====
+// ============================================================
+// RONDA
+// ============================================================
 async function entrarARonda(sala) {
   state.preguntaActualIdx = sala.preguntaActual;
   state.respuestaActual = null;
@@ -114,7 +291,9 @@ async function entrarARonda(sala) {
   });
 }
 
-// ===== TIMER =====
+// ============================================================
+// TIMER
+// ============================================================
 function iniciarTimer(seg, onEnd) {
   clearInterval(state.timerInterval);
   let restante = seg;
@@ -130,7 +309,9 @@ function iniciarTimer(seg, onEnd) {
   }, 1000);
 }
 
-// ===== RESPONDER =====
+// ============================================================
+// RESPONDER
+// ============================================================
 async function responder(indice) {
   if (state.respuestaActual !== null) return;
   state.respuestaActual = indice;
@@ -148,7 +329,9 @@ async function responder(indice) {
   $("#timer").textContent = "✓";
 }
 
-// ===== REVELAR RESULTADO (solo lectura, ya lo calcula el host) =====
+// ============================================================
+// REVELAR RESULTADO (solo lectura, ya lo calcula el host)
+// ============================================================
 async function revelarResultado() {
   if (state.yaRevelado) return;
   state.yaRevelado = true;
@@ -191,7 +374,9 @@ onValue(ref(db, `salas/${state.salaId || "_none"}/_revealTick`), (snap) => {
   revelarResultado();
 });
 
-// ===== FINAL =====
+// ============================================================
+// FINAL
+// ============================================================
 function mostrarFinal(sala) {
   clearInterval(state.timerInterval);
   mostrarPantalla("pantalla-final");
