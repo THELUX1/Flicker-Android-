@@ -124,6 +124,7 @@ function configurarControles() {
 
 const $ = (s) => document.querySelector(s);
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+const pausa = (ms) => new Promise(r => setTimeout(r, ms));
 
 // ===== INGRESO =====
 const params = new URLSearchParams(location.search);
@@ -295,29 +296,49 @@ async function revelarEnTV(sala) {
   clearInterval(tvTimerInterval);
   $("#tv-timer").textContent = "🎯";
 
-  play("correcto");
-  await mostrarCartel("🟢", preg.opciones[preg.correcta], `La respuesta correcta era…`, "verde", 2500);
-
-  if (preg.explicacion) {
-    await mostrarCartel("💬", "…", `"${preg.explicacion}"`, "amarillo", 3000);
-  }
-
   const jugadores = Object.entries(sala.jugadores).map(([id, j]) => ({ id, ...j })).filter(j => !j.esHost);
   const aciertos = jugadores.filter(j => j.respuesta === preg.correcta);
   const fallos   = jugadores.filter(j => j.respuesta !== preg.correcta);
 
+  // 1) Respuesta correcta
+  play("correcto");
+  await mostrarCartel("🟢", preg.opciones[preg.correcta], "La respuesta correcta era…", "verde", 3500);
+
+  // 2) Explicación (si existe)
+  if (preg.explicacion) {
+    await pausa(600);
+    await mostrarCartel("💬", "…", `"${preg.explicacion}"`, "amarillo", 4000);
+  }
+
+  // 3) Felicitación a los que acertaron
   if (aciertos.length > 0) {
+    await pausa(800);
     play("aplauso");
-    await mostrarCartel("🎉", `¡${aciertos.length} acertaron!`, aciertos.map(j => j.nombre).join(" · "), "verde", 2500);
+
+    const texto = aciertos.length === 1
+      ? `¡${aciertos[0].nombre} acertó!`
+      : `¡${aciertos.length} acertaron!`;
+
+    const nombres = aciertos.map(j => j.nombre).join(" · ");
+    await mostrarCartel("🎉", texto, nombres, "verde", 4000);
   }
 
+  // 4) Reacción a los que fallaron
   if (fallos.length > 0) {
+    await pausa(800);
     play("risa");
-    await mostrarCartel("😂", `¡${fallos.length} la erraron!`, fallos.map(j => j.nombre).join(" · "), "rojo", 2500);
+
+    const texto = fallos.length === 1
+      ? `¡${fallos[0].nombre} la erró!`
+      : `¡${fallos.length} la erraron!`;
+
+    const nombres = fallos.map(j => j.nombre).join(" · ");
+    await mostrarCartel("😂", texto, nombres, "rojo", 4000);
   }
 
-  // Esperar un poco y releer la sala para tener los puntos ya actualizados
-  await sleep(800);
+  // 5) Frase final con el que va mejor
+  await pausa(800);
+  await sleep(400);
 
   const salaActualizada = await new Promise((resolve) => {
     const unsub = onValue(ref(db, `salas/${state.salaId}`), (s) => {
@@ -354,15 +375,26 @@ function ajustarTextoCartel(texto) {
 
 async function mostrarCartel(emoji, texto, sub, color, dur) {
   const cartel = $("#tv-cartel");
+
+  // Ocultar el anterior si estaba visible, con un mini fade-out
+  if (cartel.classList.contains("visible")) {
+    cartel.classList.remove("visible");
+    await sleep(300);
+  }
+
   $("#tv-cartel-emoji").textContent = emoji;
   const txt = $("#tv-cartel-texto");
   txt.textContent = texto;
   txt.className = "tv-cartel-texto " + (color || "");
   ajustarTextoCartel(texto);
   $("#tv-cartel-sub").textContent = sub || "";
+
   cartel.classList.add("visible");
   await sleep(dur);
+
   cartel.classList.remove("visible");
+  // Esperar a que termine la transición de salida antes de retornar
+  await sleep(300);
 }
 
 // ===== FINAL =====

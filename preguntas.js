@@ -128,4 +128,4 @@ export const PUNTOS_POR_ACIERTO = 100;
 // ⏱️ Duración de cada fase del juego (en segundos)
 // ============================================================
 export const TIEMPO_RESPUESTA = 60; // Tiempo para responder la pregunta
-export const TIEMPO_REVELADO  = 8;  // Tiempo mostrando la respuesta antes de avanzar
+export const TIEMPO_REVELADO  = 20;  // Tiempo mostrando la respuesta antes de avanzar
