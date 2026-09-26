@@ -2,10 +2,7 @@ import { db } from "./firebase-config.js";
 import {
   ref, set, get, update, onValue, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-import {
-  TIEMPO_RESPUESTA,
-  PUNTOS_POR_ACIERTO
-} from "./preguntas.js";
+import { TIEMPO_RESPUESTA } from "./preguntas.js";
 
 const state = {
   miId: crypto.randomUUID(),
@@ -40,7 +37,7 @@ $("#btn-unirse").onclick = async () => {
   await update(ref(db, `salas/${codigo}/jugadores/${state.miId}`), {
     nombre, puntos: 0, aciertos: 0, total: 0,
     racha: 0, rachaMax: 0,
-    respuesta: null, respondio: false
+    respuesta: null, respondio: false, ultimoDelta: 0
   });
 
   mostrarPantalla("pantalla-lobby");
@@ -151,7 +148,7 @@ async function responder(indice) {
   $("#timer").textContent = "✓";
 }
 
-// ===== REVELAR RESULTADO =====
+// ===== REVELAR RESULTADO (solo lectura, ya lo calcula el host) =====
 async function revelarResultado() {
   if (state.yaRevelado) return;
   state.yaRevelado = true;
@@ -162,26 +159,14 @@ async function revelarResultado() {
   if (!preg) return;
 
   const correcta = preg.correcta;
-  const updates = {};
   const resultados = [];
 
   Object.entries(sala.jugadores).forEach(([id, j]) => {
+    if (j.esHost) return;
     const acierto = j.respuesta === correcta;
-    const delta = acierto ? PUNTOS_POR_ACIERTO : 0;
-
-    const nuevosPuntos = (j.puntos || 0) + delta;
-    const nuevaRacha = acierto ? (j.racha || 0) + 1 : 0;
-
-    updates[`salas/${state.salaId}/jugadores/${id}/puntos`]   = nuevosPuntos;
-    updates[`salas/${state.salaId}/jugadores/${id}/aciertos`] = (j.aciertos || 0) + (acierto ? 1 : 0);
-    updates[`salas/${state.salaId}/jugadores/${id}/total`]    = (j.total || 0) + 1;
-    updates[`salas/${state.salaId}/jugadores/${id}/racha`]    = nuevaRacha;
-    updates[`salas/${state.salaId}/jugadores/${id}/rachaMax`] = Math.max(j.rachaMax || 0, nuevaRacha);
-
+    const delta = j.ultimoDelta || 0;
     resultados.push({ nombre: j.nombre, acierto, delta });
   });
-
-  await update(ref(db), updates);
 
   $("#fase-pregunta").style.display = "none";
   $("#fase-resultado").style.display = "block";

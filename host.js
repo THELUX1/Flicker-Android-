@@ -2,7 +2,7 @@ import { db } from "./firebase-config.js";
 import {
   ref, set, get, update, onValue, push, remove, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-import { PREGUNTAS_EJEMPLO, TIEMPO_REVELADO } from "./preguntas.js";
+import { PREGUNTAS_EJEMPLO, TIEMPO_REVELADO, PUNTOS_POR_ACIERTO } from "./preguntas.js";
 
 const state = {
   miId: crypto.randomUUID(),
@@ -37,11 +37,12 @@ $("#host-crear").onclick = async () => {
     orden: [],
     preguntas: {},
     _revealTick: 0,
+    _rondaCalculada: false,
     jugadores: {
       [state.miId]: {
         nombre: `${nombre} (host)`,
         puntos: 0, aciertos: 0, total: 0, racha: 0, rachaMax: 0,
-        respuesta: null, respondio: false, esHost: true
+        respuesta: null, respondio: false, ultimoDelta: 0, esHost: true
       }
     }
   });
@@ -127,14 +128,19 @@ function conectarSala() {
   });
 }
 
-// ===== AUTO-AVANCE =====
-function controlarAutoAvance(sala) {
+// ===== AUTO-AVANCE Y CÁLCULO DE PUNTOS =====
+async function controlarAutoAvance(sala) {
   if (sala.estado !== "jugando") return;
   if (!sala._revealTick) return;
 
+  // ¿Ya calculamos los puntos de esta ronda?
   if (state.ultimaRondaRevelada === sala.preguntaActual) return;
   state.ultimaRondaRevelada = sala.preguntaActual;
 
+  // 1) Calcular puntos UNA SOLA VEZ
+  await calcularPuntosRonda(sala);
+
+  // 2) Programar avance a la siguiente ronda
   clearTimeout(state.timerAvance);
   state.timerAvance = setTimeout(async () => {
     const s = (await get(ref(db, `salas/${state.salaId}`))).val();
@@ -147,10 +153,52 @@ function controlarAutoAvance(sala) {
     } else {
       await update(ref(db, `salas/${state.salaId}`), {
         preguntaActual: next,
-        _revealTick: 0
+        _revealTick: 0,
+        _rondaCalculada: false
       });
     }
   }, TIEMPO_REVELADO * 1000);
+}
+
+// ===== CÁLCULO DE PUNTOS (única fuente de verdad) =====
+async function calcularPuntosRonda(sala) {
+  // Guard de idempotencia: si ya se calculó esta ronda, no hacerlo dos veces
+  if (sala._rondaCalculada === true) {
+    console.log("⚠️ Ronda ya calculada, saltando.");
+    return;
+  }
+
+  const preg = sala.preguntas[sala.orden[sala.preguntaActual]];
+  if (!preg) return;
+
+  console.log("🧮 Calculando puntos ronda", sala.preguntaActual, "correcta:", preg.correcta);
+
+  const updates = {};
+
+  Object.entries(sala.jugadores).forEach(([id, j]) => {
+    if (j.esHost) return; // el host no juega
+
+    const acierto = j.respuesta === preg.correcta;
+    const delta = acierto ? PUNTOS_POR_ACIERTO : 0;
+
+    const nuevosPuntos = (j.puntos || 0) + delta;
+    const nuevaRacha = acierto ? (j.racha || 0) + 1 : 0;
+
+    updates[`salas/${state.salaId}/jugadores/${id}/puntos`]      = nuevosPuntos;
+    updates[`salas/${state.salaId}/jugadores/${id}/aciertos`]    = (j.aciertos || 0) + (acierto ? 1 : 0);
+    updates[`salas/${state.salaId}/jugadores/${id}/total`]       = (j.total || 0) + 1;
+    updates[`salas/${state.salaId}/jugadores/${id}/racha`]       = nuevaRacha;
+    updates[`salas/${state.salaId}/jugadores/${id}/rachaMax`]    = Math.max(j.rachaMax || 0, nuevaRacha);
+    updates[`salas/${state.salaId}/jugadores/${id}/ultimoDelta`] = delta;
+
+    console.log(`  → ${j.nombre}: respuesta=${j.respuesta}, correcta=${preg.correcta}, acierto=${acierto}, delta=${delta}, total=${nuevosPuntos}`);
+  });
+
+  // Marcar ronda como calculada
+  updates[`salas/${state.salaId}/_rondaCalculada`] = true;
+
+  await update(ref(db), updates);
+  console.log("✅ Puntos guardados en Firebase");
 }
 
 // ===== DETECCIÓN "TODOS RESPONDIERON" =====
@@ -232,13 +280,15 @@ $("#btn-empezar").onclick = async () => {
 
   const updates = {};
   Object.keys(sala.jugadores).forEach(id => {
-    updates[`salas/${state.salaId}/jugadores/${id}/respondio`] = false;
-    updates[`salas/${state.salaId}/jugadores/${id}/respuesta`] = null;
+    updates[`salas/${state.salaId}/jugadores/${id}/respondio`]   = false;
+    updates[`salas/${state.salaId}/jugadores/${id}/respuesta`]   = null;
+    updates[`salas/${state.salaId}/jugadores/${id}/ultimoDelta`] = 0;
   });
-  updates[`salas/${state.salaId}/estado`]         = "jugando";
-  updates[`salas/${state.salaId}/preguntaActual`] = 0;
-  updates[`salas/${state.salaId}/orden`]          = ids.sort(() => Math.random() - 0.5);
-  updates[`salas/${state.salaId}/_revealTick`]    = 0;
+  updates[`salas/${state.salaId}/estado`]          = "jugando";
+  updates[`salas/${state.salaId}/preguntaActual`]  = 0;
+  updates[`salas/${state.salaId}/orden`]           = ids.sort(() => Math.random() - 0.5);
+  updates[`salas/${state.salaId}/_revealTick`]     = 0;
+  updates[`salas/${state.salaId}/_rondaCalculada`] = false;
 
   state.ultimaRondaRevelada = -1;
   await update(ref(db), updates);
@@ -294,7 +344,8 @@ function renderControl(sala) {
       } else {
         await update(ref(db, `salas/${state.salaId}`), {
           preguntaActual: next,
-          _revealTick: 0
+          _revealTick: 0,
+          _rondaCalculada: false
         });
       }
     };
@@ -311,7 +362,8 @@ function renderControl(sala) {
         updates[`salas/${state.salaId}/jugadores/${id}/respuesta`] = null;
         updates[`salas/${state.salaId}/jugadores/${id}/respondio`] = false;
       });
-      updates[`salas/${state.salaId}/_revealTick`] = 0;
+      updates[`salas/${state.salaId}/_revealTick`]     = 0;
+      updates[`salas/${state.salaId}/_rondaCalculada`] = false;
       await update(ref(db), updates);
     };
   }
@@ -323,19 +375,20 @@ function renderControl(sala) {
     `;
 
     $("#btn-volver-lobby").onclick = async () => {
-      await update(ref(db, `salas/${state.salaId}`), { estado: "lobby", preguntaActual: -1, _revealTick: 0 });
+      await update(ref(db, `salas/${state.salaId}`), { estado: "lobby", preguntaActual: -1, _revealTick: 0, _rondaCalculada: false });
     };
     $("#btn-nueva-partida").onclick = async () => {
       const s = (await get(ref(db, `salas/${state.salaId}`))).val();
-      const updates = { estado: "lobby", preguntaActual: -1, _revealTick: 0 };
+      const updates = { estado: "lobby", preguntaActual: -1, _revealTick: 0, _rondaCalculada: false };
       Object.keys(s.jugadores).forEach(id => {
-        updates[`jugadores/${id}/puntos`]   = 0;
-        updates[`jugadores/${id}/aciertos`] = 0;
-        updates[`jugadores/${id}/total`]    = 0;
-        updates[`jugadores/${id}/racha`]    = 0;
-        updates[`jugadores/${id}/rachaMax`] = 0;
-        updates[`jugadores/${id}/respuesta`]= null;
-        updates[`jugadores/${id}/respondio`]= false;
+        updates[`jugadores/${id}/puntos`]      = 0;
+        updates[`jugadores/${id}/aciertos`]    = 0;
+        updates[`jugadores/${id}/total`]       = 0;
+        updates[`jugadores/${id}/racha`]       = 0;
+        updates[`jugadores/${id}/rachaMax`]    = 0;
+        updates[`jugadores/${id}/respuesta`]   = null;
+        updates[`jugadores/${id}/respondio`]   = false;
+        updates[`jugadores/${id}/ultimoDelta`] = 0;
       });
       await update(ref(db, `salas/${state.salaId}`), updates);
     };

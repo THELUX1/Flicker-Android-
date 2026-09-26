@@ -9,10 +9,10 @@ const state = {
   respuestasVistas: new Set(),
   puntajesPrevios: {},
   rondaYaRevelada: false,
-  items: new Map() // id → <li> reutilizable
+  items: new Map()
 };
 
-// ===== SONIDOS =====
+// ===== SONIDOS PUNTUALES =====
 const sonidos = {
   risa:        new Audio("sonidos/risa.mp3"),
   aplauso:     new Audio("sonidos/aplauso.mp3"),
@@ -23,7 +23,104 @@ const sonidos = {
   fanfarria:   new Audio("sonidos/fanfarria.mp3")
 };
 Object.values(sonidos).forEach(a => a.volume = 0.6);
-function play(n) { const s = sonidos[n]; if (!s) return; s.currentTime = 0; s.play().catch(() => {}); }
+
+// ===== MÚSICA DE FONDO =====
+const MUSICA = {
+  lobby: new Audio("musica/lobby.mp3"),
+  juego: new Audio("musica/juego.mp3"),
+  final: new Audio("musica/final.mp3")
+};
+Object.values(MUSICA).forEach(m => {
+  m.loop = true;
+  m.volume = 0.25;
+  m.preload = "auto";
+});
+
+let musicaActual = null;
+let musicaMuteada = false;
+let volumenBase = 0.25;
+let duckTimeout = null;
+
+function reproducirMusica(clave) {
+  if (musicaActual === clave) return;
+  if (musicaActual) {
+    MUSICA[musicaActual].pause();
+    MUSICA[musicaActual].currentTime = 0;
+  }
+  musicaActual = clave;
+  if (!clave) return;
+  const track = MUSICA[clave];
+  track.volume = musicaMuteada ? 0 : volumenBase;
+  track.play().catch(() => {});
+}
+
+function duckMusica(duracionMs = 1800) {
+  if (!musicaActual || musicaMuteada) return;
+  const track = MUSICA[musicaActual];
+  track.volume = Math.max(0, volumenBase * 0.15);
+  clearTimeout(duckTimeout);
+  duckTimeout = setTimeout(() => {
+    track.volume = musicaMuteada ? 0 : volumenBase;
+  }, duracionMs);
+}
+
+function play(n) {
+  const s = sonidos[n];
+  if (!s) return;
+  s.currentTime = 0;
+  s.play().catch(() => {});
+  duckMusica(1800);
+}
+
+// ===== INDICADOR DE VOLUMEN =====
+function inyectarIndicador() {
+  if (document.getElementById("tv-vol-indicador")) return;
+  const el = document.createElement("div");
+  el.id = "tv-vol-indicador";
+  el.style.cssText = `
+    position: fixed; bottom: 18px; right: 18px;
+    padding: 10px 14px;
+    background: rgba(0,0,0,.55);
+    border: 1px solid rgba(255,255,255,.15);
+    border-radius: 12px;
+    font-family: inherit; font-size: 14px; font-weight: 700;
+    color: #fff; z-index: 200;
+    opacity: 0; transition: opacity .3s;
+    pointer-events: none; backdrop-filter: blur(8px);
+  `;
+  document.body.appendChild(el);
+}
+
+function mostrarIndicadorVolumen(texto) {
+  const el = document.getElementById("tv-vol-indicador");
+  if (!el) return;
+  el.textContent = texto;
+  el.style.opacity = "1";
+  clearTimeout(el._t);
+  el._t = setTimeout(() => { el.style.opacity = "0"; }, 1200);
+}
+
+// ===== CONTROLES DE TECLADO =====
+function configurarControles() {
+  window.addEventListener("keydown", (e) => {
+    const k = e.key.toLowerCase();
+    if (k === "+" || k === "=") {
+      volumenBase = Math.min(1, volumenBase + 0.05);
+      if (musicaActual && !musicaMuteada) MUSICA[musicaActual].volume = volumenBase;
+      mostrarIndicadorVolumen(`🔊 ${Math.round(volumenBase * 100)}%`);
+    }
+    if (k === "-" || k === "_") {
+      volumenBase = Math.max(0, volumenBase - 0.05);
+      if (musicaActual && !musicaMuteada) MUSICA[musicaActual].volume = volumenBase;
+      mostrarIndicadorVolumen(`🔉 ${Math.round(volumenBase * 100)}%`);
+    }
+    if (k === "m") {
+      musicaMuteada = !musicaMuteada;
+      if (musicaActual) MUSICA[musicaActual].volume = musicaMuteada ? 0 : volumenBase;
+      mostrarIndicadorVolumen(musicaMuteada ? "🔇 Mute" : `🔊 ${Math.round(volumenBase * 100)}%`);
+    }
+  });
+}
 
 const $ = (s) => document.querySelector(s);
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
@@ -43,6 +140,12 @@ $("#tv-entrar").onclick = () => {
   $("#tv-ingreso").style.display = "none";
   $("#tv-main").style.display = "flex";
   $("#tv-sala-nombre").textContent = codigo;
+
+  inyectarIndicador();
+  configurarControles();
+  reproducirMusica("lobby");
+  mostrarIndicadorVolumen(`🔊 ${Math.round(volumenBase * 100)}%`);
+
   conectar();
 };
 
@@ -79,14 +182,13 @@ function conectar() {
   });
 }
 
-// ===== RANKING (fix) =====
+// ===== RANKING =====
 function renderRanking(sala) {
   const jugadores = Object.entries(sala.jugadores || {}).map(([id, j]) => ({ id, ...j }));
   const ordenados = jugadores.sort((a, b) => (b.puntos || 0) - (a.puntos || 0));
   const max = Math.max(1, ...ordenados.map(j => j.puntos || 0));
   const ul = $("#tv-lista-ranking");
 
-  // 1) Crear/reutilizar elementos
   ordenados.forEach((j, i) => {
     let li = state.items.get(j.id);
     if (!li) {
@@ -102,13 +204,11 @@ function renderRanking(sala) {
       state.items.set(j.id, li);
     }
 
-    // 2) Detectar cambio de puntaje (glow)
     const antes = state.puntajesPrevios[j.id] ?? j.puntos;
     if (j.puntos > antes) { li.classList.add("subio"); setTimeout(() => li.classList.remove("subio"), 2000); }
     if (j.puntos < antes) { li.classList.add("bajo");  setTimeout(() => li.classList.remove("bajo"),  2000); }
     state.puntajesPrevios[j.id] = j.puntos;
 
-    // 3) Actualizar contenido SIEMPRE
     li.querySelector(".rank-pos").textContent = i + 1;
     li.querySelector(".rank-pos").className = "rank-pos " + (i === 0 ? "oro" : i === 1 ? "plata" : i === 2 ? "bronce" : "");
     li.querySelector(".rank-nombre").textContent = j.nombre;
@@ -116,13 +216,10 @@ function renderRanking(sala) {
     li.querySelector(".rank-bar-fill").style.width = `${((j.puntos || 0) / max) * 100}%`;
   });
 
-  // 4) Reordenar el DOM según el orden correcto
   const idsActuales = new Set(ordenados.map(j => j.id));
-  // Eliminar elementos de jugadores que ya no están
   state.items.forEach((li, id) => {
     if (!idsActuales.has(id)) { li.remove(); state.items.delete(id); }
   });
-  // Reinsertar en orden
   ordenados.forEach(j => ul.appendChild(state.items.get(j.id)));
 }
 
@@ -132,12 +229,15 @@ function manejarEstado(sala) {
     $("#tv-estado").textContent = "🛋️ En el lobby";
     $("#tv-texto-pregunta").textContent = "Esperando que empiece la partida…";
     $("#tv-timer").textContent = "--";
+    reproducirMusica("lobby");
   }
   if (sala.estado === "jugando") {
     $("#tv-estado").textContent = "🎮 ¡Jugando!";
+    reproducirMusica("juego");
   }
   if (sala.estado === "final") {
     $("#tv-estado").textContent = "🏁 ¡Terminó!";
+    reproducirMusica("final");
     mostrarFinalTV(sala);
   }
 }
@@ -161,7 +261,10 @@ function iniciarTensionTimer(sala) {
   tvTimerInterval = setInterval(() => {
     restante--;
     $("#tv-timer").textContent = Math.max(0, restante);
-    if (restante <= 10) $("#tv-timer").classList.add("urgente");
+    if (restante <= 10) {
+      $("#tv-timer").classList.add("urgente");
+      if (restante === 10) play("tension");
+    }
     if (restante <= 0) clearInterval(tvTimerInterval);
   }, 1000);
 }
@@ -213,7 +316,20 @@ async function revelarEnTV(sala) {
     await mostrarCartel("😂", `¡${fallos.length} la erraron!`, fallos.map(j => j.nombre).join(" · "), "rojo", 2500);
   }
 
-  const mejor = jugadores.sort((a, b) => (b.puntos || 0) - (a.puntos || 0))[0];
+  // Esperar un poco y releer la sala para tener los puntos ya actualizados
+  await sleep(800);
+
+  const salaActualizada = await new Promise((resolve) => {
+    const unsub = onValue(ref(db, `salas/${state.salaId}`), (s) => {
+      resolve(s.val());
+      unsub();
+    });
+  });
+
+  const mejor = Object.values(salaActualizada.jugadores)
+    .filter(j => !j.esHost)
+    .sort((a, b) => (b.puntos || 0) - (a.puntos || 0))[0];
+
   if (mejor && mejor.total > 0) {
     const mem = Math.round((mejor.aciertos / mejor.total) * 100);
     if (mem >= 70) {
