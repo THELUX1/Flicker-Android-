@@ -2,6 +2,8 @@ import { db } from "./firebase-config.js";
 import { ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { TIEMPO_RESPUESTA } from "./preguntas.js";
 
+console.log("🎬 tv.js cargado");
+
 const state = {
   salaId: null,
   ultimaRonda: -1,
@@ -10,12 +12,11 @@ const state = {
   puntajesPrevios: {},
   rondaYaRevelada: false,
   items: new Map(),
-  // Nuevos: evitar repetir reacciones y chats
   reaccionesVistas: new Set(),
   chatsVistos: new Set()
 };
 
-// ===== SONIDOS PUNTUALES =====
+// ===== SONIDOS =====
 const sonidos = {
   risa:        new Audio("sonidos/risa.mp3"),
   aplauso:     new Audio("sonidos/aplauso.mp3"),
@@ -28,7 +29,7 @@ const sonidos = {
 };
 Object.values(sonidos).forEach(a => a.volume = 0.6);
 
-// ===== MÚSICA DE FONDO =====
+// ===== MÚSICA =====
 const MUSICA = {
   lobby: new Audio("musica/lobby.mp3"),
   juego: new Audio("musica/juego.mp3"),
@@ -47,12 +48,12 @@ let duckTimeout = null;
 
 function reproducirMusica(clave) {
   if (musicaActual === clave) return;
-  if (musicaActual) {
+  if (musicaActual && MUSICA[musicaActual]) {
     MUSICA[musicaActual].pause();
     MUSICA[musicaActual].currentTime = 0;
   }
   musicaActual = clave;
-  if (!clave) return;
+  if (!clave || !MUSICA[clave]) return;
   const track = MUSICA[clave];
   track.volume = musicaMuteada ? 0 : volumenBase;
   track.play().catch(() => {});
@@ -61,6 +62,7 @@ function reproducirMusica(clave) {
 function duckMusica(duracionMs = 1800) {
   if (!musicaActual || musicaMuteada) return;
   const track = MUSICA[musicaActual];
+  if (!track) return;
   track.volume = Math.max(0, volumenBase * 0.15);
   clearTimeout(duckTimeout);
   duckTimeout = setTimeout(() => {
@@ -104,23 +106,29 @@ function mostrarIndicadorVolumen(texto) {
   el._t = setTimeout(() => { el.style.opacity = "0"; }, 1200);
 }
 
-// ===== CONTROLES DE TECLADO =====
+// ===== CONTROLES =====
 function configurarControles() {
   window.addEventListener("keydown", (e) => {
     const k = e.key.toLowerCase();
     if (k === "+" || k === "=") {
       volumenBase = Math.min(1, volumenBase + 0.05);
-      if (musicaActual && !musicaMuteada) MUSICA[musicaActual].volume = volumenBase;
+      if (musicaActual && !musicaMuteada && MUSICA[musicaActual]) {
+        MUSICA[musicaActual].volume = volumenBase;
+      }
       mostrarIndicadorVolumen(`🔊 ${Math.round(volumenBase * 100)}%`);
     }
     if (k === "-" || k === "_") {
       volumenBase = Math.max(0, volumenBase - 0.05);
-      if (musicaActual && !musicaMuteada) MUSICA[musicaActual].volume = volumenBase;
+      if (musicaActual && !musicaMuteada && MUSICA[musicaActual]) {
+        MUSICA[musicaActual].volume = volumenBase;
+      }
       mostrarIndicadorVolumen(`🔉 ${Math.round(volumenBase * 100)}%`);
     }
     if (k === "m") {
       musicaMuteada = !musicaMuteada;
-      if (musicaActual) MUSICA[musicaActual].volume = musicaMuteada ? 0 : volumenBase;
+      if (musicaActual && MUSICA[musicaActual]) {
+        MUSICA[musicaActual].volume = musicaMuteada ? 0 : volumenBase;
+      }
       mostrarIndicadorVolumen(musicaMuteada ? "🔇 Mute" : `🔊 ${Math.round(volumenBase * 100)}%`);
     }
   });
@@ -131,11 +139,14 @@ const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 const pausa = (ms) => new Promise(r => setTimeout(r, ms));
 
 // ============================================================
-// CARTELES FLOTANTES (reemplazan al ticker)
+// CARTELES FLOTANTES
 // ============================================================
 function mostrarFlotante(emoji, texto, sub, color = "amarillo", duracion = 4500) {
   const cont = document.getElementById("tv-flotantes");
-  if (!cont) return;
+  if (!cont) {
+    console.warn("⚠️ #tv-flotantes no existe en el DOM");
+    return;
+  }
 
   const el = document.createElement("div");
   el.className = `cartel-flotante ${color}`;
@@ -148,7 +159,6 @@ function mostrarFlotante(emoji, texto, sub, color = "amarillo", duracion = 4500)
   `;
   cont.appendChild(el);
 
-  // Limitar a 5 carteles a la vez
   while (cont.children.length > 5) {
     cont.removeChild(cont.firstChild);
   }
@@ -159,38 +169,79 @@ function mostrarFlotante(emoji, texto, sub, color = "amarillo", duracion = 4500)
   }, duracion);
 }
 
-// ===== INGRESO =====
-const params = new URLSearchParams(location.search);
-const salaParam = params.get("sala");
-if (salaParam) {
-  $("#tv-sala").value = salaParam.toUpperCase();
-  setTimeout(() => $("#tv-entrar").click(), 100);
+// ============================================================
+// INICIALIZACIÓN (esperar DOM)
+// ============================================================
+function iniciar() {
+  console.log("🚀 Iniciando TV...");
+
+  const params = new URLSearchParams(location.search);
+  const salaParam = params.get("sala");
+
+  if (salaParam) {
+    console.log("📺 Código recibido por URL:", salaParam);
+    const inputSala = $("#tv-sala");
+    if (inputSala) inputSala.value = salaParam.toUpperCase();
+
+    // Auto-conectar después de un pequeño delay
+    setTimeout(() => {
+      const btn = $("#tv-entrar");
+      if (btn) {
+        console.log("🖱️ Simulando click en Conectar...");
+        btn.click();
+      }
+    }, 300);
+  }
+
+  const btnEntrar = $("#tv-entrar");
+  if (!btnEntrar) {
+    console.error("❌ No se encontró #tv-entrar");
+    return;
+  }
+
+  btnEntrar.onclick = () => {
+    const codigo = ($("#tv-sala")?.value || "").trim().toUpperCase();
+    if (!codigo) return alert("Poné el código");
+
+    console.log("✅ Conectando a sala:", codigo);
+    state.salaId = codigo;
+
+    const ingreso = $("#tv-ingreso");
+    const main = $("#tv-main");
+    const nombreSala = $("#tv-sala-nombre");
+
+    if (ingreso) ingreso.style.display = "none";
+    if (main) main.style.display = "flex";
+    if (nombreSala) nombreSala.textContent = codigo;
+
+    inyectarIndicador();
+    configurarControles();
+    reproducirMusica("lobby");
+    mostrarIndicadorVolumen(`🔊 ${Math.round(volumenBase * 100)}%`);
+
+    conectar();
+  };
 }
 
-$("#tv-entrar").onclick = () => {
-  const codigo = $("#tv-sala").value.trim().toUpperCase();
-  if (!codigo) return alert("Poné el código");
-  state.salaId = codigo;
-  $("#tv-ingreso").style.display = "none";
-  $("#tv-main").style.display = "flex";
-  $("#tv-sala-nombre").textContent = codigo;
-
-  inyectarIndicador();
-  configurarControles();
-  reproducirMusica("lobby");
-  mostrarIndicadorVolumen(`🔊 ${Math.round(volumenBase * 100)}%`);
-
-  conectar();
-};
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", iniciar);
+} else {
+  iniciar();
+}
 
 // ============================================================
 // CONEXIÓN A SALA
 // ============================================================
 function conectar() {
-  // Estado principal de la sala
+  console.log("🔌 Conectando a Firebase sala:", state.salaId);
+
+  // Estado principal
   onValue(ref(db, `salas/${state.salaId}`), async (snap) => {
     const sala = snap.val();
-    if (!sala) return;
+    if (!sala) {
+      console.log("⚠️ Sala no encontrada");
+      return;
+    }
 
     renderRanking(sala);
 
@@ -218,7 +269,7 @@ function conectar() {
     }
   });
 
-  // ===== REACCIONES AUTOMÁTICAS =====
+  // Reacciones
   onValue(ref(db, `salas/${state.salaId}/_reacciones`), (snap) => {
     const grupos = snap.val();
     if (!grupos) return;
@@ -238,7 +289,7 @@ function conectar() {
     });
   });
 
-  // ===== CHAT =====
+  // Chat
   onValue(ref(db, `salas/${state.salaId}/_chat`), (snap) => {
     const mensajes = snap.val();
     if (!mensajes) return;
@@ -254,13 +305,14 @@ function conectar() {
 }
 
 // ============================================================
-// RANKING EN VIVO
+// RANKING
 // ============================================================
 function renderRanking(sala) {
   const jugadores = Object.entries(sala.jugadores || {}).map(([id, j]) => ({ id, ...j }));
   const ordenados = jugadores.sort((a, b) => (b.puntos || 0) - (a.puntos || 0));
   const max = Math.max(1, ...ordenados.map(j => j.puntos || 0));
   const ul = $("#tv-lista-ranking");
+  if (!ul) return;
 
   ordenados.forEach((j, i) => {
     let li = state.items.get(j.id);
@@ -289,7 +341,6 @@ function renderRanking(sala) {
     li.querySelector(".rank-puntos").textContent = `${j.puntos || 0} pts`;
     li.querySelector(".rank-bar-fill").style.width = `${((j.puntos || 0) / max) * 100}%`;
 
-    // Avatar (si tiene fotoUrl, sino emoji)
     const avatarEl = li.querySelector(".rank-avatar");
     const urlFoto = j.fotoUrl || "";
     if (avatarEl.dataset.url !== urlFoto) {
@@ -322,37 +373,40 @@ function manejarEstado(sala) {
     reproducirMusica("juego");
   }
   if (sala.estado === "final") {
-    $("#tv-estado").textContent = "🏁 ¡Fin de la partida!";
+    $("#tv-estado").textContent = "🏁 ¡Fin!";
     reproducirMusica("final");
     mostrarFinalTV(sala);
   }
 }
 
 // ============================================================
-// PREGUNTA ACTUAL
+// PREGUNTA
 // ============================================================
 function mostrarPregunta(sala) {
-  const preg = sala.preguntas[sala.orden[sala.preguntaActual]];
+  const preg = sala.preguntas?.[sala.orden?.[sala.preguntaActual]];
   if (!preg) return;
   $("#tv-texto-pregunta").textContent = preg.pregunta;
   mostrarFlotante("📢", `Pregunta ${sala.preguntaActual + 1}/${sala.orden.length}`, "", "amarillo", 3500);
 }
 
 // ============================================================
-// TIMER VISUAL
+// TIMER
 // ============================================================
 let tvTimerInterval = null;
 function iniciarTensionTimer(sala) {
   clearInterval(tvTimerInterval);
   let restante = TIEMPO_RESPUESTA;
-  $("#tv-timer").textContent = restante;
-  $("#tv-timer").classList.remove("urgente");
+  const timer = $("#tv-timer");
+  if (timer) {
+    timer.textContent = restante;
+    timer.classList.remove("urgente");
+  }
 
   tvTimerInterval = setInterval(() => {
     restante--;
-    $("#tv-timer").textContent = Math.max(0, restante);
+    if (timer) timer.textContent = Math.max(0, restante);
     if (restante <= 10) {
-      $("#tv-timer").classList.add("urgente");
+      if (timer) timer.classList.add("urgente");
       if (restante === 10) play("tension");
     }
     if (restante <= 0) clearInterval(tvTimerInterval);
@@ -380,14 +434,15 @@ function detectarRespuestas(sala) {
 }
 
 // ============================================================
-// REVELAR EN TV
+// REVELAR
 // ============================================================
 async function revelarEnTV(sala) {
-  const preg = sala.preguntas[sala.orden[sala.preguntaActual]];
+  const preg = sala.preguntas?.[sala.orden?.[sala.preguntaActual]];
   if (!preg) return;
 
   clearInterval(tvTimerInterval);
-  $("#tv-timer").textContent = "🎯";
+  const timer = $("#tv-timer");
+  if (timer) timer.textContent = "🎯";
 
   const jugadores = Object.entries(sala.jugadores).map(([id, j]) => ({ id, ...j })).filter(j => !j.esHost);
   const aciertos = jugadores.filter(j => j.respuesta === preg.correcta);
@@ -404,11 +459,7 @@ async function revelarEnTV(sala) {
   if (aciertos.length > 0) {
     await pausa(800);
     play("aplauso");
-
-    const texto = aciertos.length === 1
-      ? `¡${aciertos[0].nombre} Acertó!`
-      : `¡${aciertos.length} Acertaron!`;
-
+    const texto = aciertos.length === 1 ? `¡${aciertos[0].nombre} acertó!` : `¡${aciertos.length} acertaron!`;
     const nombres = aciertos.map(j => j.nombre).join(" · ");
     await mostrarCartel("🎉", texto, nombres, "verde", 4000);
   }
@@ -416,11 +467,7 @@ async function revelarEnTV(sala) {
   if (fallos.length > 0) {
     await pausa(800);
     play("risa");
-
-    const texto = fallos.length === 1
-      ? `¡${fallos[0].nombre} La Falló!`
-      : `¡${fallos.length} La Fallaron!`;
-
+    const texto = fallos.length === 1 ? `¡${fallos[0].nombre} la erró!` : `¡${fallos.length} la erraron!`;
     const nombres = fallos.map(j => j.nombre).join(" · ");
     await mostrarCartel("😂", texto, nombres, "rojo", 4000);
   }
@@ -428,7 +475,6 @@ async function revelarEnTV(sala) {
   await pausa(800);
   await sleep(400);
 
-  // Frase final con el que va mejor (usando flotante en vez de ticker)
   const salaActualizada = await new Promise((resolve) => {
     const unsub = onValue(ref(db, `salas/${state.salaId}`), (s) => {
       resolve(s.val());
@@ -447,7 +493,7 @@ async function revelarEnTV(sala) {
       mostrarFlotante("👀", `${mejor.nombre} viene acertando el ${mem}%`, "¿Sospechoso?", "amarillo", 4500);
     } else if (mem <= 30) {
       play("risa");
-      mostrarFlotante("💀", `${mejor.nombre} viene acertando el ${mem}%`, "¿Amigo o desconocido?", "rojo", 4500);
+      mostrarFlotante("💀", `${mejor.nombre} viene acertando el ${mem}%`, "¿Amigo o conocido?", "rojo", 4500);
     }
   }
 }
@@ -467,8 +513,8 @@ function ajustarTextoCartel(texto) {
 
 async function mostrarCartel(emoji, texto, sub, color, dur) {
   const cartel = $("#tv-cartel");
+  if (!cartel) return;
 
-  // Reparar estructura si fue modificada
   if (!document.getElementById("tv-cartel-emoji")) {
     cartel.innerHTML = `
       <div class="tv-cartel-emoji" id="tv-cartel-emoji"></div>
@@ -491,13 +537,12 @@ async function mostrarCartel(emoji, texto, sub, color, dur) {
 
   cartel.classList.add("visible");
   await sleep(dur);
-
   cartel.classList.remove("visible");
   await sleep(300);
 }
 
 // ============================================================
-// ESTADÍSTICAS FINALES
+// ESTADÍSTICAS
 // ============================================================
 async function mostrarEstadisticasTV(sala) {
   const stats = sala._estadisticas || {};
@@ -506,89 +551,45 @@ async function mostrarEstadisticasTV(sala) {
 
   await mostrarCartel("📊", "ESTADÍSTICAS", "Veamos qué pasó...", "amarillo", 2500);
 
-  // 🟢 Pregunta más fácil
   const masFacil = [...lista].sort((a, b) => b.porcentajeAciertos - a.porcentajeAciertos)[0];
   if (masFacil) {
     play("aplauso");
-    await mostrarCartel(
-      "🟢",
-      `${masFacil.porcentajeAciertos}% acertaron`,
-      `LA MÁS FÁCIL: "${masFacil.pregunta}"`,
-      "verde",
-      5000
-    );
+    await mostrarCartel("🟢", `${masFacil.porcentajeAciertos}% acertaron`, `LA MÁS FÁCIL: "${masFacil.pregunta}"`, "verde", 5000);
   }
 
-  // 🔴 Pregunta más difícil
   const masDificil = [...lista].sort((a, b) => a.porcentajeAciertos - b.porcentajeAciertos)[0];
   if (masDificil && masDificil.porcentajeAciertos < masFacil.porcentajeAciertos) {
     play("risa");
-    await mostrarCartel(
-      "🔴",
-      `${masDificil.porcentajeAciertos}% acertaron`,
-      `LA MÁS DIFÍCIL: "${masDificil.pregunta}"`,
-      "rojo",
-      5000
-    );
+    await mostrarCartel("🔴", `${masDificil.porcentajeAciertos}% acertaron`, `LA MÁS DIFÍCIL: "${masDificil.pregunta}"`, "rojo", 5000);
   }
 
-  // 🏆 Únicos aciertos
   const unicos = lista.filter(s => s.unicoAcierto);
   if (unicos.length > 0) {
     for (const s of unicos.slice(0, 3)) {
       play("aplauso");
-      await mostrarCartel(
-        "🏆",
-        `¡Solo ${s.unicoAcierto} acertó!`,
-        `"${s.pregunta}"`,
-        "amarillo",
-        4500
-      );
+      await mostrarCartel("🏆", `¡Solo ${s.unicoAcierto} acertó!`, `"${s.pregunta}"`, "amarillo", 4500);
     }
   }
 
-  // 💀 Preguntas donde nadie acertó
   const todosFallaron = lista.filter(s => s.todosFallaron);
   if (todosFallaron.length > 0) {
     play("risa");
     const s = todosFallaron[0];
     const extra = todosFallaron.length > 1 ? ` (y ${todosFallaron.length - 1} más)` : "";
-    await mostrarCartel(
-      "💀",
-      "¡Nadie la sabía!",
-      `"${s.pregunta}"${extra}`,
-      "rojo",
-      5000
-    );
+    await mostrarCartel("💀", "¡Nadie la sabía!", `"${s.pregunta}"${extra}`, "rojo", 5000);
   }
 
-  // 🔥 Pregunta donde todos acertaron
   const todosAcertaron = lista.filter(s => s.todosAcertaron);
   if (todosAcertaron.length > 0) {
     play("aplauso");
     const s = todosAcertaron[0];
     const extra = todosAcertaron.length > 1 ? ` (y ${todosAcertaron.length - 1} más)` : "";
-    await mostrarCartel(
-      "🔥",
-      "¡Todos la sabían!",
-      `"${s.pregunta}"${extra}`,
-      "verde",
-      5000
-    );
+    await mostrarCartel("🔥", "¡Todos la sabían!", `"${s.pregunta}"${extra}`, "verde", 5000);
   }
 
-  // 📊 Promedio general
-  const promedio = Math.round(
-    lista.reduce((acc, s) => acc + s.porcentajeAciertos, 0) / lista.length
-  );
+  const promedio = Math.round(lista.reduce((acc, s) => acc + s.porcentajeAciertos, 0) / lista.length);
   await pausa(500);
-  await mostrarCartel(
-    "📊",
-    `${promedio}% promedio`,
-    `El grupo acertó en promedio ${promedio} de cada 100`,
-    "amarillo",
-    4500
-  );
+  await mostrarCartel("📊", `${promedio}% promedio`, `El grupo acertó en promedio ${promedio} de cada 100`, "amarillo", 4500);
 }
 
 // ============================================================
@@ -601,11 +602,9 @@ async function mostrarFinalTV(sala) {
   const ganador = jugadores[0];
   if (!ganador) return;
 
-  // 1) Cartel del ganador
   await mostrarCartel("🏆", `${ganador.nombre} GANA`, `${ganador.puntos} puntos`, "amarillo", 6000);
   await pausa(1200);
 
-  // 2) Recorrer a cada jugador con su título (con foto si tiene)
   for (let i = 0; i < jugadores.length; i++) {
     const j = jugadores[i];
     const memoria = j.total ? Math.round((j.aciertos / j.total) * 100) : 0;
@@ -620,7 +619,6 @@ async function mostrarFinalTV(sala) {
 
     play(sonido);
 
-    // Si tiene foto, mostrar cartel con foto grande
     if (j.fotoUrl) {
       const cartel = $("#tv-cartel");
       const colorBorde = color === "verde" ? "#16a34a" : color === "rojo" ? "#dc2626" : "#facc15";
@@ -644,14 +642,12 @@ async function mostrarFinalTV(sala) {
       cartel.classList.remove("visible");
       await sleep(300);
 
-      // Restaurar estructura
       cartel.innerHTML = `
         <div class="tv-cartel-emoji" id="tv-cartel-emoji"></div>
         <div class="tv-cartel-texto" id="tv-cartel-texto"></div>
         <div class="tv-cartel-sub" id="tv-cartel-sub"></div>
       `;
     } else {
-      // Sin foto → cartel normal con emoji
       await mostrarCartel(emoji, j.nombre, `${j.puntos} pts · ${memoria}% de memoria · "${frase}"`, color, 6000);
     }
 
@@ -659,18 +655,14 @@ async function mostrarFinalTV(sala) {
   }
 
   await pausa(1200);
-
-  // 3) Estadísticas finales
   await mostrarEstadisticasTV(sala);
   await pausa(1200);
 
-  // 4) Mensaje personalizado (si existe)
   if (sala.ajustes?.mensaje) {
     play("aplauso");
     await mostrarCartel("💬", "Un mensaje...", `"${sala.ajustes.mensaje}"`, "amarillo", 6000);
     await pausa(800);
   }
 
-  // 5) Cierre
-  await mostrarCartel("🎉", "Bien jugado", "Hora de entregar el premio 🏅"", "amarillo", 7000);
+  await mostrarCartel("🎉", "Buen juego", "Hora de repartir los premios", "amarillo", 7000);
 }
