@@ -10,11 +10,33 @@
   <div id="host-app">
 
     <section id="host-inicio" class="host-pantalla activa">
-      <h1>🎛️ Panel del Anfitrión</h1>
-      <input id="host-nombre" placeholder="Tu nombre (anfitrión)" maxlength="15" />
-      <button id="host-crear" class="btn-primario">Crear sala</button>
-      <p class="hint">Después vas a poder cargar preguntas y arrancar la partida</p>
-    </section>
+  <h1>🎛️ Panel del Anfitrión</h1>
+
+  <div id="host-reconectar-box" style="display:none" class="host-reconectar-box">
+    <p>📌 Detectamos una sala anterior:</p>
+    <div class="host-reconectar-info">
+      <strong id="host-reconectar-codigo"></strong>
+      <span id="host-reconectar-jugadores"></span>
+    </div>
+    <div class="row-host">
+      <button id="host-reconectar" class="btn-primario">🔁 Reconectar</button>
+      <button id="host-olvidar" class="btn-secundario">🗑️ Olvidar</button>
+    </div>
+    <hr class="host-sep" />
+    <p class="hint">O creá una nueva sala:</p>
+  </div>
+
+  <input id="host-nombre" placeholder="Tu nombre (anfitrión)" maxlength="15" />
+  <button id="host-crear" class="btn-primario">➕ Crear sala nueva</button>
+
+  <details class="host-join-existing">
+    <summary>🔗 Unirme a una sala existente como host</summary>
+    <input id="host-join-codigo" placeholder="Código de sala (ej: ABCD12)" maxlength="10" />
+    <button id="host-join" class="btn-secundario">Unirme como host</button>
+  </details>
+
+  <p class="hint">Las preguntas se guardan automáticamente en la nube ✅</p>
+</section>
 
     <section id="host-panel" class="host-pantalla">
 

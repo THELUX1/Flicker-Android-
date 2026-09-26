@@ -150,3 +150,56 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 .host-fase span { opacity: .8; }
 
 #control-contenido button { width: 100%; }
+/* ===== RECONEXIÓN ===== */
+.host-reconectar-box {
+  background: rgba(233,69,96,.1);
+  border: 1px solid rgba(233,69,96,.4);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+.host-reconectar-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255,255,255,.05);
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin: 12px 0;
+}
+.host-reconectar-info strong {
+  font-size: 1.4rem;
+  letter-spacing: 3px;
+  color: #e94560;
+}
+.host-reconectar-info span {
+  font-size: .85rem;
+  opacity: .7;
+}
+.row-host {
+  display: flex;
+  gap: 8px;
+}
+.row-host button {
+  flex: 1;
+  margin-bottom: 0;
+}
+.host-sep {
+  border: none;
+  border-top: 1px dashed rgba(255,255,255,.15);
+  margin: 20px 0 12px;
+}
+.host-join-existing {
+  margin-top: 16px;
+  background: rgba(255,255,255,.03);
+  border-radius: 10px;
+  padding: 12px;
+}
+.host-join-existing summary {
+  cursor: pointer;
+  font-size: .9rem;
+  opacity: .8;
+  user-select: none;
+}
+.host-join-existing summary:hover { opacity: 1; }
+.host-join-existing input { margin-top: 12px; }
